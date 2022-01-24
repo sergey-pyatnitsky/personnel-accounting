@@ -5,8 +5,8 @@ create table role(
 
 create table user(
 	id int primary key auto_increment,
-    username varchar(20) not null unique,
-    password varchar(20) not null unique,
+    username varchar(10) not null unique,
+    password varchar(16) not null unique,
     role_id int not null,
     active bool default false,
     foreign key (role_id) references role (id)
@@ -14,21 +14,21 @@ create table user(
 
 create table positions(
 	id int primary key auto_increment,
-    name varchar(20) not null unique
+    name varchar(40) not null unique
 );
 
 create table profile(
 	id int primary key auto_increment,
-    education varchar(100),
-    address varchar(100),
-    phone varchar(16),
-	email varchar(20),
+    education varchar(2048),
+    address varchar(256),
+    phone varchar(60),
+	email varchar(256),
     skills text
 );
 
 create table department(
 	id int primary key auto_increment,
-    name varchar(40) not null,
+    name varchar(256) not null,
     active bool default false,
     start_date date not null,
     end_date date
@@ -36,7 +36,7 @@ create table department(
 
 create table project(
 	id int primary key auto_increment,
-    name varchar(40) not null,
+    name varchar(256) not null,
     department_id int not null,
     active bool default false, 
     start_date date not null, 
@@ -49,7 +49,7 @@ create table employee(
     user_id int not null unique,
     department_id int, 
     profile_id int not null, 
-    name varchar(40) not null, 
+    name varchar(256) not null,
     active bool default false, 
     create_date date not null,
     modified_date date,
@@ -79,7 +79,7 @@ create table tack_status(
 
 create table task(
 	id int primary key auto_increment,
-    name varchar(40) not null,
+    name varchar(100) not null,
     description text, 
     project_id int not null, 
     reporter_id int not null, 
@@ -98,7 +98,7 @@ create table report_card(
     date date not null, 
     task_id int not null,
     employee_id int not null,
-    working_time int not null, 
+    working_time time not null,
     foreign key (task_id) references task (id),
     foreign key (employee_id) references employee (id)
 );
