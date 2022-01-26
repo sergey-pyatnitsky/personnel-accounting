@@ -11,27 +11,27 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "active")
     private boolean isActive;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private Date startDate;
 
     @Column(name = "end_date")
     private Date endDate;
 
     @ManyToOne
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
     @OneToMany(mappedBy = "project")
     private List<EmployeePosition> employeePositionList;
 
-    public Project() {
-    }
+    @OneToMany(mappedBy = "project")
+    private List<Task> taskList;
 }

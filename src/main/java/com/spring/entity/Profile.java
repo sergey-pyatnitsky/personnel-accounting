@@ -10,7 +10,7 @@ public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "education")
     private String education;
@@ -26,7 +26,4 @@ public class Profile {
 
     @Column(name = "skills")
     private String skills;
-
-    public Profile() {
-    }
 }

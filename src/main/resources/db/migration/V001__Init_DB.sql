@@ -1,24 +1,19 @@
-create table role(
-	id int primary key auto_increment,
-    name varchar(20) not null unique
-);
 
 create table user(
-	id int primary key auto_increment,
+	id bigint primary key auto_increment,
     username varchar(10) not null unique,
     password varchar(16) not null unique,
-    role_id int not null,
-    active bool default false,
-    foreign key (role_id) references role (id)
+    role varchar(20) not null,
+    active bool default false
 );
 
 create table positions(
-	id int primary key auto_increment,
+    id bigint primary key auto_increment,
     name varchar(40) not null unique
 );
 
 create table profile(
-	id int primary key auto_increment,
+	id bigint primary key auto_increment,
     education varchar(2048),
     address varchar(256),
     phone varchar(60),
@@ -27,7 +22,7 @@ create table profile(
 );
 
 create table department(
-	id int primary key auto_increment,
+	id bigint primary key auto_increment,
     name varchar(256) not null,
     active bool default false,
     start_date date not null,
@@ -35,7 +30,7 @@ create table department(
 );
 
 create table project(
-	id int primary key auto_increment,
+	id bigint primary key auto_increment,
     name varchar(256) not null,
     department_id int not null,
     active bool default false, 
@@ -45,7 +40,7 @@ create table project(
 );
 
 create table employee(
-	id int primary key auto_increment,
+	id bigint primary key auto_increment,
     user_id int not null unique,
     department_id int, 
     profile_id int not null, 
@@ -58,9 +53,9 @@ create table employee(
 );
 
 create table employee_position(
-	id int primary key auto_increment,
-    employee_id int not null, 
-    position_id int not null, 
+	id bigint primary key auto_increment,
+    employee_id int not null,
+    position_id int not null,
     project_id int not null, 
     department_id int not null, 
     active bool default false, 
@@ -72,29 +67,23 @@ create table employee_position(
     foreign key (project_id) references project (id)    
 );
 
-create table tack_status(
-	id int primary key auto_increment,
-    name varchar(10) not null unique
-);
-
 create table task(
-	id int primary key auto_increment,
+	id bigint primary key auto_increment,
     name varchar(100) not null,
     description text, 
     project_id int not null, 
     reporter_id int not null, 
     assignee_id int not null, 
-    status_id int not null, 
+    status varchar(10) not null,
     create_date date not null, 
     modified_date date, 
     foreign key (project_id) references project (id),
     foreign key (reporter_id) references employee (id),
-    foreign key (assignee_id) references employee (id),
-    foreign key (status_id) references tack_status (id)
+    foreign key (assignee_id) references employee (id)
 );
 
 create table report_card(
-	id int primary key auto_increment,
+	id bigint primary key auto_increment,
     date date not null, 
     task_id int not null,
     employee_id int not null,

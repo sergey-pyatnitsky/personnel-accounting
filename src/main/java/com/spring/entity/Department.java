@@ -11,15 +11,15 @@ public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "active")
     private boolean isActive;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private Date startDate;
 
     @Column(name = "end_date")
@@ -30,7 +30,4 @@ public class Department {
 
     @OneToMany(mappedBy = "department")
     private List<Project> projectList;
-
-    public Department() {
-    }
 }

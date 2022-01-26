@@ -10,31 +10,31 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "description")
     private String description;
 
-    @OneToOne
-    @JoinColumn(name = "project_id")
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     @OneToOne
-    @JoinColumn(name = "reporter_id")
+    @JoinColumn(name = "reporter_id", nullable = false)
     private Employee reporter;
 
     @OneToOne
-    @JoinColumn(name = "assignee_id")
+    @JoinColumn(name = "assignee_id", nullable = false)
     private Employee assignee;
 
-    @OneToOne
-    @JoinColumn(name = "status_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private TaskStatus taskStatus;
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     private Date createDate;
 
     @Column(name = "modified_date")
@@ -42,7 +42,4 @@ public class Task {
 
     @OneToOne(fetch = FetchType.LAZY)
     private ReportCard reportCard;
-
-    public Task() {
-    }
 }

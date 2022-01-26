@@ -2,7 +2,6 @@ package com.spring.entity;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "employee_position")
@@ -11,19 +10,19 @@ public class EmployeePosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "active")
     private boolean isActive;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private Date startDate;
 
     @Column(name = "end_date")
     private Date endDate;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
     @ManyToOne
@@ -31,13 +30,10 @@ public class EmployeePosition {
     private Position position;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id", nullable = false)
     private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = false)
     private Department department;
-
-    public EmployeePosition() {
-    }
 }
