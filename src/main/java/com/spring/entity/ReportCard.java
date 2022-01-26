@@ -1,9 +1,14 @@
 package com.spring.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Time;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "report_card")
 public class ReportCard {

@@ -1,8 +1,12 @@
 package com.spring.entity;
 
-import javax.persistence.*;
-import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "profile")
 public class Profile {

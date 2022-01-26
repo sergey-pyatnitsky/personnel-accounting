@@ -1,8 +1,13 @@
 package com.spring.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.sql.Date;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "employee_position")
 public class EmployeePosition {
