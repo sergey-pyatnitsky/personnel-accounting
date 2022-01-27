@@ -35,7 +35,7 @@ public class EmployeePosition {
     private Position position;
 
     @ManyToOne
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     @ManyToOne

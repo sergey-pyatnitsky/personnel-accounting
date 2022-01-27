@@ -44,7 +44,7 @@ public class Employee {
     @Column(name = "modified_date")
     private Date modifiedDate;
 
-    @OneToMany
+    @OneToMany(mappedBy = "employee")
     private List<EmployeePosition> employeePositionList;
 
     @OneToMany(mappedBy = "employee")
