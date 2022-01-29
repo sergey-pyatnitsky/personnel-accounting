@@ -32,7 +32,7 @@ create table department(
 create table project(
 	id bigint primary key auto_increment,
     name varchar(256) not null,
-    department_id int not null,
+    department_id bigint not null,
     active bool default false, 
     start_date date not null, 
     end_date date,
@@ -42,8 +42,8 @@ create table project(
 create table employee(
 	id bigint primary key auto_increment,
     user_id int not null unique,
-    department_id int, 
-    profile_id int not null, 
+    department_id bigint,
+    profile_id bigint not null,
     name varchar(256) not null,
     active bool default false, 
     create_date date not null,
@@ -54,10 +54,10 @@ create table employee(
 
 create table employee_position(
 	id bigint primary key auto_increment,
-    employee_id int not null,
-    position_id int not null,
-    project_id int not null, 
-    department_id int not null, 
+    employee_id bigint not null,
+    position_id bigint not null,
+    project_id bigint not null,
+    department_id bigint not null,
     active bool default false, 
     start_date date not null, 
     end_date date,
@@ -71,9 +71,9 @@ create table task(
 	id bigint primary key auto_increment,
     name varchar(100) not null,
     description text, 
-    project_id int not null, 
-    reporter_id int not null, 
-    assignee_id int not null, 
+    project_id bigint not null,
+    reporter_id bigint not null,
+    assignee_id bigint not null,
     status varchar(10) not null,
     create_date date not null, 
     modified_date date, 
@@ -85,8 +85,8 @@ create table task(
 create table report_card(
 	id bigint primary key auto_increment,
     date date not null, 
-    task_id int not null,
-    employee_id int not null,
+    task_id bigint not null,
+    employee_id bigint not null,
     working_time time not null,
     foreign key (task_id) references task (id),
     foreign key (employee_id) references employee (id)
