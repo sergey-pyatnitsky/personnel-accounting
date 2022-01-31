@@ -1,4 +1,4 @@
-package com.dao.ProjectDAO;
+package com.dao.project;
 
 import com.core.domain.Department;
 import com.core.domain.Project;
@@ -11,15 +11,17 @@ import java.util.List;
 
 @Repository
 public class ProjectDAOImpl implements ProjectDAO{
+    private SessionFactory sessionFactory;
 
     @Autowired
-    private SessionFactory sessionFactory;
+    public void setSessionFactory(SessionFactory sessionFactory){
+        this.sessionFactory = sessionFactory;
+    }
 
     @Override
     public Project find(int id) {
         Session session = sessionFactory.getCurrentSession();
-        Project project = session.get(Project.class, id);
-        return project;
+        return session.get(Project.class, id);
     }
 
     @Override
@@ -100,7 +102,7 @@ public class ProjectDAOImpl implements ProjectDAO{
     @Override
     public boolean inactivate(Project project) {
         Session session = sessionFactory.getCurrentSession();
-        if (!project.isActive()) ;
+        if (!project.isActive()) return true;
         else if (session.get(Project.class, project.getId()) == null) return false;
         else {
             project.setActive(false);
@@ -124,7 +126,7 @@ public class ProjectDAOImpl implements ProjectDAO{
     @Override
     public boolean activate(Project project) {
         Session session = sessionFactory.getCurrentSession();
-        if (project.isActive()) ;
+        if (project.isActive()) return true;
         else if (session.get(Project.class, project.getId()) == null) return false;
         else {
             project.setActive(true);

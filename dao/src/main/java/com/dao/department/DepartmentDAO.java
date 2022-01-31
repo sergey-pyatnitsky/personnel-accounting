@@ -1,11 +1,11 @@
-package com.dao.DepartmentDAO;
+package com.dao.department;
 
 import com.core.domain.Department;
 
 import java.util.List;
 
 public interface DepartmentDAO {
-    Department find(int id);
+    Department find(Long id);
     List<Department> findByActive(boolean isActive);
     List<Department> findAll();
     Department findByName(String username);
@@ -15,9 +15,9 @@ public interface DepartmentDAO {
     boolean removeById(Long id);
     boolean remove(Department user);
 
-    boolean inactivateById(long id);
+    boolean inactivateById(Long id);
     boolean inactivate(Department user);
 
-    boolean activateById(long id);
+    boolean activateById(Long id);
     boolean activate(Department user);
 }

@@ -1,4 +1,4 @@
-package com.dao.UserDAO;
+package com.dao.user;
 
 import com.core.domain.User;
 import com.core.enums.Role;
@@ -12,42 +12,41 @@ import java.util.List;
 @Repository
 public class UserDAOImpl implements UserDAO {
 
-    @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    public void setSessionFactory(SessionFactory sessionFactory){
+        this.sessionFactory = sessionFactory;
+    }
 
     @Override
     public User find(int id) {
         Session session = sessionFactory.getCurrentSession();
-        User user = session.get(User.class, id);
-        return user;
+        return session.get(User.class, id);
     }
 
     @Override
     public List<User> findByActive(boolean isActive) {
         Session session = sessionFactory.getCurrentSession();
-        List<User> userList = session.createQuery("from user where active = :isActive").list();
-        return userList;
+        return (List<User>) session.createQuery("from user where active = :isActive").list();
     }
 
     @Override
     public List<User> findAll() {
         Session session = sessionFactory.getCurrentSession();
-        List<User> userList = session.createQuery("from user").list();
-        return userList;
+        return session.createQuery("from user").list();
     }
 
     @Override
     public User findByUsername(String username) {
         Session session = sessionFactory.getCurrentSession();
-        User user = (User) session.createQuery("from user where username = :username").getSingleResult();
-        return user;
+        return (User) session.createQuery("from user where username = :username").getSingleResult();
     }
 
     @Override
     public List<User> findByRole(Role role) {
         Session session = sessionFactory.getCurrentSession();
-        List<User> userList = session.createQuery("from user where role = :role").list();
-        return userList;
+        return (List<User>) session.createQuery("from user where role = :role").list();
     }
 
     @Override
@@ -96,7 +95,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean inactivate(User user) {
         Session session = sessionFactory.getCurrentSession();
-        if (!user.isActive()) ;
+        if (!user.isActive()) return true;
         else if (session.get(User.class, user.getId()) == null) return false;
         else {
             user.setActive(false);
@@ -120,7 +119,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean activate(User user) {
         Session session = sessionFactory.getCurrentSession();
-        if (user.isActive()) ;
+        if (user.isActive()) return true;
         else if (session.get(User.class, user.getId()) == null) return false;
         else {
             user.setActive(true);

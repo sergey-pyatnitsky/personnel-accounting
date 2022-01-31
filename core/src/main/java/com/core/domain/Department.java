@@ -35,4 +35,10 @@ public class Department {
 
     @OneToMany(mappedBy = "department")
     private List<Project> projectList;
+
+    public Department(String name, boolean isActive, Date startDate) {
+        this.name = name;
+        this.isActive = isActive;
+        this.startDate = startDate;
+    }
 }

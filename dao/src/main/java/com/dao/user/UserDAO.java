@@ -1,4 +1,4 @@
-package com.dao.UserDAO;
+package com.dao.user;
 
 import com.core.domain.User;
 import com.core.enums.Role;

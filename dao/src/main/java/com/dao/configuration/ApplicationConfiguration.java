@@ -1,9 +1,10 @@
-package com.core.configuration;
+package com.dao.configuration;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -14,7 +15,8 @@ import java.beans.PropertyVetoException;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = "com.core")
+@ComponentScan(basePackages = "com.dao")
+@PropertySource("classpath:database.properties")
 @EnableTransactionManagement
 public class ApplicationConfiguration {
     private final Environment env;
@@ -36,12 +38,6 @@ public class ApplicationConfiguration {
         }
         return dataSource;
     }
-
-    /*@Bean(initMethod = "migrate")
-    public Flyway flyway(){
-        Flyway flyway = Flyway.configure().dataSource(dataSource()).load();
-        return flyway;
-    }*/
 
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
