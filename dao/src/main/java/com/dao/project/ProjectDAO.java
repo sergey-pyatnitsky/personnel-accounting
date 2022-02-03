@@ -6,20 +6,20 @@ import com.core.domain.Project;
 import java.util.List;
 
 public interface ProjectDAO {
-    Project find(int id);
+    Project find(Long id);
     List<Project> findByActive(boolean isActive);
     List<Project> findAll();
-    Project findByName(String name);
+    List<Project> findByName(String name);
     List<Project> findByDepartment(Department department);
 
-    Project create(Project user);
+    Project save(Project user);
     Project update(Project user);
     boolean removeById(Long id);
     boolean remove(Project user);
 
-    boolean inactivateById(long id);
+    boolean inactivateById(Long id);
     boolean inactivate(Project user);
 
-    boolean activateById(long id);
+    boolean activateById(Long id);
     boolean activate(Project user);
 }

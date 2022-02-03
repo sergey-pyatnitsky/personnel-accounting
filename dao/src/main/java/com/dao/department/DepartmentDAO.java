@@ -10,7 +10,7 @@ public interface DepartmentDAO {
     List<Department> findAll();
     Department findByName(String username);
 
-    Department create(Department user);
+    Department save(Department user);
     Department update(Department user);
     boolean removeById(Long id);
     boolean remove(Department user);

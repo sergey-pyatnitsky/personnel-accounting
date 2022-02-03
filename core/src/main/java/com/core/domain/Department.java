@@ -24,8 +24,14 @@ public class Department {
     @Column(name = "active")
     private boolean isActive;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date")
     private Date startDate;
+
+    @Column(name = "create_date", nullable = false)
+    private Date createDate;
+
+    @Column(name = "modified_date")
+    private Date modifiedDate;
 
     @Column(name = "end_date")
     private Date endDate;
@@ -36,9 +42,9 @@ public class Department {
     @OneToMany(mappedBy = "department")
     private List<Project> projectList;
 
-    public Department(String name, boolean isActive, Date startDate) {
+    public Department(String name, boolean isActive, Date createDate) {
         this.name = name;
         this.isActive = isActive;
-        this.startDate = startDate;
+        this.createDate = createDate;
     }
 }

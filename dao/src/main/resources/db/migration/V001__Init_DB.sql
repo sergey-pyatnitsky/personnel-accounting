@@ -1,4 +1,3 @@
-
 create table user(
 	id bigint primary key auto_increment,
     username varchar(10) not null unique,
@@ -25,8 +24,10 @@ create table department(
 	id bigint primary key auto_increment,
     name varchar(256) not null,
     active bool default false,
-    start_date date not null,
-    end_date date
+    start_date date,
+    end_date date,
+    create_date date not null,
+    modified_date date
 );
 
 create table project(
@@ -34,8 +35,10 @@ create table project(
     name varchar(256) not null,
     department_id bigint not null,
     active bool default false, 
-    start_date date not null, 
+    start_date date,
     end_date date,
+    create_date date not null,
+    modified_date date,
     foreign key (department_id) references department (id)
 );
 
@@ -59,8 +62,10 @@ create table employee_position(
     project_id bigint not null,
     department_id bigint not null,
     active bool default false, 
-    start_date date not null, 
+    start_date date,
     end_date date,
+    create_date date not null,
+    modified_date date,
     foreign key (employee_id) references employee (id),
     foreign key (position_id) references positions (id),
     foreign key (department_id) references department (id),
@@ -88,6 +93,8 @@ create table report_card(
     task_id bigint not null,
     employee_id bigint not null,
     working_time time not null,
+    create_date date not null,
+    modified_date date,
     foreign key (task_id) references task (id),
     foreign key (employee_id) references employee (id)
 );

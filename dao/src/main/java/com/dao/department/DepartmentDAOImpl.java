@@ -23,8 +23,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     @Override
     public Department find(Long id) {
         Session session = sessionFactory.getCurrentSession();
-        Department department = session.get(Department.class, id);
-        return department;
+        return session.get(Department.class, id);
     }
 
     @Override
@@ -32,16 +31,13 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("from Department where active = :isActive");
         query.setParameter("isActive", isActive);
-
-        List<Department> departmentList = query.list();
-        return departmentList;
+        return (List<Department>) query.list();
     }
 
     @Override
     public List<Department> findAll() {
         Session session = sessionFactory.getCurrentSession();
-        List<Department> departmentList = session.createQuery("from Department").list();
-        return departmentList;
+        return (List<Department>) session.createQuery("from Department").list();
     }
 
     @Override
@@ -49,38 +45,46 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("from Department where name = :nameDepartment");
         query.setParameter("nameDepartment", name);
-        return (Department) query.list().get(0);
+        return (Department) query.getSingleResult();
     }
 
     @Override
-    public Department create(Department department) {
+    public Department save(Department department) {
         Session session = sessionFactory.getCurrentSession();
-        session.save(department);
-        return findByName(department.getName());
+        session.saveOrUpdate(department);
+        return department;
     }
 
     @Override
     public Department update(Department department) {
         Session session = sessionFactory.getCurrentSession();
-        session.update(department);
-        return findByName(department.getName());
+        return (Department) session.merge(department);
     }
 
     @Override
     public boolean removeById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Department department = session.get(Department.class, id);
-        if (department != null)
-            session.delete(department);
+        if (department == null) return false;
+        else{
+            try{
+                session.delete(department);
+            }catch (Exception e){
+                return false;
+            }
+        }
         return true;
     }
 
     @Override
     public boolean remove(Department department) {
         Session session = sessionFactory.getCurrentSession();
-        if (session.get(Department.class, department.getId()) != null)
+        try{
             session.delete(department);
-        return true;
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 
     @Override
@@ -89,8 +93,11 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         Department department = session.get(Department.class, id);
         if (department == null) return false;
         else if (department.isActive()) {
-            department.setActive(false);
-            session.update(department);
+            try{
+                department.setActive(false);
+            }catch (Exception e){
+                return false;
+            }
         }
         return true;
     }
@@ -98,11 +105,15 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     @Override
     public boolean inactivate(Department department) {
         Session session = sessionFactory.getCurrentSession();
+        Department departmentFromDB = session.get(Department.class, department.getId());
         if (!department.isActive()) return true;
-        else if (session.get(Department.class, department.getId()) == null) return false;
+        else if (departmentFromDB == null) return false;
         else {
-            department.setActive(false);
-            session.update(department);
+            try{
+                department.setActive(false);
+            }catch (Exception e){
+                return false;
+            }
         }
         return true;
     }
@@ -113,8 +124,11 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         Department department = session.get(Department.class, id);
         if (department == null) return false;
         else if (!department.isActive()) {
-            department.setActive(true);
-            session.update(department);
+            try{
+                department.setActive(true);
+            }catch (Exception e){
+                return false;
+            }
         }
         return true;
     }
@@ -122,11 +136,15 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     @Override
     public boolean activate(Department department) {
         Session session = sessionFactory.getCurrentSession();
+        Department departmentFromDB = session.get(Department.class, department.getId());
         if (department.isActive()) return true;
-        else if (session.get(Department.class, department.getId()) == null) return false;
+        else if (departmentFromDB == null) return false;
         else {
-            department.setActive(true);
-            session.update(department);
+            try{
+                department.setActive(true);
+            }catch (Exception e){
+                return false;
+            }
         }
         return true;
     }

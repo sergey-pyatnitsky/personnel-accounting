@@ -3,21 +3,21 @@ package com.dao.test;
 import com.core.domain.Department;
 import com.dao.configuration.ApplicationConfiguration;
 import com.dao.department.DepartmentDAO;
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfiguration.class)
-@Transactional
 public class DepartmentDAOTest {
 
     @Autowired
@@ -25,47 +25,57 @@ public class DepartmentDAOTest {
     private static Department department;
     private static Department secondDepartment;
 
-    @BeforeClass
-    public static void initDepartmentEntity() {
-        Date date = new Date(2022, 12, 15);
-        department = new Department("Отдел Java разработки", true, date);
+    @After
+    public void deleteDepartmentEntity() {
+        try {
+            departmentDAO.remove(department);
+        } catch (Exception e) {
+        }
+        try {
+            departmentDAO.remove(secondDepartment);
+        } catch (Exception e) {
+        }
+    }
+
+    @Before
+    public void entityToPersist() {
+        department = departmentDAO.update(new Department("Отдел Java разработки",
+                true, new Date(2022, 12, 15)));
+        secondDepartment = departmentDAO.update(new Department("Отдел Python разработки",
+                true, new Date(System.currentTimeMillis())));
+
+        System.out.println(department.getName() + " - " + department.getId());
+        System.out.println(secondDepartment.getName() + " - " + secondDepartment.getId());
     }
 
     @Test
-    public void create() {
-        department = departmentDAO.create(department);
+    public void save() {
         Assert.assertEquals(department.getName(), "Отдел Java разработки");
         Assert.assertTrue(department.isActive());
-        Assert.assertEquals(department.getStartDate(), new Date(2022, 12, 15));
-
-        secondDepartment = departmentDAO.create(new Department("Отдел Python разработки",
-                true, new Date(System.currentTimeMillis())));
+        Assert.assertEquals(department.getCreateDate(), new Date(2022, 12, 15));
     }
 
     @Test
     public void findByActive() {
-        departmentDAO.create(department);
         List<Department> departmentListFromDB = departmentDAO.findByActive(true);
         departmentListFromDB.forEach(obj -> Assert.assertTrue(obj.isActive()));
     }
 
     @Test
+    @Transactional
     public void findByName() {
-        departmentDAO.create(secondDepartment);
-        Assert.assertEquals(departmentDAO.findByName("Отдел Python разработки").getName(),
-                secondDepartment.getName());
+        Assert.assertEquals(departmentDAO.findByName("Отдел Python разработки"), secondDepartment);
     }
 
     @Test
+    @Transactional
     public void find() {
-        departmentDAO.create(department);
         Assert.assertEquals(departmentDAO.find(department.getId()), department);
     }
 
     @Test
+    @Transactional
     public void findAll() {
-        departmentDAO.create(department);
-        departmentDAO.create(secondDepartment);
         List<Department> departmentListFromDB = departmentDAO.findAll();
         Assert.assertEquals(departmentListFromDB.get(departmentListFromDB.size() - 1), secondDepartment);
         Assert.assertEquals(departmentListFromDB.get(departmentListFromDB.size() - 2), department);
@@ -73,34 +83,29 @@ public class DepartmentDAOTest {
 
     @Test
     public void update() {
-        departmentDAO.create(department);
         department.setName("Отдел PHP разработки");
         Assert.assertEquals(departmentDAO.update(department), department);
     }
 
     @Test
     public void inactivateById() {
-        departmentDAO.create(department);
         Assert.assertTrue(departmentDAO.inactivateById(department.getId()));
     }
 
     @Test
     public void activateById() {
         department.setActive(false);
-        departmentDAO.create(department);
         Assert.assertTrue(departmentDAO.activateById(department.getId()));
     }
 
     @Test
     public void inactivate() {
-        department.setActive(true);
-        departmentDAO.create(department);
         Assert.assertTrue(departmentDAO.inactivate(department));
     }
 
     @Test
     public void activate() {
-        departmentDAO.create(department);
+        department.setActive(false);
         Assert.assertTrue(departmentDAO.activate(department));
     }
 

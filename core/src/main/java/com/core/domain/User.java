@@ -29,4 +29,11 @@ public class User {
 
     @Column(name = "active")
     private boolean isActive;
+
+    public User(String username, String password, Role role, boolean isActive) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.isActive = isActive;
+    }
 }

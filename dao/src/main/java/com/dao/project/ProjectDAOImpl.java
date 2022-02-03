@@ -4,12 +4,15 @@ import com.core.domain.Department;
 import com.core.domain.Project;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class ProjectDAOImpl implements ProjectDAO{
     private SessionFactory sessionFactory;
 
@@ -19,7 +22,7 @@ public class ProjectDAOImpl implements ProjectDAO{
     }
 
     @Override
-    public Project find(int id) {
+    public Project find(Long id) {
         Session session = sessionFactory.getCurrentSession();
         return session.get(Project.class, id);
     }
@@ -27,74 +30,83 @@ public class ProjectDAOImpl implements ProjectDAO{
     @Override
     public List<Project> findByActive(boolean isActive) {
         Session session = sessionFactory.getCurrentSession();
-        List<Project> projectList = session.createQuery(
-                "from project where active = :isActive").list();
-        return projectList;
+        Query query = session.createQuery("from Project where active = :isActive");
+        query.setParameter("isActive", isActive);
+        return (List<Project>) query.list();
     }
 
     @Override
     public List<Project> findAll() {
         Session session = sessionFactory.getCurrentSession();
-        List<Project> projectList = session.createQuery("from project").list();
-        return projectList;
+        return (List<Project>) session.createQuery("from Project").list();
     }
 
     @Override
-    public Project findByName(String name) {
+    public List<Project> findByName(String name) {
         Session session = sessionFactory.getCurrentSession();
-        Project project = (Project) session.createQuery(
-                "from project where name = :name").getSingleResult();
-        return project;
+        Query query = session.createQuery("from Project where name = :name");
+        query.setParameter("name", name);
+        return (List<Project>) query.list();
     }
 
     @Override
     public List<Project> findByDepartment(Department department) {
         Session session = sessionFactory.getCurrentSession();
-        Long departmentId = department.getId();
-        List<Project> projectList = session.createQuery(
-                "from project where department_id = :departmentId").list();
-        return projectList;
+        Query query = session.createQuery("from Project where department_id = :id");
+        query.setParameter("id", department.getId());
+        return (List<Project>) query.list();
     }
 
     @Override
-    public Project create(Project project) {
+    public Project save(Project project) {
         Session session = sessionFactory.getCurrentSession();
-        session.save(project);
+        session.saveOrUpdate(project);
         return project;
     }
 
     @Override
     public Project update(Project project) {
         Session session = sessionFactory.getCurrentSession();
-        session.update(project);
-        return project;
+        return (Project) session.merge(project);
     }
 
     @Override
     public boolean removeById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Project project = session.get(Project.class, id);
-        if (project != null)
-            session.delete(project);
+        if (project == null) return false;
+        else{
+            try{
+                session.delete(project);
+            }catch (Exception e){
+                return false;
+            }
+        }
         return true;
     }
 
     @Override
     public boolean remove(Project project) {
         Session session = sessionFactory.getCurrentSession();
-        if (session.get(Project.class, project.getId()) != null)
+        try{
             session.delete(project);
-        return true;
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 
     @Override
-    public boolean inactivateById(long id) {
+    public boolean inactivateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Project project = session.get(Project.class, id);
         if (project == null) return false;
         else if (project.isActive()) {
-            project.setActive(false);
-            session.update(project);
+            try{
+                project.setActive(false);
+            }catch (Exception e){
+                return false;
+            }
         }
         return true;
     }
@@ -102,23 +114,30 @@ public class ProjectDAOImpl implements ProjectDAO{
     @Override
     public boolean inactivate(Project project) {
         Session session = sessionFactory.getCurrentSession();
+        Project projectFromDB = session.get(Project.class, project.getId());
         if (!project.isActive()) return true;
-        else if (session.get(Project.class, project.getId()) == null) return false;
+        else if (projectFromDB == null) return false;
         else {
-            project.setActive(false);
-            session.update(project);
+            try{
+                project.setActive(false);
+            }catch (Exception e){
+                return false;
+            }
         }
         return true;
     }
 
     @Override
-    public boolean activateById(long id) {
+    public boolean activateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Project project = session.get(Project.class, id);
         if (project == null) return false;
         else if (!project.isActive()) {
-            project.setActive(true);
-            session.update(project);
+            try{
+                project.setActive(true);
+            }catch (Exception e){
+                return false;
+            }
         }
         return true;
     }
@@ -126,11 +145,15 @@ public class ProjectDAOImpl implements ProjectDAO{
     @Override
     public boolean activate(Project project) {
         Session session = sessionFactory.getCurrentSession();
+        Project projectFromDB = session.get(Project.class, project.getId());
         if (project.isActive()) return true;
-        else if (session.get(Project.class, project.getId()) == null) return false;
+        else if (projectFromDB == null) return false;
         else {
-            project.setActive(true);
-            session.update(project);
+            try{
+                project.setActive(true);
+            }catch (Exception e){
+                return false;
+            }
         }
         return true;
     }

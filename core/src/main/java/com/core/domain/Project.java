@@ -24,11 +24,17 @@ public class Project {
     @Column(name = "active")
     private boolean isActive;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date")
     private Date startDate;
 
     @Column(name = "end_date")
     private Date endDate;
+
+    @Column(name = "create_date", nullable = false)
+    private Date createDate;
+
+    @Column(name = "modified_date")
+    private Date modifiedDate;
 
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
@@ -39,4 +45,11 @@ public class Project {
 
     @OneToMany(mappedBy = "project")
     private List<Task> taskList;
+
+    public Project(String name, Department department, boolean isActive, Date createDate) {
+        this.name = name;
+        this.department = department;
+        this.isActive = isActive;
+        this.createDate = createDate;
+    }
 }

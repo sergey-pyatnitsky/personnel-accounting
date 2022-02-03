@@ -31,4 +31,10 @@ public class ReportCard {
 
     @Column(name = "working_time", nullable = false)
     private Time workingTime;
+
+    @Column(name = "create_date", nullable = false)
+    private Date createDate;
+
+    @Column(name = "modified_date")
+    private Date modifiedDate;
 }

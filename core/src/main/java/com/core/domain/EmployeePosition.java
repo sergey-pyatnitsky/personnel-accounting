@@ -26,6 +26,12 @@ public class EmployeePosition {
     @Column(name = "end_date")
     private Date endDate;
 
+    @Column(name = "create_date", nullable = false)
+    private Date createDate;
+
+    @Column(name = "modified_date")
+    private Date modifiedDate;
+
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
