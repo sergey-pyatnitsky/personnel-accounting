@@ -37,4 +37,12 @@ public class ReportCard {
 
     @Column(name = "modified_date")
     private Date modifiedDate;
+
+    public ReportCard(Date date, Task task, Employee employee, Time workingTime) {
+        this.date = date;
+        this.task = task;
+        this.employee = employee;
+        this.workingTime = workingTime;
+        createDate = new Date(System.currentTimeMillis());
+    }
 }

@@ -1,7 +1,6 @@
 package com.dao.configuration;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import org.apache.log4j.PropertyConfigurator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,13 +15,13 @@ import java.beans.PropertyVetoException;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = "com.dao")
+@ComponentScan("com.dao")
 @PropertySource("classpath:database.properties")
 @EnableTransactionManagement
-public class ApplicationConfiguration {
+public class DAOConfiguration {
     private final Environment env;
 
-    public ApplicationConfiguration(Environment env) {
+    public DAOConfiguration(Environment env) {
         this.env = env;
     }
 

@@ -20,7 +20,7 @@ public class EmployeePosition {
     @Column(name = "active")
     private boolean isActive;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date")
     private Date startDate;
 
     @Column(name = "end_date")
@@ -47,4 +47,13 @@ public class EmployeePosition {
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
+
+    public EmployeePosition(boolean isActive, Employee employee, Position position, Project project, Department department) {
+        this.isActive = isActive;
+        this.employee = employee;
+        this.position = position;
+        this.project = project;
+        this.department = department;
+        createDate = new Date(System.currentTimeMillis());
+    }
 }

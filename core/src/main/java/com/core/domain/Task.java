@@ -46,6 +46,17 @@ public class Task {
     @Column(name = "modified_date")
     private Date modifiedDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "task", fetch = FetchType.LAZY)
     private ReportCard reportCard;
+
+    public Task(String name, String description,
+                Project project, Employee reporter, Employee assignee, TaskStatus taskStatus) {
+        this.name = name;
+        this.description = description;
+        this.project = project;
+        this.reporter = reporter;
+        this.assignee = assignee;
+        this.taskStatus = taskStatus;
+        createDate = new Date(System.currentTimeMillis());
+    }
 }

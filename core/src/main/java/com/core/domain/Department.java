@@ -42,9 +42,9 @@ public class Department {
     @OneToMany(mappedBy = "department")
     private List<Project> projectList;
 
-    public Department(String name, boolean isActive, Date createDate) {
+    public Department(String name, boolean isActive) {
         this.name = name;
         this.isActive = isActive;
-        this.createDate = createDate;
+        createDate = new Date(System.currentTimeMillis());
     }
 }

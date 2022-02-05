@@ -49,4 +49,12 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee")
     private List<ReportCard> reportCardList;
+
+    public Employee(String name, boolean isActive, User user, Profile profile) {
+        this.user = user;
+        this.profile = profile;
+        this.name = name;
+        this.isActive = isActive;
+        createDate = new Date(System.currentTimeMillis());
+    }
 }

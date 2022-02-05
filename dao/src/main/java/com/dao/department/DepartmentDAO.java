@@ -8,16 +8,16 @@ public interface DepartmentDAO {
     Department find(Long id);
     List<Department> findByActive(boolean isActive);
     List<Department> findAll();
-    Department findByName(String username);
+    Department findByName(String name);
 
-    Department save(Department user);
-    Department update(Department user);
+    Department save(Department department);
+    Department update(Department department);
     boolean removeById(Long id);
-    boolean remove(Department user);
+    boolean remove(Department department);
 
     boolean inactivateById(Long id);
-    boolean inactivate(Department user);
+    boolean inactivate(Department department);
 
     boolean activateById(Long id);
-    boolean activate(Department user);
+    boolean activate(Department department);
 }

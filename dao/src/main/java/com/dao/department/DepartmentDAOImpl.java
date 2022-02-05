@@ -7,11 +7,9 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-@Transactional
 public class DepartmentDAOImpl implements DepartmentDAO {
     private SessionFactory sessionFactory;
 
@@ -66,10 +64,10 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         Session session = sessionFactory.getCurrentSession();
         Department department = session.get(Department.class, id);
         if (department == null) return false;
-        else{
-            try{
+        else {
+            try {
                 session.delete(department);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -79,11 +77,16 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     @Override
     public boolean remove(Department department) {
         Session session = sessionFactory.getCurrentSession();
-        try{
-            session.delete(department);
-            return true;
-        }catch (Exception e){
-            return false;
+        Department departmentFromDB =
+                session.get(Department.class, department.getId());
+        if (departmentFromDB == null) return false;
+        else {
+            try {
+                session.delete(department);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
         }
     }
 
@@ -93,9 +96,9 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         Department department = session.get(Department.class, id);
         if (department == null) return false;
         else if (department.isActive()) {
-            try{
+            try {
                 department.setActive(false);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -109,9 +112,9 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         if (!department.isActive()) return true;
         else if (departmentFromDB == null) return false;
         else {
-            try{
+            try {
                 department.setActive(false);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -124,9 +127,9 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         Department department = session.get(Department.class, id);
         if (department == null) return false;
         else if (!department.isActive()) {
-            try{
+            try {
                 department.setActive(true);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -140,9 +143,9 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         if (department.isActive()) return true;
         else if (departmentFromDB == null) return false;
         else {
-            try{
+            try {
                 department.setActive(true);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }

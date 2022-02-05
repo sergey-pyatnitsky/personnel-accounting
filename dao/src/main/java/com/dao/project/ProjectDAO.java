@@ -12,14 +12,14 @@ public interface ProjectDAO {
     List<Project> findByName(String name);
     List<Project> findByDepartment(Department department);
 
-    Project save(Project user);
-    Project update(Project user);
+    Project save(Project project);
+    Project update(Project project);
     boolean removeById(Long id);
-    boolean remove(Project user);
+    boolean remove(Project project);
 
     boolean inactivateById(Long id);
-    boolean inactivate(Project user);
+    boolean inactivate(Project project);
 
     boolean activateById(Long id);
-    boolean activate(Project user);
+    boolean activate(Project project);
 }

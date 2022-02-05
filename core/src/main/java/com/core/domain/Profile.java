@@ -30,4 +30,12 @@ public class Profile {
 
     @Column(name = "skills")
     private String skills;
+
+    public Profile(String education, String address, String phone, String email, String skills) {
+        this.education = education;
+        this.address = address;
+        this.phone = phone;
+        this.email = email;
+        this.skills = skills;
+    }
 }

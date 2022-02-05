@@ -18,4 +18,8 @@ public class Position {
 
     @Column(name = "name")
     private String name;
+
+    public Position(String name) {
+        this.name = name;
+    }
 }

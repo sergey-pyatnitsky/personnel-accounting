@@ -8,16 +8,14 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-@Transactional
-public class ProjectDAOImpl implements ProjectDAO{
+public class ProjectDAOImpl implements ProjectDAO {
     private SessionFactory sessionFactory;
 
     @Autowired
-    public void setSessionFactory(SessionFactory sessionFactory){
+    public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
@@ -52,8 +50,8 @@ public class ProjectDAOImpl implements ProjectDAO{
     @Override
     public List<Project> findByDepartment(Department department) {
         Session session = sessionFactory.getCurrentSession();
-        Query query = session.createQuery("from Project where department_id = :id");
-        query.setParameter("id", department.getId());
+        Query query = session.createQuery("from Project where department = :department");
+        query.setParameter("department", department);
         return (List<Project>) query.list();
     }
 
@@ -75,10 +73,10 @@ public class ProjectDAOImpl implements ProjectDAO{
         Session session = sessionFactory.getCurrentSession();
         Project project = session.get(Project.class, id);
         if (project == null) return false;
-        else{
-            try{
+        else {
+            try {
                 session.delete(project);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -88,10 +86,10 @@ public class ProjectDAOImpl implements ProjectDAO{
     @Override
     public boolean remove(Project project) {
         Session session = sessionFactory.getCurrentSession();
-        try{
+        try {
             session.delete(project);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -102,9 +100,9 @@ public class ProjectDAOImpl implements ProjectDAO{
         Project project = session.get(Project.class, id);
         if (project == null) return false;
         else if (project.isActive()) {
-            try{
+            try {
                 project.setActive(false);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -118,9 +116,9 @@ public class ProjectDAOImpl implements ProjectDAO{
         if (!project.isActive()) return true;
         else if (projectFromDB == null) return false;
         else {
-            try{
+            try {
                 project.setActive(false);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -133,9 +131,9 @@ public class ProjectDAOImpl implements ProjectDAO{
         Project project = session.get(Project.class, id);
         if (project == null) return false;
         else if (!project.isActive()) {
-            try{
+            try {
                 project.setActive(true);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -149,9 +147,9 @@ public class ProjectDAOImpl implements ProjectDAO{
         if (project.isActive()) return true;
         else if (projectFromDB == null) return false;
         else {
-            try{
+            try {
                 project.setActive(true);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }

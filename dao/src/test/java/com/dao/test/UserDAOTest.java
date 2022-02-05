@@ -2,7 +2,7 @@ package com.dao.test;
 
 import com.core.domain.User;
 import com.core.enums.Role;
-import com.dao.configuration.ApplicationConfiguration;
+import com.dao.configuration.DAOConfiguration;
 import com.dao.user.UserDAO;
 import org.junit.After;
 import org.junit.Assert;
@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ApplicationConfiguration.class)
+@ContextConfiguration(classes = DAOConfiguration.class)
+@Transactional
 public class UserDAOTest {
 
     @Autowired
