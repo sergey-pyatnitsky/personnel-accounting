@@ -1,4 +1,4 @@
-package com.service;
+package com.service.configuration;
 
 import com.dao.configuration.DAOConfiguration;
 import org.springframework.context.annotation.ComponentScan;
