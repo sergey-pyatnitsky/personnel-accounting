@@ -78,6 +78,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
+    public List<Employee> save(List<Employee> employees) {
+        Session session = sessionFactory.getCurrentSession();
+        employees.forEach(obj -> session.saveOrUpdate(obj));
+        return employees;
+    }
+
+    @Override
     public Employee update(Employee employee) {
         Session session = sessionFactory.getCurrentSession();
         return (Employee) session.merge(employee);

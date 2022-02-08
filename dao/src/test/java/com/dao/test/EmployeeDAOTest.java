@@ -12,6 +12,7 @@ import com.dao.profile.ProfileDAO;
 import com.dao.user.UserDAO;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -117,6 +119,53 @@ public class EmployeeDAOTest {
         Assert.assertEquals(employee.getProfile().getPhone(), "+375294894561");
         Assert.assertEquals(employee.getProfile().getEmail(), "qwerty@mail.ru");
         Assert.assertEquals(employee.getProfile().getSkills(), "Java Python");
+    }
+
+    @Test
+    public void saveList() {
+        logger.info("START saveList");
+        deleteEntity();
+        List<Employee> employeesFromDB = employeeDAO.save(entityToListSave());
+        Employee tempEmployee = employeesFromDB.get(employeesFromDB.size() - 2);
+
+
+        Assert.assertEquals(tempEmployee.getName(), "Иванов Иван Иванович");
+        Assert.assertFalse(tempEmployee.isActive());
+
+        Assert.assertEquals(tempEmployee.getUser().getUsername(), "employee");
+        Assert.assertEquals(tempEmployee.getUser().getPassword(), "qwerty");
+        Assert.assertEquals(tempEmployee.getUser().getRole(), Role.EMPLOYEE);
+        Assert.assertFalse(tempEmployee.getUser().isActive());
+
+        Assert.assertEquals(tempEmployee.getProfile().getEducation(), "Инженер-программист");
+        Assert.assertEquals(tempEmployee.getProfile().getAddress(), "г.Минск ул.Якуба Коласа 89");
+        Assert.assertEquals(tempEmployee.getProfile().getPhone(), "+375294894561");
+        Assert.assertEquals(tempEmployee.getProfile().getEmail(), "qwerty@mail.ru");
+        Assert.assertEquals(tempEmployee.getProfile().getSkills(), "Java Python");
+    }
+
+    private List<Employee> entityToListSave(){
+
+        List<Employee> employees = new ArrayList<>();
+        department = departmentDAO.save(new Department("Отдел Java разработки", true));
+
+        user = userDAO.save(new User("employee", "qwerty", Role.EMPLOYEE, false));
+        Profile profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 89",
+                "+375294894561", "qwerty@mail.ru", "Java Python");
+
+        employee = new Employee("Иванов Иван Иванович", false, user, profileDAO.save(profile));
+        employee.setDepartment(department);
+
+        employees.add(employee);
+
+        secondUser = userDAO.save(new User("secondEmployee", "qwerty123", Role.EMPLOYEE, false));
+        profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 123",
+                "+375294344561", "qwertyqwe@mail.ru", "Java");
+
+        secondEmployee = new Employee("Иванов Игорь Иванович", false, secondUser, profileDAO.save(profile));
+        employees.add(secondEmployee);
+        secondEmployee = employeeDAO.save(secondEmployee);
+        return employees;
     }
 
     @Test

@@ -65,6 +65,13 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
+    public List<Project> save(List<Project> projects) {
+        Session session = sessionFactory.getCurrentSession();
+        projects.forEach(obj -> session.saveOrUpdate(obj));
+        return projects;
+    }
+
+    @Override
     public Project update(Project project) {
         Session session = sessionFactory.getCurrentSession();
         return (Project) session.merge(project);

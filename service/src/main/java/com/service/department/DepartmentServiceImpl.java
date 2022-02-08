@@ -1,20 +1,70 @@
 package com.service.department;
 
 import com.core.domain.Department;
+import com.core.domain.Employee;
+import com.core.domain.Project;
 import com.dao.department.DepartmentDAO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dao.employee.EmployeeDAO;
+import com.dao.employee_position.EmployeePositionDAO;
+import com.dao.project.ProjectDAO;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-public class DepartmentServiceImpl implements DepartmentService{
-    private DepartmentDAO departmentDAO;
+public class DepartmentServiceImpl implements DepartmentService {
+    private final DepartmentDAO departmentDAO;
+    private final ProjectDAO projectDAO;
+    private final EmployeeDAO employeeDAO;
+    private final EmployeePositionDAO employeePositionDAO;
 
-    @Autowired
-    public void setDepartmentDAO(DepartmentDAO departmentDAO){
+    public DepartmentServiceImpl(DepartmentDAO departmentDAO, ProjectDAO projectDAO,
+                                 EmployeeDAO employeeDAO, EmployeePositionDAO employeePositionDAO) {
         this.departmentDAO = departmentDAO;
+        this.projectDAO = projectDAO;
+        this.employeeDAO = employeeDAO;
+        this.employeePositionDAO = employeePositionDAO;
+    }
+
+    @Override
+    @Transactional
+    public List<Project> findProjects(Department department) {
+        return projectDAO.findByDepartment(department);
+    }
+
+    @Override
+    @Transactional
+    public List<Employee> findEmployees(Department department) {
+        return employeeDAO.findByDepartment(department);
+    }
+
+    @Override
+    @Transactional
+    public Employee assignToDepartment(Employee employee, Department department) {
+        employeePositionDAO.findByEmployee(employee).forEach(obj -> obj.setActive(false));
+
+        employee = employeeDAO.update(employee);
+        employee.setDepartment(department);
+        employeeDAO.save(employee);
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Department changeDepartmentActiveStatus(Department department, boolean isActive) {
+        List<Project> projects = projectDAO.findByDepartment(department);
+        projects.forEach(obj -> obj.setActive(false));
+        projectDAO.save(projects);
+
+        List<Employee> employees = employeeDAO.findByDepartment(department);
+        employees.forEach(obj -> obj.setActive(false));
+        employeeDAO.save(employees);
+
+        projects.forEach(obj -> obj.setActive(false));
+        projectDAO.save(projects);
+        department.setActive(false);
+        return departmentDAO.save(department);
     }
 
     @Override

@@ -1,11 +1,14 @@
 package com.service.project;
 
-import com.core.domain.Department;
-import com.core.domain.Project;
+import com.core.domain.*;
 
 import java.util.List;
 
 public interface ProjectService {
+    EmployeePosition assignToProject(EmployeePosition employeePosition);
+    void changeEmployeeActiveStatusInProject(Employee employee, Project project, boolean isActive);
+    List<Employee> findByProject(Project project);
+
     Project find(Long id);
     List<Project> findByActive(boolean isActive);
     List<Project> findAll();

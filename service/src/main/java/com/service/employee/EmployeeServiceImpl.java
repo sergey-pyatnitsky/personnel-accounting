@@ -1,28 +1,45 @@
 package com.service.employee;
 
 import com.core.domain.*;
+import com.core.enums.TaskStatus;
 import com.dao.employee.EmployeeDAO;
-import com.dao.employee_position.EmployeePositionDAO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dao.report_card.ReportCardDAO;
+import com.dao.task.TaskDAO;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService{
-    private EmployeeDAO employeeDAO;
-    private EmployeePositionDAO employeePositionDAO;
+public class EmployeeServiceImpl implements EmployeeService {
+    private final EmployeeDAO employeeDAO;
+    private final TaskDAO taskDAO;
+    private final ReportCardDAO reportCardDAO;
 
-    @Autowired
-    public void setEmployeeDAO(EmployeeDAO employeeDAO){
+    public EmployeeServiceImpl(EmployeeDAO employeeDAO, TaskDAO taskDAO, ReportCardDAO reportCardDAO) {
         this.employeeDAO = employeeDAO;
+        this.taskDAO = taskDAO;
+        this.reportCardDAO = reportCardDAO;
     }
 
-    @Autowired
-    public void setEmployeePositionDAO(EmployeePositionDAO employeePositionDAO){
-        this.employeePositionDAO = employeePositionDAO;
+    @Override
+    @Transactional
+    public ReportCard assigneeTime(ReportCard reportCard) {
+        return reportCardDAO.save(reportCard);
+    }
+
+    @Override
+    @Transactional
+    public Task addTaskInProject(Project project, Task task) {
+        task.setProject(project);
+        return taskDAO.save(task);
+    }
+
+    @Override
+    @Transactional
+    public Task changeTaskStatus(Task task, TaskStatus taskStatus) {
+        task.setTaskStatus(taskStatus);
+        return taskDAO.save(task);
     }
 
     @Override
@@ -30,46 +47,6 @@ public class EmployeeServiceImpl implements EmployeeService{
     public Employee addProfileData(Employee employee, Profile profile) {
         employee.setProfile(profile);
         return employeeDAO.save(employee);
-    }
-
-    @Override
-    @Transactional
-    public Employee assignToDepartment(Employee employee, Department department) {
-        employee.setDepartment(department);
-        employeeDAO.save(employee);
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public EmployeePosition assignToProject(Employee employee, Project project, Position position) {
-        employeePositionDAO.save(new EmployeePosition(false, employee,
-                position, project, project.getDepartment()));
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public void changeActiveStatusInProject(Employee employee,
-                                                        Project project, boolean isActive) {
-        List<EmployeePosition> employeePositions =
-                employeePositionDAO.findByEmployee(employee);
-        employeePositions.forEach(obj -> {
-            if(obj.getProject().equals(project)) {
-                obj.setActive(isActive);
-            }
-        });
-    }
-
-    @Override
-    @Transactional
-    public List<Employee> findByProject(Project project) {
-        List<Employee> employees = new ArrayList<>();
-
-        List<EmployeePosition> allEmployeePositionsInProject =
-                employeePositionDAO.findByProject(project);
-        allEmployeePositionsInProject.forEach(obj -> employees.add(obj.getEmployee()));
-        return employees;
     }
 
     @Override

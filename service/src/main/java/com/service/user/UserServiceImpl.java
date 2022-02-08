@@ -6,7 +6,6 @@ import com.core.domain.User;
 import com.core.enums.Role;
 import com.dao.employee.EmployeeDAO;
 import com.dao.user.UserDAO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -14,16 +13,11 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService{
-    private UserDAO userDAO;
-    private EmployeeDAO employeeDAO;
+    private final UserDAO userDAO;
+    private final EmployeeDAO employeeDAO;
 
-    @Autowired
-    public void setUserDAO(UserDAO userDAO){
+    public UserServiceImpl(UserDAO userDAO, EmployeeDAO employeeDAO) {
         this.userDAO = userDAO;
-    }
-
-    @Autowired
-    public void setEmployeeDAO(EmployeeDAO employeeDAO){
         this.employeeDAO = employeeDAO;
     }
 

@@ -1,16 +1,15 @@
 package com.service.employee;
 
 import com.core.domain.*;
+import com.core.enums.TaskStatus;
 
 import java.util.List;
 
 public interface EmployeeService {
     Employee addProfileData(Employee employee, Profile profile);
-    Employee assignToDepartment(Employee employee, Department department);
-    EmployeePosition assignToProject(Employee employee, Project project, Position position);
-    void changeActiveStatusInProject(Employee employee, Project project, boolean isActive);
-
-    List<Employee> findByProject(Project project);
+    ReportCard assigneeTime(ReportCard reportCard);
+    Task addTaskInProject(Project project, Task task);
+    Task changeTaskStatus(Task task, TaskStatus taskStatus);
 
     Employee find(Long id);
     List<Employee> findAll();

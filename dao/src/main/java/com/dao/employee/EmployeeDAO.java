@@ -15,6 +15,7 @@ public interface EmployeeDAO {
     List<Employee> findByDepartment(Department department);
 
     Employee save(Employee employee);
+    List<Employee> save(List<Employee> employees);
     Employee update(Employee employee);
     boolean removeById(Long id);
     boolean remove(Employee employee);

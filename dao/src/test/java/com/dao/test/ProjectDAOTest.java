@@ -1,7 +1,7 @@
 package com.dao.test;
 
-import com.core.domain.Department;
-import com.core.domain.Project;
+import com.core.domain.*;
+import com.core.enums.Role;
 import com.dao.configuration.DAOConfiguration;
 import com.dao.department.DepartmentDAO;
 import com.dao.project.ProjectDAO;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -88,6 +89,28 @@ public class ProjectDAOTest {
         logger.info("START save");
         Assert.assertEquals(project.getName(), "Банковская система");
         Assert.assertTrue(project.isActive());
+    }
+
+    @Test
+    public void saveList(){
+        logger.info("START saveList");
+        deleteProjectEntity();
+        List<Project> projectsFromDB = projectDAO.save(entityToListSave());
+        Project tempProject = projectsFromDB.get(projectsFromDB.size() - 2);
+        Assert.assertEquals(project.getName(), "Банковская система");
+        Assert.assertTrue(project.isActive());
+    }
+
+    private List<Project> entityToListSave(){
+        logger.info("START entityToListSave");
+        List<Project> projects = new ArrayList<>();
+        department = departmentDAO.save(
+                new Department("Отдел Java Разработки", true));
+        project = new Project("Банковская система", department, true);
+        secondProject = new Project("Система учёта товаров на складе", department, true);
+        projects.add(project);
+        projects.add(secondProject);
+        return projects;
     }
 
     @Test
