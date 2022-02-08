@@ -9,10 +9,12 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.List;
 
 @Repository
+@Transactional
 public class ReportCardDAOImpl implements ReportCardDAO {
     private SessionFactory sessionFactory;
 
@@ -88,8 +90,8 @@ public class ReportCardDAOImpl implements ReportCardDAO {
     @Override
     public boolean remove(ReportCard reportCard) {
         Session session = sessionFactory.getCurrentSession();
-        ReportCard reportCardFromDB = session.get(ReportCard.class, reportCard.getId());
-        if (reportCardFromDB == null) return false;
+        reportCard = (ReportCard) session.merge(reportCard);
+        if (reportCard == null) return false;
         else {
             try {
                 session.delete(reportCard);

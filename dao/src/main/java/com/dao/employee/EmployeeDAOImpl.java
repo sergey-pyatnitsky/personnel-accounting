@@ -9,9 +9,11 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class EmployeeDAOImpl implements EmployeeDAO {
     private SessionFactory sessionFactory;
 
@@ -99,9 +101,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     @Override
     public boolean remove(Employee employee) {
         Session session = sessionFactory.getCurrentSession();
-        Employee employeeFromDB =
-                session.get(Employee.class, employee.getId());
-        if (employeeFromDB == null) return false;
+        employee = (Employee) session.merge(employee);
+        if (employee == null) return false;
         else {
             try {
                 session.delete(employee);
@@ -120,6 +121,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         else if (employee.isActive()) {
             try {
                 employee.setActive(false);
+                session.saveOrUpdate(employee);
             } catch (Exception e) {
                 return false;
             }
@@ -130,12 +132,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     @Override
     public boolean inactivate(Employee employee) {
         Session session = sessionFactory.getCurrentSession();
-        Employee employeeFromDB = session.get(Employee.class, employee.getId());
-        if (!employee.isActive()) return true;
-        else if (employeeFromDB == null) return false;
+        employee = (Employee) session.merge(employee);
+        if (employee == null) return false;
+        else if (!employee.isActive()) return true;
         else {
             try {
                 employee.setActive(false);
+                session.saveOrUpdate(employee);
             } catch (Exception e) {
                 return false;
             }
@@ -151,6 +154,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         else if (!employee.isActive()) {
             try {
                 employee.setActive(true);
+                session.saveOrUpdate(employee);
             } catch (Exception e) {
                 return false;
             }
@@ -161,12 +165,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     @Override
     public boolean activate(Employee employee) {
         Session session = sessionFactory.getCurrentSession();
-        Employee employeeFromDB = session.get(Employee.class, employee.getId());
-        if (employee.isActive()) return true;
-        else if (employeeFromDB == null) return false;
+        employee = (Employee) session.merge(employee);
+        if (employee == null) return false;
+        else if (employee.isActive()) return true;
         else {
             try {
                 employee.setActive(true);
+                session.saveOrUpdate(employee);
             } catch (Exception e) {
                 return false;
             }

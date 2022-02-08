@@ -10,6 +10,8 @@ import com.dao.position.PositionDAO;
 import com.dao.profile.ProfileDAO;
 import com.dao.project.ProjectDAO;
 import com.dao.user.UserDAO;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,13 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = DAOConfiguration.class)
-@Transactional
-public class EmployeePositionTest {
+public class EmployeePositionDAOTest {
+
+    private static final Logger logger = LogManager.getLogger("EmployeePositionDAOTest logger");
 
     @Autowired
     private EmployeePositionDAO employeePositionDAO;
@@ -58,42 +60,52 @@ public class EmployeePositionTest {
 
     @After
     public void deleteDepartmentEntity() {
+        logger.info("START deleteDepartmentEntity");
         try {
             employeePositionDAO.remove(employeePosition);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             employeePositionDAO.remove(secondEmployeePosition);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             employeeDAO.remove(employee);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             userDAO.remove(user);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             positionDAO.remove(position);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             positionDAO.remove(secondPosition);
         } catch (Exception e) {
-        }
-        try {
-            departmentDAO.remove(department);
-        } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             projectDAO.remove(project);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            departmentDAO.remove(department);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @Before
     public void entityToPersist() {
+        logger.info("START entityToPersist");
         department = departmentDAO.save(new Department("Отдел Java разработки", true));
 
         project = projectDAO.save(
@@ -104,10 +116,10 @@ public class EmployeePositionTest {
                 "+375294894561", "qwerty@mail.ru", "Java Python");
 
         employee = employeeDAO.save(new Employee("Иванов Иван Иванович", false, user,
-                profileDAO.update(profile)));
+                profileDAO.save(profile)));
 
         position = positionDAO.save(new Position("Разработчик"));
-        secondPosition = positionDAO.update(new Position("Проектировщик"));
+        secondPosition = positionDAO.save(new Position("Проектировщик"));
 
         employeePosition = employeePositionDAO.save(
                 new EmployeePosition(false, employee, position, project, department));
@@ -122,6 +134,7 @@ public class EmployeePositionTest {
 
     @Test
     public void save() {
+        logger.info("START save");
         Assert.assertEquals(employeePosition.getEmployee(), employee);
         Assert.assertEquals(employeePosition.getPosition(), position);
         Assert.assertEquals(employeePosition.getProject(), project);
@@ -132,62 +145,110 @@ public class EmployeePositionTest {
 
     @Test
     public void findByActive() {
+        logger.info("START findByActive");
         List<EmployeePosition> employeePositionListFromDB = employeePositionDAO.findByActive(true);
         employeePositionListFromDB.forEach(obj -> Assert.assertFalse(obj.isActive()));
     }
 
     @Test
     public void findByEmployee() {
+        logger.info("START findByEmployee");
         List<EmployeePosition> employeePositionFromDB = employeePositionDAO.findByEmployee(employee);
-        Assert.assertEquals(employeePositionFromDB.get(employeePositionFromDB.size() - 1), secondEmployeePosition);
-        Assert.assertEquals(employeePositionFromDB.get(employeePositionFromDB.size() - 2), employeePosition);
+
+        EmployeePosition tempEmployeePosition = employeePositionFromDB.get(employeePositionFromDB.size() - 1);
+        Assert.assertEquals(tempEmployeePosition.getId(), secondEmployeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                secondEmployeePosition.getCreateDate().toString());
+
+        tempEmployeePosition = employeePositionFromDB.get(employeePositionFromDB.size() - 2);
+        Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                secondEmployeePosition.getCreateDate().toString());
     }
 
     @Test
     public void findByPosition() {
+        logger.info("START findByPosition");
         List<EmployeePosition> employeePositionFromDB = employeePositionDAO.findByPosition(position);
-        Assert.assertEquals(employeePositionFromDB.get(employeePositionFromDB.size() - 1), employeePosition);
+        EmployeePosition tempEmployeePosition = employeePositionFromDB.get(employeePositionFromDB.size() - 1);
+        Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                employeePosition.getCreateDate().toString());
     }
 
     @Test
     public void findByProject() {
+        logger.info("START findByProject");
         List<EmployeePosition> employeePositionFromDB = employeePositionDAO.findByProject(project);
-        Assert.assertEquals(employeePositionFromDB.get(employeePositionFromDB.size() - 1), secondEmployeePosition);
-        Assert.assertEquals(employeePositionFromDB.get(employeePositionFromDB.size() - 2), employeePosition);
+        EmployeePosition tempEmployeePosition = employeePositionFromDB.get(employeePositionFromDB.size() - 1);
+        Assert.assertEquals(tempEmployeePosition.getId(), secondEmployeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                secondEmployeePosition.getCreateDate().toString());
+
+        tempEmployeePosition = employeePositionFromDB.get(employeePositionFromDB.size() - 2);
+        Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                secondEmployeePosition.getCreateDate().toString());
     }
 
     @Test
     public void findByDepartment() {
+        logger.info("START findByDepartment");
         List<EmployeePosition> employeePositionFromDB = employeePositionDAO.findByDepartment(department);
-        Assert.assertEquals(employeePositionFromDB.get(employeePositionFromDB.size() - 1), secondEmployeePosition);
-        Assert.assertEquals(employeePositionFromDB.get(employeePositionFromDB.size() - 2), employeePosition);
+        EmployeePosition tempEmployeePosition = employeePositionFromDB.get(employeePositionFromDB.size() - 1);
+        Assert.assertEquals(tempEmployeePosition.getId(), secondEmployeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                secondEmployeePosition.getCreateDate().toString());
+
+        tempEmployeePosition = employeePositionFromDB.get(employeePositionFromDB.size() - 2);
+        Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                secondEmployeePosition.getCreateDate().toString());
     }
 
     @Test
     public void find() {
-        Assert.assertEquals(employeePositionDAO.find(employeePosition.getId()), employeePosition);
+        logger.info("START find");
+        EmployeePosition tempEmployeePosition = employeePositionDAO.find(employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                employeePosition.getCreateDate().toString());
     }
 
     @Test
     public void findAll() {
+        logger.info("START findAll");
         List<EmployeePosition> employeePositionFromDB = employeePositionDAO.findAll();
-        Assert.assertEquals(employeePositionFromDB.get(employeePositionFromDB.size() - 1), secondEmployeePosition);
-        Assert.assertEquals(employeePositionFromDB.get(employeePositionFromDB.size() - 2), employeePosition);
+        EmployeePosition tempEmployeePosition = employeePositionFromDB.get(employeePositionFromDB.size() - 1);
+        Assert.assertEquals(tempEmployeePosition.getId(), secondEmployeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                secondEmployeePosition.getCreateDate().toString());
+
+        tempEmployeePosition = employeePositionFromDB.get(employeePositionFromDB.size() - 2);
+        Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                secondEmployeePosition.getCreateDate().toString());
     }
 
     @Test
     public void update() {
+        logger.info("START update");
         employeePosition.setPosition(secondPosition);
-        Assert.assertEquals(employeePositionDAO.update(employeePosition), employeePosition);
+        EmployeePosition tempEmployeePosition = employeePositionDAO.update(employeePosition);
+        Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                employeePosition.getCreateDate().toString());
     }
 
     @Test
     public void removeById() {
+        logger.info("START removeById");
         Assert.assertTrue(employeePositionDAO.removeById(employeePosition.getId()));
     }
 
     @Test
     public void remove() {
+        logger.info("START remove");
         Assert.assertTrue(employeePositionDAO.remove(employeePosition));
     }
 }

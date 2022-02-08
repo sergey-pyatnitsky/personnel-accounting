@@ -10,6 +10,8 @@ import com.dao.profile.ProfileDAO;
 import com.dao.project.ProjectDAO;
 import com.dao.task.TaskDAO;
 import com.dao.user.UserDAO;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,13 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = DAOConfiguration.class)
-@Transactional
-public class TaskTest {
+public class TaskDAOTest {
+
+    private static final Logger logger = LogManager.getLogger("TaskDAOTest logger");
 
     @Autowired
     private TaskDAO taskDAO;
@@ -55,42 +57,52 @@ public class TaskTest {
 
     @After
     public void deleteDepartmentEntity() {
+        logger.info("START deleteDepartmentEntity");
         try {
             taskDAO.remove(task);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             taskDAO.remove(secondTask);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             employeeDAO.remove(assignee);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             employeeDAO.remove(reporter);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             userDAO.remove(userAssignee);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             userDAO.remove(userReporter);
         } catch (Exception e) {
-        }
-        try {
-            departmentDAO.remove(department);
-        } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             projectDAO.remove(project);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            departmentDAO.remove(department);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @Before
     public void entityToPersist() {
+        logger.info("START entityToPersist");
         department = departmentDAO.save(new Department("Отдел Java разработки", true));
 
         project = projectDAO.save(
@@ -101,7 +113,7 @@ public class TaskTest {
                 "+375294894561", "qwerty@mail.ru", "Java Python");
 
         assignee = employeeDAO.save(new Employee("Иванов Иван Иванович", true, userAssignee,
-                profileDAO.update(profile)));
+                profileDAO.save(profile)));
 
         userReporter = userDAO.save(new User("reporter", "qwerty123", Role.PROJECT_MANAGER, true));
         profile = new Profile("Инженер-программист", "г.Минск ул.Приова 105",
@@ -121,6 +133,7 @@ public class TaskTest {
 
     @Test
     public void save() {
+        logger.info("START save");
         Assert.assertEquals(task.getAssignee(), assignee);
         Assert.assertEquals(task.getReporter(), reporter);
         Assert.assertEquals(task.getName(), "Исправить баг");
@@ -131,62 +144,119 @@ public class TaskTest {
 
     @Test
     public void findAll() {
+        logger.info("START findAll");
         List<Task> taskFromDB = taskDAO.findAll();
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 1), secondTask);
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 2), task);
+
+        Task testTask = taskFromDB.get(taskFromDB.size() - 1);
+        Assert.assertEquals(testTask.getId(), secondTask.getId());
+        Assert.assertEquals(testTask.getName(), secondTask.getName());
+        Assert.assertEquals(testTask.getDescription(), secondTask.getDescription());
+
+        testTask = taskFromDB.get(taskFromDB.size() - 2);
+        Assert.assertEquals(testTask.getId(), task.getId());
+        Assert.assertEquals(testTask.getName(), task.getName());
+        Assert.assertEquals(testTask.getDescription(), task.getDescription());
     }
 
     @Test
     public void findByName() {
-        Assert.assertEquals(taskDAO.findByName("Исправить баг"), task);
+        logger.info("START findByName");
+        Assert.assertEquals(taskDAO.findByName("Исправить баг").getName(),
+                "Исправить баг");
     }
 
     @Test
     public void findByProject() {
+        logger.info("START findByProject");
         List<Task> taskFromDB = taskDAO.findByProject(project);
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 1), secondTask);
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 2), task);
+
+        Task testTask = taskFromDB.get(taskFromDB.size() - 1);
+        Assert.assertEquals(testTask.getId(), secondTask.getId());
+        Assert.assertEquals(testTask.getName(), secondTask.getName());
+        Assert.assertEquals(testTask.getDescription(), secondTask.getDescription());
+
+        testTask = taskFromDB.get(taskFromDB.size() - 2);
+        Assert.assertEquals(testTask.getId(), task.getId());
+        Assert.assertEquals(testTask.getName(), task.getName());
+        Assert.assertEquals(testTask.getDescription(), task.getDescription());
     }
 
     @Test
     public void findByReporter() {
+        logger.info("START findByReporter");
         List<Task> taskFromDB = taskDAO.findByReporter(reporter);
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 1), secondTask);
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 2), task);
+
+        Task testTask = taskFromDB.get(taskFromDB.size() - 1);
+        Assert.assertEquals(testTask.getId(), secondTask.getId());
+        Assert.assertEquals(testTask.getName(), secondTask.getName());
+        Assert.assertEquals(testTask.getDescription(), secondTask.getDescription());
+
+        testTask = taskFromDB.get(taskFromDB.size() - 2);
+        Assert.assertEquals(testTask.getId(), task.getId());
+        Assert.assertEquals(testTask.getName(), task.getName());
+        Assert.assertEquals(testTask.getDescription(), task.getDescription());
     }
 
     @Test
     public void findByAssignee() {
+        logger.info("START findByAssignee");
         List<Task> taskFromDB = taskDAO.findByAssignee(assignee);
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 1), secondTask);
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 2), task);
+
+        Task testTask = taskFromDB.get(taskFromDB.size() - 1);
+        Assert.assertEquals(testTask.getId(), secondTask.getId());
+        Assert.assertEquals(testTask.getName(), secondTask.getName());
+        Assert.assertEquals(testTask.getDescription(), secondTask.getDescription());
+
+        testTask = taskFromDB.get(taskFromDB.size() - 2);
+        Assert.assertEquals(testTask.getId(), task.getId());
+        Assert.assertEquals(testTask.getName(), task.getName());
+        Assert.assertEquals(testTask.getDescription(), task.getDescription());
     }
 
     @Test
     public void findByStatus() {
+        logger.info("START findByStatus");
         List<Task> taskFromDB = taskDAO.findByStatus(TaskStatus.OPEN);
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 1), secondTask);
-        Assert.assertEquals(taskFromDB.get(taskFromDB.size() - 2), task);
+
+        Task testTask = taskFromDB.get(taskFromDB.size() - 1);
+        Assert.assertEquals(testTask.getId(), secondTask.getId());
+        Assert.assertEquals(testTask.getName(), secondTask.getName());
+        Assert.assertEquals(testTask.getDescription(), secondTask.getDescription());
+
+        testTask = taskFromDB.get(taskFromDB.size() - 2);
+        Assert.assertEquals(testTask.getId(), task.getId());
+        Assert.assertEquals(testTask.getName(), task.getName());
+        Assert.assertEquals(testTask.getDescription(), task.getDescription());
     }
 
     @Test
     public void find() {
-        Assert.assertEquals(taskDAO.find(task.getId()), task);
+        logger.info("START find");
+        Task testTask = taskDAO.find(task.getId());
+        Assert.assertEquals(testTask.getId(), task.getId());
+        Assert.assertEquals(testTask.getName(), task.getName());
+        Assert.assertEquals(testTask.getDescription(), task.getDescription());
     }
 
     @Test
     public void update() {
+        logger.info("START update");
         task.setTaskStatus(TaskStatus.CLOSED);
-        Assert.assertEquals(taskDAO.update(task), task);
+        Task testTask = taskDAO.update(task);
+        Assert.assertEquals(testTask.getId(), task.getId());
+        Assert.assertEquals(testTask.getName(), task.getName());
+        Assert.assertEquals(testTask.getDescription(), task.getDescription());
     }
 
     @Test
     public void removeById() {
+        logger.info("START removeById");
         Assert.assertTrue(taskDAO.removeById(task.getId()));
     }
 
     @Test
     public void remove() {
+        logger.info("START remove");
         Assert.assertTrue(taskDAO.remove(task));
     }
 }

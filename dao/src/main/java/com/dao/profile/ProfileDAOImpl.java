@@ -7,9 +7,11 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class ProfileDAOImpl implements ProfileDAO {
     private SessionFactory sessionFactory;
 
@@ -97,9 +99,8 @@ public class ProfileDAOImpl implements ProfileDAO {
     @Override
     public boolean remove(Profile profile) {
         Session session = sessionFactory.getCurrentSession();
-        Profile profileFromDB =
-                session.get(Profile.class, profile.getId());
-        if (profileFromDB == null) return false;
+        profile = (Profile) session.merge(profile);
+        if (profile == null) return false;
         else {
             try {
                 session.delete(profile);

@@ -11,6 +11,8 @@ import com.dao.project.ProjectDAO;
 import com.dao.report_card.ReportCardDAO;
 import com.dao.task.TaskDAO;
 import com.dao.user.UserDAO;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,15 +22,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.transaction.Transactional;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = DAOConfiguration.class)
-@Transactional
-public class ReportCardTest {
+public class ReportCardDAOTest {
+
+    private static final Logger logger = LogManager.getLogger("ReportCardDAOTest logger");
 
     @Autowired
     private ReportCardDAO reportCardDAO;
@@ -65,50 +67,62 @@ public class ReportCardTest {
 
     @After
     public void deleteDepartmentEntity() {
-        try {
-            taskDAO.remove(task);
-        } catch (Exception e) {
-        }
-        try {
-            taskDAO.remove(secondTask);
-        } catch (Exception e) {
-        }
-        try {
-            employeeDAO.remove(assignee);
-        } catch (Exception e) {
-        }
-        try {
-            employeeDAO.remove(reporter);
-        } catch (Exception e) {
-        }
-        try {
-            userDAO.remove(userAssignee);
-        } catch (Exception e) {
-        }
-        try {
-            userDAO.remove(userReporter);
-        } catch (Exception e) {
-        }
-        try {
-            departmentDAO.remove(department);
-        } catch (Exception e) {
-        }
-        try {
-            projectDAO.remove(project);
-        } catch (Exception e) {
-        }
+        logger.info("START deleteDepartmentEntity");
         try {
             reportCardDAO.remove(reportCard);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             reportCardDAO.remove(secondReportCard);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            taskDAO.remove(task);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            taskDAO.remove(secondTask);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            employeeDAO.remove(assignee);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            employeeDAO.remove(reporter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            userDAO.remove(userAssignee);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            userDAO.remove(userReporter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            projectDAO.remove(project);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            departmentDAO.remove(department);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @Before
     public void entityToPersist() {
+        logger.info("START entityToPersist");
         department = departmentDAO.save(new Department("Отдел Java разработки", true));
 
         project = projectDAO.save(
@@ -119,7 +133,7 @@ public class ReportCardTest {
                 "+375294894561", "qwerty@mail.ru", "Java Python");
 
         assignee = employeeDAO.save(new Employee("Иванов Иван Иванович", true, userAssignee,
-                profileDAO.update(profile)));
+                profileDAO.save(profile)));
 
         userReporter = userDAO.save(new User("reporter", "qwerty123", Role.PROJECT_MANAGER, true));
         profile = new Profile("Инженер-программист", "г.Минск ул.Приова 105",
@@ -146,6 +160,7 @@ public class ReportCardTest {
 
     @Test
     public void save() {
+        logger.info("START save");
         Assert.assertEquals(reportCard.getTask(), task);
         Assert.assertEquals(reportCard.getDate(), date);
         Assert.assertEquals(reportCard.getEmployee(), assignee);
@@ -154,48 +169,98 @@ public class ReportCardTest {
 
     @Test
     public void findAll() {
+        logger.info("START findAll");
         List<ReportCard> repostCardFromDB = reportCardDAO.findAll();
-        Assert.assertEquals(repostCardFromDB.get(repostCardFromDB.size() - 1), secondReportCard);
-        Assert.assertEquals(repostCardFromDB.get(repostCardFromDB.size() - 2), reportCard);
+
+        ReportCard tempReportCard = repostCardFromDB.get(repostCardFromDB.size() - 1);
+        Assert.assertEquals(tempReportCard.getId(), secondReportCard.getId());
+        Assert.assertEquals(tempReportCard.getWorkingTime(), secondReportCard.getWorkingTime());
+        Assert.assertEquals(tempReportCard.getDate().toString(), secondReportCard.getDate().toString());
+        Assert.assertEquals(tempReportCard.getCreateDate().toString(), secondReportCard.getCreateDate().toString());
+
+        tempReportCard = repostCardFromDB.get(repostCardFromDB.size() - 2);
+        Assert.assertEquals(tempReportCard.getId(), reportCard.getId());
+        Assert.assertEquals(tempReportCard.getWorkingTime(), reportCard.getWorkingTime());
+        Assert.assertEquals(tempReportCard.getDate().toString(), reportCard.getDate().toString());
+        Assert.assertEquals(tempReportCard.getCreateDate().toString(), reportCard.getCreateDate().toString());
     }
 
     @Test
     public void findByDate() {
+        logger.info("START findByDate");
         List<ReportCard> repostCardFromDB = reportCardDAO.findByDate(date);
-        Assert.assertEquals(repostCardFromDB.get(repostCardFromDB.size() - 1), secondReportCard);
-        Assert.assertEquals(repostCardFromDB.get(repostCardFromDB.size() - 2), reportCard);
+
+        ReportCard tempReportCard = repostCardFromDB.get(repostCardFromDB.size() - 1);
+        Assert.assertEquals(tempReportCard.getId(), secondReportCard.getId());
+        Assert.assertEquals(tempReportCard.getWorkingTime(), secondReportCard.getWorkingTime());
+        Assert.assertEquals(tempReportCard.getDate().toString(), secondReportCard.getDate().toString());
+        Assert.assertEquals(tempReportCard.getCreateDate().toString(), secondReportCard.getCreateDate().toString());
+
+        tempReportCard = repostCardFromDB.get(repostCardFromDB.size() - 2);
+        Assert.assertEquals(tempReportCard.getId(), reportCard.getId());
+        Assert.assertEquals(tempReportCard.getWorkingTime(), reportCard.getWorkingTime());
+        Assert.assertEquals(tempReportCard.getDate().toString(), reportCard.getDate().toString());
+        Assert.assertEquals(tempReportCard.getCreateDate().toString(), reportCard.getCreateDate().toString());
     }
 
     @Test
     public void findByTask() {
-        Assert.assertEquals(reportCardDAO.findByTask(task), reportCard);
+        logger.info("START findByTask");
+        ReportCard tempReportCard = reportCardDAO.findByTask(task);
+        Assert.assertEquals(tempReportCard.getId(), reportCard.getId());
+        Assert.assertEquals(tempReportCard.getWorkingTime(), reportCard.getWorkingTime());
+        Assert.assertEquals(tempReportCard.getDate().toString(), reportCard.getDate().toString());
+        Assert.assertEquals(tempReportCard.getCreateDate().toString(), reportCard.getCreateDate().toString());
     }
 
     @Test
     public void findByEmployee() {
+        logger.info("START findByEmployee");
         List<ReportCard> repostCardFromDB = reportCardDAO.findByEmployee(assignee);
-        Assert.assertEquals(repostCardFromDB.get(repostCardFromDB.size() - 1), secondReportCard);
-        Assert.assertEquals(repostCardFromDB.get(repostCardFromDB.size() - 2), reportCard);
+
+        ReportCard tempReportCard = repostCardFromDB.get(repostCardFromDB.size() - 1);
+        Assert.assertEquals(tempReportCard.getId(), secondReportCard.getId());
+        Assert.assertEquals(tempReportCard.getWorkingTime(), secondReportCard.getWorkingTime());
+        Assert.assertEquals(tempReportCard.getDate().toString(), secondReportCard.getDate().toString());
+        Assert.assertEquals(tempReportCard.getCreateDate().toString(), secondReportCard.getCreateDate().toString());
+
+        tempReportCard = repostCardFromDB.get(repostCardFromDB.size() - 2);
+        Assert.assertEquals(tempReportCard.getId(), reportCard.getId());
+        Assert.assertEquals(tempReportCard.getWorkingTime(), reportCard.getWorkingTime());
+        Assert.assertEquals(tempReportCard.getDate().toString(), reportCard.getDate().toString());
+        Assert.assertEquals(tempReportCard.getCreateDate().toString(), reportCard.getCreateDate().toString());
     }
 
     @Test
     public void find() {
-        Assert.assertEquals(reportCardDAO.find(reportCard.getId()), reportCard);
+        logger.info("START find");
+        ReportCard tempReportCard = reportCardDAO.find(reportCard.getId());
+        Assert.assertEquals(tempReportCard.getId(), reportCard.getId());
+        Assert.assertEquals(tempReportCard.getWorkingTime(), reportCard.getWorkingTime());
+        Assert.assertEquals(tempReportCard.getDate().toString(), reportCard.getDate().toString());
+        Assert.assertEquals(tempReportCard.getCreateDate().toString(), reportCard.getCreateDate().toString());
     }
 
     @Test
     public void update() {
+        logger.info("START update");
         reportCard.setTask(secondTask);
-        Assert.assertEquals(reportCardDAO.update(reportCard), reportCard);
+        ReportCard tempReportCard = reportCardDAO.update(reportCard);
+        Assert.assertEquals(tempReportCard.getId(), reportCard.getId());
+        Assert.assertEquals(tempReportCard.getWorkingTime(), reportCard.getWorkingTime());
+        Assert.assertEquals(tempReportCard.getDate().toString(), reportCard.getDate().toString());
+        Assert.assertEquals(tempReportCard.getCreateDate().toString(), reportCard.getCreateDate().toString());
     }
 
     @Test
     public void removeById() {
+        logger.info("START removeById");
         Assert.assertTrue(reportCardDAO.removeById(reportCard.getId()));
     }
 
     @Test
     public void remove() {
+        logger.info("START remove");
         Assert.assertTrue(reportCardDAO.remove(reportCard));
     }
 }

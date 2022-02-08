@@ -7,9 +7,11 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class PositionDAOImpl implements PositionDAO {
     private SessionFactory sessionFactory;
 
@@ -70,9 +72,8 @@ public class PositionDAOImpl implements PositionDAO {
     @Override
     public boolean remove(Position position) {
         Session session = sessionFactory.getCurrentSession();
-        Position positionFromDB =
-                session.get(Position.class, position.getId());
-        if (positionFromDB == null) return false;
+        position = (Position) session.merge(position);
+        if (position == null) return false;
         else {
             try {
                 session.delete(position);

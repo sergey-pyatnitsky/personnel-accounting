@@ -7,9 +7,11 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class DepartmentDAOImpl implements DepartmentDAO {
     private SessionFactory sessionFactory;
 
@@ -77,9 +79,8 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     @Override
     public boolean remove(Department department) {
         Session session = sessionFactory.getCurrentSession();
-        Department departmentFromDB =
-                session.get(Department.class, department.getId());
-        if (departmentFromDB == null) return false;
+        department = (Department) session.merge(department);
+        if (department == null) return false;
         else {
             try {
                 session.delete(department);
@@ -98,6 +99,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         else if (department.isActive()) {
             try {
                 department.setActive(false);
+                session.saveOrUpdate(department);
             } catch (Exception e) {
                 return false;
             }
@@ -108,12 +110,13 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     @Override
     public boolean inactivate(Department department) {
         Session session = sessionFactory.getCurrentSession();
-        Department departmentFromDB = session.get(Department.class, department.getId());
-        if (!department.isActive()) return true;
-        else if (departmentFromDB == null) return false;
+        department = (Department) session.merge(department);
+        if (department == null) return false;
+        else if (!department.isActive()) return true;
         else {
             try {
                 department.setActive(false);
+                session.saveOrUpdate(department);
             } catch (Exception e) {
                 return false;
             }
@@ -129,6 +132,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         else if (!department.isActive()) {
             try {
                 department.setActive(true);
+                session.saveOrUpdate(department);
             } catch (Exception e) {
                 return false;
             }
@@ -139,12 +143,13 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     @Override
     public boolean activate(Department department) {
         Session session = sessionFactory.getCurrentSession();
-        Department departmentFromDB = session.get(Department.class, department.getId());
-        if (department.isActive()) return true;
-        else if (departmentFromDB == null) return false;
+        department = (Department) session.merge(department);
+        if (department == null) return false;
+        else if (department.isActive()) return true;
         else {
             try {
                 department.setActive(true);
+                session.saveOrUpdate(department);
             } catch (Exception e) {
                 return false;
             }

@@ -44,11 +44,11 @@ public class DAOConfiguration {
         LocalSessionFactoryBean sessionFactory =
                 new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("com.core.domain");
+        sessionFactory.setPackagesToScan(env.getProperty("hb.packages.to.scan"));
 
         Properties hibernateProperties = new Properties();
-        hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        hibernateProperties.setProperty("hibernate.show_sql", "true");
+        hibernateProperties.setProperty("hibernate.dialect", env.getProperty("hb.hibernate.dialect"));
+        hibernateProperties.setProperty("hibernate.show_sql", env.getProperty("hb.hibernate.show_sql"));
 
         sessionFactory.setHibernateProperties(hibernateProperties);
 

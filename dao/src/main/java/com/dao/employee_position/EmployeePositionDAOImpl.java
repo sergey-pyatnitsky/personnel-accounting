@@ -7,9 +7,11 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class EmployeePositionDAOImpl implements EmployeePositionDAO {
     private SessionFactory sessionFactory;
 
@@ -106,9 +108,8 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
     @Override
     public boolean remove(EmployeePosition employeePosition) {
         Session session = sessionFactory.getCurrentSession();
-        EmployeePosition employeePositionFromDB =
-                session.get(EmployeePosition.class, employeePosition.getId());
-        if (employeePositionFromDB == null) return false;
+        employeePosition = (EmployeePosition) session.merge(employeePosition);
+        if (employeePosition == null) return false;
         else {
             try {
                 session.delete(employeePosition);

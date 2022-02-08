@@ -1,5 +1,6 @@
 package com.dao.user;
 
+import com.core.domain.Task;
 import com.core.domain.User;
 import com.core.enums.Role;
 import org.hibernate.Session;
@@ -8,9 +9,11 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class UserDAOImpl implements UserDAO {
 
     private SessionFactory sessionFactory;
@@ -87,11 +90,15 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean remove(User user) {
         Session session = sessionFactory.getCurrentSession();
-        try {
-            session.delete(user);
-            return true;
-        } catch (Exception e) {
-            return false;
+        user = (User) session.merge(user);
+        if (user == null) return false;
+        else {
+            try {
+                session.delete(user);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
         }
     }
 
@@ -103,6 +110,7 @@ public class UserDAOImpl implements UserDAO {
         else if (user.isActive()) {
             try {
                 user.setActive(false);
+                session.saveOrUpdate(user);
             } catch (Exception e) {
                 return false;
             }
@@ -113,12 +121,13 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean inactivate(User user) {
         Session session = sessionFactory.getCurrentSession();
-        User userFromDB = session.get(User.class, user.getId());
-        if (!user.isActive()) return true;
-        else if (userFromDB == null) return false;
+        user = (User) session.merge(user);
+        if (user == null) return false;
+        else if (!user.isActive()) return true;
         else {
             try {
                 user.setActive(false);
+                session.saveOrUpdate(user);
             } catch (Exception e) {
                 return false;
             }
@@ -134,6 +143,7 @@ public class UserDAOImpl implements UserDAO {
         else if (!user.isActive()) {
             try {
                 user.setActive(true);
+                session.saveOrUpdate(user);
             } catch (Exception e) {
                 return false;
             }
@@ -144,12 +154,13 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean activate(User user) {
         Session session = sessionFactory.getCurrentSession();
-        User userFromDB = session.get(User.class, user.getId());
-        if (userFromDB.isActive()) return true;
-        else if (userFromDB == null) return false;
+        user = (User) session.merge(user);
+        if (user == null) return false;
+        else if (user.isActive()) return true;
         else {
             try {
-                userFromDB.setActive(true);
+                user.setActive(true);
+                session.saveOrUpdate(user);
             } catch (Exception e) {
                 return false;
             }

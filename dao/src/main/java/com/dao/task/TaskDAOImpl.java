@@ -10,9 +10,11 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class TaskDAOImpl implements TaskDAO {
     private SessionFactory sessionFactory;
 
@@ -104,8 +106,8 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public boolean remove(Task task) {
         Session session = sessionFactory.getCurrentSession();
-        Task taskFromDB = session.get(Task.class, task.getId());
-        if (taskFromDB == null) return false;
+        task = (Task) session.merge(task);
+        if (task == null) return false;
         else {
             try {
                 session.delete(task);
