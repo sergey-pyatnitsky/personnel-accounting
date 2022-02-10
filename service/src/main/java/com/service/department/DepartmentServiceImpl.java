@@ -4,9 +4,9 @@ import com.core.domain.Department;
 import com.core.domain.Employee;
 import com.core.domain.Project;
 import com.dao.department.DepartmentDAO;
-import com.dao.employee.EmployeeDAO;
 import com.dao.employee_position.EmployeePositionDAO;
 import com.dao.project.ProjectDAO;
+import com.dao.project.employee.EmployeeDAO;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -47,7 +47,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         employee = employeeDAO.update(employee);
         employee.setDepartment(department);
         employeeDAO.save(employee);
-        return null;
+        return employee;
     }
 
     @Override
@@ -61,8 +61,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         employees.forEach(obj -> obj.setActive(false));
         employeeDAO.save(employees);
 
-        projects.forEach(obj -> obj.setActive(false));
-        projectDAO.save(projects);
+        department = departmentDAO.update(department);
         department.setActive(false);
         return departmentDAO.save(department);
     }

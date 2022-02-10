@@ -5,8 +5,8 @@ import com.core.domain.*;
 import java.util.List;
 
 public interface ProjectService {
-    EmployeePosition assignToProject(EmployeePosition employeePosition);
-    void changeEmployeeActiveStatusInProject(Employee employee, Project project, boolean isActive);
+    EmployeePosition assignToProject(Employee employee, Project project, Position position);
+    EmployeePosition changeEmployeeActiveStatusInProject(Employee employee, Project project, boolean isActive);
     List<Employee> findByProject(Project project);
 
     Project find(Long id);

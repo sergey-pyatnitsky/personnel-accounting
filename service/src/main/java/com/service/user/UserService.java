@@ -20,6 +20,7 @@ public interface UserService {
     boolean inactivate(User user);
     boolean activate(User user);
 
+    User save(User user);
     User update(User user);
     boolean remove(User user);
 }

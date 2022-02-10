@@ -1,10 +1,8 @@
 package com.service.project;
 
-import com.core.domain.Department;
-import com.core.domain.Employee;
-import com.core.domain.EmployeePosition;
-import com.core.domain.Project;
+import com.core.domain.*;
 import com.dao.employee_position.EmployeePositionDAO;
+import com.dao.position.PositionDAO;
 import com.dao.project.ProjectDAO;
 import org.springframework.stereotype.Service;
 
@@ -16,25 +14,38 @@ import java.util.List;
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectDAO projectDAO;
     private final EmployeePositionDAO employeePositionDAO;
+    private final PositionDAO positionDAO;
 
-    public ProjectServiceImpl(ProjectDAO projectDAO, EmployeePositionDAO employeePositionDAO) {
+    public ProjectServiceImpl(ProjectDAO projectDAO, EmployeePositionDAO employeePositionDAO, PositionDAO positionDAO) {
         this.projectDAO = projectDAO;
         this.employeePositionDAO = employeePositionDAO;
+        this.positionDAO = positionDAO;
     }
 
     @Override
-    @Transactional
-    public EmployeePosition assignToProject(EmployeePosition employeePosition) {
-        return employeePositionDAO.save(employeePosition);
-    }
-
-    @Override
-    @Transactional
-    public void changeEmployeeActiveStatusInProject(Employee employee, Project project, boolean isActive) {
+    public EmployeePosition assignToProject(Employee employee, Project project, Position position) {
         List<EmployeePosition> employeePositions = employeePositionDAO.findByEmployee(employee);
-        employeePositions.forEach(obj -> {
-            if (obj.getProject() == project) obj.setActive(isActive);
-        });
+
+        for (EmployeePosition obj : employeePositions) {
+            if (obj.getProject().getId().equals(project.getId()))
+                return obj;
+        }
+        return employeePositionDAO.save(
+                new EmployeePosition(false, employee, positionDAO.update(position),
+                        project, project.getDepartment()));
+    }
+
+    @Override
+    @Transactional
+    public EmployeePosition changeEmployeeActiveStatusInProject(Employee employee, Project project, boolean isActive) {
+        List<EmployeePosition> employeePositions = employeePositionDAO.findByEmployee(employee);
+        for (EmployeePosition employeePosition : employeePositions) {
+            if (employeePosition.getProject().getId().equals(project.getId())) {
+                employeePosition.setActive(isActive);
+                return employeePositionDAO.save(employeePosition);
+            }
+        }
+        return null;
     }
 
     @Override

@@ -2,12 +2,15 @@ package com.service.employee;
 
 import com.core.domain.*;
 import com.core.enums.TaskStatus;
-import com.dao.employee.EmployeeDAO;
+import com.dao.profile.ProfileDAO;
+import com.dao.project.employee.EmployeeDAO;
 import com.dao.report_card.ReportCardDAO;
 import com.dao.task.TaskDAO;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
 @Service
@@ -15,17 +18,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeDAO employeeDAO;
     private final TaskDAO taskDAO;
     private final ReportCardDAO reportCardDAO;
+    private final ProfileDAO profileDAO;
 
-    public EmployeeServiceImpl(EmployeeDAO employeeDAO, TaskDAO taskDAO, ReportCardDAO reportCardDAO) {
+    public EmployeeServiceImpl(EmployeeDAO employeeDAO, TaskDAO taskDAO, ReportCardDAO reportCardDAO, ProfileDAO profileDAO) {
         this.employeeDAO = employeeDAO;
         this.taskDAO = taskDAO;
         this.reportCardDAO = reportCardDAO;
+        this.profileDAO = profileDAO;
     }
 
     @Override
     @Transactional
-    public ReportCard assigneeTime(ReportCard reportCard) {
-        return reportCardDAO.save(reportCard);
+    public ReportCard assigneeTime(Date date, Time workingTime, Task task, Employee assignee) {
+        return reportCardDAO.save(new ReportCard(date,
+                task, assignee, workingTime));
     }
 
     @Override
@@ -45,6 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public Employee addProfileData(Employee employee, Profile profile) {
+        profile = profileDAO.save(profile);
         employee.setProfile(profile);
         return employeeDAO.save(employee);
     }

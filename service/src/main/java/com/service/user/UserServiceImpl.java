@@ -4,7 +4,7 @@ import com.core.domain.Employee;
 import com.core.domain.Profile;
 import com.core.domain.User;
 import com.core.enums.Role;
-import com.dao.employee.EmployeeDAO;
+import com.dao.project.employee.EmployeeDAO;
 import com.dao.user.UserDAO;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
     private final EmployeeDAO employeeDAO;
 
@@ -24,12 +24,10 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public boolean registerUser(String login, String password, Role role, String name) {
-        if(userDAO.findByUsername(login) == null) {
+        if (userDAO.findByUsername(login) == null) {
             User user = new User(login, password, role, false);
-            if(role == Role.SUPER_ADMIN){
-                userDAO.save(user);
-            }
-            else{
+            user = userDAO.save(user);
+            if (role != Role.SUPER_ADMIN) {
                 Employee employee = new Employee(name, false, user, new Profile());
                 employeeDAO.save(employee);
             }
@@ -42,7 +40,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public User authorizeUser(String login, String password) {
         User user = userDAO.findByUsername(login);
-        if(user.getPassword().equals(password))
+        if (user.getPassword().equals(password))
             return user;
         return null;
     }
@@ -58,7 +56,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public User changeAuthData(User user, String login, String password) {
         user.setUsername(login);
-        user.setUsername(password);
+        user.setPassword(password);
         return userDAO.save(user);
     }
 
@@ -114,5 +112,11 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public boolean remove(User user) {
         return userDAO.remove(user);
+    }
+
+    @Override
+    @Transactional
+    public User save(User user) {
+        return userDAO.save(user);
     }
 }

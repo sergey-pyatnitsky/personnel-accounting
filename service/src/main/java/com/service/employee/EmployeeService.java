@@ -3,11 +3,13 @@ package com.service.employee;
 import com.core.domain.*;
 import com.core.enums.TaskStatus;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
 public interface EmployeeService {
     Employee addProfileData(Employee employee, Profile profile);
-    ReportCard assigneeTime(ReportCard reportCard);
+    ReportCard assigneeTime(Date date, Time workingTime, Task task, Employee assignee);
     Task addTaskInProject(Project project, Task task);
     Task changeTaskStatus(Task task, TaskStatus taskStatus);
 

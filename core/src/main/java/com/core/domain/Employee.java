@@ -57,4 +57,13 @@ public class Employee {
         this.isActive = isActive;
         createDate = new Date(System.currentTimeMillis());
     }
+
+    public Employee(String name, boolean isActive, User user) {
+        this.user = user;
+        profile = null;
+        this.name = name;
+        this.isActive = isActive;
+        createDate = new Date(System.currentTimeMillis());
+        profile = new Profile();
+    }
 }

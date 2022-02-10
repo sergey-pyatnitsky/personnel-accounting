@@ -5,7 +5,7 @@ import com.core.enums.Role;
 import com.core.enums.TaskStatus;
 import com.dao.configuration.DAOConfiguration;
 import com.dao.department.DepartmentDAO;
-import com.dao.employee.EmployeeDAO;
+import com.dao.project.employee.EmployeeDAO;
 import com.dao.profile.ProfileDAO;
 import com.dao.project.ProjectDAO;
 import com.dao.task.TaskDAO;

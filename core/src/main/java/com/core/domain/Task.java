@@ -59,4 +59,15 @@ public class Task {
         this.taskStatus = taskStatus;
         createDate = new Date(System.currentTimeMillis());
     }
+
+    public Task(String name, String description,
+                Employee reporter, Employee assignee, TaskStatus taskStatus) {
+        this.name = name;
+        this.description = description;
+        this.project = null;
+        this.reporter = reporter;
+        this.assignee = assignee;
+        this.taskStatus = taskStatus;
+        createDate = new Date(System.currentTimeMillis());
+    }
 }
