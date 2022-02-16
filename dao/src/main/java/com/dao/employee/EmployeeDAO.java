@@ -1,4 +1,4 @@
-package com.dao.project.employee;
+package com.dao.employee;
 
 import com.core.domain.Department;
 import com.core.domain.Employee;

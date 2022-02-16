@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="navbar">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd">
+        <div class="container-fluid">
+            <a class="navbar-brand logo" href="registration.html">Tasky</a>
+            <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarText"
+                    aria-controls="navbarText"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <form class="d-flex">
+                <div>
+                    <h5 style="margin-right: 20px">Иванов Иван</h5>
+                    <h6 style="margin-right: 20px; font-size: 12px">Разработчик</h6>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle"
+                            type="button"
+                            id="menu1"
+                            data-toggle="dropdown"
+                            aria-expanded="true">
+                        <img th:src="@{/resources/images/profile-photo.png}" class="round">
+                        <span class="caret"></span>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="right: 0; left: auto;">
+                        <a class="dropdown-item" href="registration.html">Профиль</a>
+                        <a class="dropdown-item" href="/">Выход</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </nav>
+</th:block>
+</body>
+</html>

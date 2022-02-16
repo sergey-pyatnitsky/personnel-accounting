@@ -1,0 +1,60 @@
+html{
+    height: 100%;
+}
+
+body {
+    font-family: "Poppins", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    font-weight: normal;
+    background: #fff;
+    color: black;
+    height: 100%;
+}
+.my-own-container {
+    height: 100%;
+}
+.round {
+    border-radius: 100px;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000000;
+}
+
+a {
+    width: 250px;
+}
+
+.logo {
+    margin-left: 40px;
+}
+
+#sidebar a {
+    color: #000000;
+    padding: 15px 30px;
+    display: block;
+    text-decoration: none;
+}
+
+#sidebar a:hover {
+    color: black;
+    background: #e9ecef;
+}
+
+.sidebar {
+    padding: 0;
+    min-width: 250px;
+    max-width: 250px;
+    background: #212121;
+    color: #000000;
+    transition: all 0.3s;
+    height: 100% !important;
+    display: flex;
+    align-items: start;
+}
+
+#content {
+    width: 100%;
+    padding: 0;
+    transition: all 0.3s;
+}

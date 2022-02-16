@@ -4,7 +4,7 @@ import com.core.domain.*;
 import com.core.enums.Role;
 import com.dao.configuration.DAOConfiguration;
 import com.dao.department.DepartmentDAO;
-import com.dao.project.employee.EmployeeDAO;
+import com.dao.employee.EmployeeDAO;
 import com.dao.employee_position.EmployeePositionDAO;
 import com.dao.position.PositionDAO;
 import com.dao.profile.ProfileDAO;

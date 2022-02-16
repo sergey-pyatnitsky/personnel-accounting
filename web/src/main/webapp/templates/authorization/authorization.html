@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link th:href="@{/resources/css/auth-reg-style.css}" rel="stylesheet" type="text/css">
+</head>
+<body class="login-page">
+<main>
+    <div class="login-block">
+        <img th:src="@{/resources/images/auth-reg.png}">
+        <h1>Введите свои данные</h1>
+        <form action="main-page">
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-user ti-user"></i></span>
+                    <label>
+                        <input type="text" class="form-control" placeholder="Логин">
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-lock ti-unlock"></i></span>
+                    <label>
+                        <input type="password" class="form-control" placeholder="Пароль">
+                    </label>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block" type="submit">Войти</button>
+        </form>
+    </div>
+
+    <div class="login-links">
+        <p class="text-center">Еще нету аккаунта? <a class="txt-brand" href="/registration">
+            <span style="color: #29aafe; ">Регистрируйся</span></a>
+        </p>
+    </div>
+</main>
+</body>
+</html>

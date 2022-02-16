@@ -7,7 +7,7 @@ import com.core.domain.User;
 import com.core.enums.Role;
 import com.dao.configuration.DAOConfiguration;
 import com.dao.department.DepartmentDAO;
-import com.dao.project.employee.EmployeeDAO;
+import com.dao.employee.EmployeeDAO;
 import com.dao.profile.ProfileDAO;
 import com.dao.user.UserDAO;
 import org.apache.log4j.LogManager;

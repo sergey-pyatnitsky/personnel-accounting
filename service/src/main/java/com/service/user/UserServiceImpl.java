@@ -4,7 +4,7 @@ import com.core.domain.Employee;
 import com.core.domain.Profile;
 import com.core.domain.User;
 import com.core.enums.Role;
-import com.dao.project.employee.EmployeeDAO;
+import com.dao.employee.EmployeeDAO;
 import com.dao.user.UserDAO;
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,7 @@ package com.service.employee;
 import com.core.domain.*;
 import com.core.enums.TaskStatus;
 import com.dao.profile.ProfileDAO;
-import com.dao.project.employee.EmployeeDAO;
+import com.dao.employee.EmployeeDAO;
 import com.dao.report_card.ReportCardDAO;
 import com.dao.task.TaskDAO;
 import org.springframework.stereotype.Service;

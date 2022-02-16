@@ -6,7 +6,7 @@ import com.core.domain.Project;
 import com.dao.department.DepartmentDAO;
 import com.dao.employee_position.EmployeePositionDAO;
 import com.dao.project.ProjectDAO;
-import com.dao.project.employee.EmployeeDAO;
+import com.dao.employee.EmployeeDAO;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
