@@ -20,4 +20,9 @@ public class MainController {
     public String showMainPage() {
         return "main-page/main-page";
     }
+
+    @RequestMapping("/profile")
+    public String showProfile(){
+        return "profile-page";
+    }
 }
