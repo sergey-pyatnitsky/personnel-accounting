@@ -13,10 +13,10 @@
         <img th:src="@{/resources/images/auth-reg.png}">
         <h1>Введите свои данные</h1>
         <div th:if="${param.error}" class="alert alert-danger" role="alert">
-            Invalid username and password.
+            Неверные имя пользователя или пароль.
         </div>
         <div th:if="${param.logout}" class="alert alert-danger" role="alert">
-            You have been logged out.
+            Вы вышли из системы.
         </div>
         <form th:action="@{/login}" method="post">
             <div class="form-group">

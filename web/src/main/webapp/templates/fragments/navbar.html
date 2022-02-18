@@ -31,16 +31,7 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="right: 0; left: auto;">
                         <a class="dropdown-item" href="/profile">Профиль</a>
-                        <form th:action="@{/logout}" method="post">
-                            <a class="dropdown-item">Выход</a>
-                        </form>
-
-                        <form th:action="@{/logout}" method="post">
-
-                            <input type="hidden" name="${param}" value="${_csrf.token}"/>
-                            <input type="submit" value="logout">
-
-                        </form>
+                        <a class="dropdown-item" href="/logout">Выход</a>
                     </div>
                 </div>
             </form>
