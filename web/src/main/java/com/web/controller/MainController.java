@@ -6,8 +6,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class MainController {
 
-    @RequestMapping("/")
+    @RequestMapping("/login")
     public String showLoginPage() {
+        return "authorization/authorization";
+    }
+
+    @RequestMapping("/logout")
+    public String showLogoutPage() {
         return "authorization/authorization";
     }
 
@@ -16,7 +21,7 @@ public class MainController {
         return "authorization/registration";
     }
 
-    @RequestMapping("/main-page")
+    @RequestMapping("/")
     public String showMainPage() {
         return "main-page/main-page";
     }

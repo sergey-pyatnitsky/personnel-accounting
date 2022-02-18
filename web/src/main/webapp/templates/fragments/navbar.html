@@ -4,7 +4,7 @@
 <th:block th:fragment="navbar">
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/main-page" style="font-size: 30px; font-weight: bold;">Tasky</a>
+            <a class="navbar-brand" href="/" style="font-size: 30px; font-weight: bold;">Tasky</a>
             <button
                     class="navbar-toggler"
                     type="button"
@@ -31,7 +31,16 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="right: 0; left: auto;">
                         <a class="dropdown-item" href="/profile">Профиль</a>
-                        <a class="dropdown-item" href="/">Выход</a>
+                        <form th:action="@{/logout}" method="post">
+                            <a class="dropdown-item">Выход</a>
+                        </form>
+
+                        <form th:action="@{/logout}" method="post">
+
+                            <input type="hidden" name="${param}" value="${_csrf.token}"/>
+                            <input type="submit" value="logout">
+
+                        </form>
                     </div>
                 </div>
             </form>

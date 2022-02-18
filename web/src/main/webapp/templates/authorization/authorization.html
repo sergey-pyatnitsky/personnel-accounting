@@ -12,12 +12,18 @@
     <div class="login-block">
         <img th:src="@{/resources/images/auth-reg.png}">
         <h1>Введите свои данные</h1>
-        <form action="main-page">
+        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+            Invalid username and password.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-danger" role="alert">
+            You have been logged out.
+        </div>
+        <form th:action="@{/login}" method="post">
             <div class="form-group">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-user ti-user"></i></span>
                     <label>
-                        <input type="text" class="form-control" placeholder="Логин">
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Логин">
                     </label>
                 </div>
             </div>
@@ -25,7 +31,7 @@
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-lock ti-unlock"></i></span>
                     <label>
-                        <input type="password" class="form-control" placeholder="Пароль">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Пароль">
                     </label>
                 </div>
             </div>
