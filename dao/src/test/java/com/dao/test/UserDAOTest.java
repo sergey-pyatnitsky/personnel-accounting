@@ -1,7 +1,6 @@
 package com.dao.test;
 
 import com.core.domain.User;
-import com.core.enums.Role;
 import com.dao.configuration.DAOConfiguration;
 import com.dao.user.UserDAO;
 import org.apache.log4j.LogManager;
@@ -20,13 +19,12 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = DAOConfiguration.class)
 public class UserDAOTest {
-
     private static final Logger logger = LogManager.getLogger("UserDAOTest logger");
 
     @Autowired
     private UserDAO userDAO;
-    private static User user;
-    private static User secondUser;
+    private User user;
+    private User secondUser;
 
     @After
     public void deleteUserEntity() {
@@ -46,13 +44,12 @@ public class UserDAOTest {
     @Before
     public void entityToPersist() {
         logger.info("START entityToPersist");
-        user = userDAO.save(new User("admin", "qwerty",
-                Role.ADMIN, true));
-        secondUser = userDAO.save(new User("employee", "123qwerty",
-                Role.EMPLOYEE, false));
 
-        System.out.println(user.getUsername() + " - " + user.getId());
-        System.out.println(secondUser.getUsername() + " - " + secondUser.getId());
+        user = userDAO.save(new User("admin", "qwerty", true));
+        secondUser = userDAO.save(new User("employee", "123qwerty", false));
+
+        System.out.println("Первый пользователь" + " - " + user.getUsername());
+        System.out.println("Второй пользователь" + " - " + secondUser.getUsername());
     }
 
     @Test
@@ -61,7 +58,6 @@ public class UserDAOTest {
         Assert.assertEquals(user.getUsername(), "admin");
         Assert.assertEquals(user.getPassword(), "qwerty");
         Assert.assertTrue(user.isActive());
-        Assert.assertEquals(user.getRole(), Role.ADMIN);
     }
 
     @Test
@@ -72,49 +68,41 @@ public class UserDAOTest {
     }
 
     @Test
-    public void findByRole() {
-        logger.info("START findByRole");
-        List<User> userListFromDB = userDAO.findByRole(Role.ADMIN);
-        userListFromDB.forEach(obj -> Assert.assertEquals(obj.getRole(), Role.ADMIN));
-    }
-
-    @Test
-    public void findByUsername() {
-        logger.info("START findByUsername");
-        Assert.assertEquals(userDAO.findByUsername("admin"), user);
-    }
-
-    @Test
     public void find() {
         logger.info("START find");
-        Assert.assertEquals(userDAO.find(user.getId()), user);
+        Assert.assertEquals(userDAO.find(user.getUsername()), user);
     }
 
     @Test
     public void findAll() {
         logger.info("START findAll");
         List<User> userListFromDB = userDAO.findAll();
-        Assert.assertEquals(userListFromDB.get(userListFromDB.size() - 1), secondUser);
-        Assert.assertEquals(userListFromDB.get(userListFromDB.size() - 2), user);
+        user = userDAO.update(user);
+        secondUser = userDAO.update(secondUser);
+        userListFromDB.forEach(obj -> {
+            if (obj.getUsername().equals("admin")) Assert.assertEquals(obj, user);
+            else if (obj.getUsername().equals("employee")) Assert.assertEquals(obj, secondUser);
+        });
     }
 
     @Test
     public void update() {
         logger.info("START update");
         user.setPassword("admin");
+        user = userDAO.update(user);
         Assert.assertEquals(userDAO.update(user), user);
     }
 
     @Test
-    public void inactivateById() {
-        logger.info("START inactivateById");
-        Assert.assertTrue(userDAO.inactivateById(user.getId()));
+    public void inactivateByUsername() {
+        logger.info("START inactivateByUsername");
+        Assert.assertTrue(userDAO.inactivateByUsername(user.getUsername()));
     }
 
     @Test
-    public void activateById() {
-        logger.info("START activateById");
-        Assert.assertTrue(userDAO.activateById(secondUser.getId()));
+    public void activateByUsername() {
+        logger.info("START activateByUsername");
+        Assert.assertTrue(userDAO.activateByUsername(secondUser.getUsername()));
     }
 
     @Test
@@ -130,9 +118,9 @@ public class UserDAOTest {
     }
 
     @Test
-    public void removeById() {
-        logger.info("START removeById");
-        Assert.assertTrue(userDAO.removeById(secondUser.getId()));
+    public void removeByUsername() {
+        logger.info("START removeByUsername");
+        Assert.assertTrue(userDAO.removeByUsername(secondUser.getUsername()));
     }
 
     @Test

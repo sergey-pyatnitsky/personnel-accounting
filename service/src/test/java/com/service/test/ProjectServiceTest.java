@@ -95,7 +95,7 @@ public class ProjectServiceTest {
         project = projectService.save(
                 new Project("Банковская система", department, true));
 
-        user = userService.save(new User("employee", "qwerty", Role.EMPLOYEE, false));
+        user = userService.save(new User("employee", "qwerty", false), Role.EMPLOYEE);
 
         employee = new Employee("Иванов Иван Иванович", false, user);
         employee.setDepartment(department);

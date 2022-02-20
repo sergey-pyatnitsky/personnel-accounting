@@ -111,7 +111,7 @@ public class EmployeePositionDAOTest {
         project = projectDAO.save(
                 new Project("Банковская система", department, true));
 
-        user = userDAO.save(new User("employee", "qwerty", Role.EMPLOYEE, false));
+        user = userDAO.save(new User("employee", "qwerty", false));
         Profile profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 89",
                 "+375294894561", "qwerty@mail.ru", "Java Python");
 

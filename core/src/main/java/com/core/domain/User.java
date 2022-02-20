@@ -1,39 +1,35 @@
 package com.core.domain;
 
-import com.core.enums.Role;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-
     @Column(name = "username", unique = true, nullable = false)
     private String username;
 
     @Column(name = "password", unique = true, nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role;
-
-    @Column(name = "active")
+    @Column(name = "enabled")
     private boolean isActive;
 
-    public User(String username, String password, Role role, boolean isActive) {
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "username")
+    private List<Authority> authorityList = new ArrayList<>();
+
+    public User(String username, String password, boolean isActive) {
         this.username = username;
         this.password = password;
-        this.role = role;
         this.isActive = isActive;
     }
 }

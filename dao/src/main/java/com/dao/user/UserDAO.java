@@ -1,25 +1,22 @@
 package com.dao.user;
 
 import com.core.domain.User;
-import com.core.enums.Role;
 
 import java.util.List;
 
 public interface UserDAO {
-    User find(Long id);
+    User find(String username);
     List<User> findByActive(boolean isActive);
     List<User> findAll();
-    User findByUsername(String username);
-    List<User> findByRole(Role role);
 
     User save(User user);
     User update(User user);
-    boolean removeById(Long id);
+    boolean removeByUsername(String username);
     boolean remove(User user);
 
-    boolean inactivateById(Long id);
+    boolean inactivateByUsername(String username);
     boolean inactivate(User user);
 
-    boolean activateById(Long id);
+    boolean activateByUsername(String username);
     boolean activate(User user);
 }

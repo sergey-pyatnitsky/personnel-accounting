@@ -1,8 +1,6 @@
 package com.dao.user;
 
-import com.core.domain.Task;
 import com.core.domain.User;
-import com.core.enums.Role;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -24,15 +22,15 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User find(Long id) {
+    public User find(String username) {
         Session session = sessionFactory.getCurrentSession();
-        return session.get(User.class, id);
+        return session.get(User.class, username);
     }
 
     @Override
     public List<User> findByActive(boolean isActive) {
         Session session = sessionFactory.getCurrentSession();
-        Query query = session.createQuery("from User where active = :isActive");
+        Query query = session.createQuery("from User where isActive = :isActive");
         query.setParameter("isActive", isActive);
         return query.list();
     }
@@ -41,27 +39,6 @@ public class UserDAOImpl implements UserDAO {
     public List<User> findAll() {
         Session session = sessionFactory.getCurrentSession();
         return session.createQuery("from User").list();
-    }
-
-    @Override
-    public User findByUsername(String username) {
-        Session session = sessionFactory.getCurrentSession();
-        Query query = session.createQuery("from User where username = :username");
-        query.setParameter("username", username);
-        try{
-            return  (User) query.getSingleResult();
-        }catch(Exception e){
-            System.out.println("Не найдено!");
-            return null;
-        }
-    }
-
-    @Override
-    public List<User> findByRole(Role role) {
-        Session session = sessionFactory.getCurrentSession();
-        Query query = session.createQuery("from User where role = :role");
-        query.setParameter("role", role);
-        return query.list();
     }
 
     @Override
@@ -78,9 +55,9 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean removeById(Long id) {
+    public boolean removeByUsername(String username) {
         Session session = sessionFactory.getCurrentSession();
-        User user = session.get(User.class, id);
+        User user = session.get(User.class, username);
         if (user == null) return false;
         else {
             try {
@@ -108,9 +85,9 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean inactivateById(Long id) {
+    public boolean inactivateByUsername(String username) {
         Session session = sessionFactory.getCurrentSession();
-        User user = session.get(User.class, id);
+        User user = session.get(User.class, username);
         if (user == null) return false;
         else if (user.isActive()) {
             try {
@@ -141,9 +118,9 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean activateById(Long id) {
+    public boolean activateByUsername(String username) {
         Session session = sessionFactory.getCurrentSession();
-        User user = session.get(User.class, id);
+        User user = session.get(User.class, username);
         if (user == null) return false;
         else if (!user.isActive()) {
             try {

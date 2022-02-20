@@ -82,7 +82,7 @@ public class EmployeeDAOTest {
         logger.info("START entityToPersist");
         department = departmentDAO.save(new Department("Отдел Java разработки", true));
 
-        user = userDAO.save(new User("employee", "qwerty", Role.EMPLOYEE, false));
+        user = userDAO.save(new User("employee", "qwerty", false));
         Profile profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 89",
                 "+375294894561", "qwerty@mail.ru", "Java Python");
 
@@ -90,7 +90,7 @@ public class EmployeeDAOTest {
         employee.setDepartment(department);
         employee = employeeDAO.save(employee);
 
-        secondUser = userDAO.save(new User("secondEmployee", "qwerty123", Role.EMPLOYEE, false));
+        secondUser = userDAO.save(new User("secondEmployee", "qwerty123", false));
         profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 123",
                 "+375294344561", "qwertyqwe@mail.ru", "Java");
 
@@ -110,7 +110,6 @@ public class EmployeeDAOTest {
 
         Assert.assertEquals(employee.getUser().getUsername(), "employee");
         Assert.assertEquals(employee.getUser().getPassword(), "qwerty");
-        Assert.assertEquals(employee.getUser().getRole(), Role.EMPLOYEE);
         Assert.assertFalse(employee.getUser().isActive());
 
         Assert.assertEquals(employee.getProfile().getEducation(), "Инженер-программист");
@@ -133,7 +132,6 @@ public class EmployeeDAOTest {
 
         Assert.assertEquals(tempEmployee.getUser().getUsername(), "employee");
         Assert.assertEquals(tempEmployee.getUser().getPassword(), "qwerty");
-        Assert.assertEquals(tempEmployee.getUser().getRole(), Role.EMPLOYEE);
         Assert.assertFalse(tempEmployee.getUser().isActive());
 
         Assert.assertEquals(tempEmployee.getProfile().getEducation(), "Инженер-программист");
@@ -148,7 +146,7 @@ public class EmployeeDAOTest {
         List<Employee> employees = new ArrayList<>();
         department = departmentDAO.save(new Department("Отдел Java разработки", true));
 
-        user = userDAO.save(new User("employee", "qwerty", Role.EMPLOYEE, false));
+        user = userDAO.save(new User("employee", "qwerty", false));
         Profile profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 89",
                 "+375294894561", "qwerty@mail.ru", "Java Python");
 
@@ -157,7 +155,7 @@ public class EmployeeDAOTest {
 
         employees.add(employee);
 
-        secondUser = userDAO.save(new User("secondEmployee", "qwerty123", Role.EMPLOYEE, false));
+        secondUser = userDAO.save(new User("secondEmployee", "qwerty123", false));
         profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 123",
                 "+375294344561", "qwertyqwe@mail.ru", "Java");
 

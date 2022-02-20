@@ -93,13 +93,13 @@ public class DepartmentServiceTest {
         logger.info("START entityToPersist");
         department = departmentService.save(new Department("Отдел Java разработки", true));
 
-        user = userService.save(new User("employee", "qwerty", Role.EMPLOYEE, false));
+        user = userService.save(new User("employee", "qwerty", false), Role.EMPLOYEE);
 
         employee = new Employee("Иванов Иван Иванович", false, user);
         employee.setDepartment(department);
         employee = employeeService.save(employee);
 
-        secondUser = userService.save(new User("secondEmployee", "qwerty123", Role.EMPLOYEE, false));
+        secondUser = userService.save(new User("secondEmployee", "qwerty123", false), Role.EMPLOYEE);
 
         secondEmployee = new Employee("Иванов Игорь Иванович", false, secondUser);
         secondEmployee.setDepartment(department);

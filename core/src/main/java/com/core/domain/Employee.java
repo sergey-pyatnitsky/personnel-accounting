@@ -21,7 +21,7 @@ public class Employee {
     @OneToOne(
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH}
             , fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    @JoinColumn(name = "username", unique = true, nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

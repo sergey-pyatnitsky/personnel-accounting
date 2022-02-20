@@ -44,37 +44,11 @@ public class UserServiceTest {
     @Before
     public void entityToPersist() {
         logger.info("START entityToPersist");
-        user = userService.save(new User("admin", "qwerty",
-                Role.ADMIN, true));
-        secondUser = userService.save(new User("employee", "123qwerty",
-                Role.EMPLOYEE, false));
+        user = userService.save(new User("admin", "qwerty", true), Role.ADMIN);
+        secondUser = userService.save(new User("employee", "123qwerty", false), Role.EMPLOYEE);
 
-        System.out.println(user.getUsername() + " - " + user.getId());
-        System.out.println(secondUser.getUsername() + " - " + secondUser.getId());
-    }
-
-    @Test
-    public void registerUser() {
-        logger.info("START registerUser");
-        Assert.assertTrue(userService.registerUser("1234", "1234", Role.ADMIN, ""));
-    }
-
-    @Test
-    public void authorizeUser() {
-        logger.info("START authorizeUser");
-        User tempUser = userService.authorizeUser("admin", "qwerty");
-        Assert.assertEquals(tempUser.getUsername(), user.getUsername());
-        Assert.assertEquals(tempUser.getPassword(), user.getPassword());
-        Assert.assertEquals(tempUser.getRole(), user.getRole());
-    }
-
-    @Test
-    public void changeUserRole() {
-        logger.info("START changeUserRole");
-        User tempUser = userService.changeUserRole(secondUser, Role.ADMIN);
-        Assert.assertEquals(tempUser.getUsername(), secondUser.getUsername());
-        Assert.assertEquals(tempUser.getPassword(), secondUser.getPassword());
-        Assert.assertEquals(tempUser.getRole(), secondUser.getRole());
+        System.out.println("Первый пользователь" + " - " + user.getUsername());
+        System.out.println("Второй пользователь" + " - " + secondUser.getUsername());
     }
 
     @Test
@@ -83,6 +57,5 @@ public class UserServiceTest {
         User tempUser = userService.changeAuthData(user, "bestAdmin", "bestAdmin");
         Assert.assertEquals(tempUser.getUsername(), "bestAdmin");
         Assert.assertEquals(tempUser.getPassword(), "bestAdmin");
-        Assert.assertEquals(tempUser.getRole(), user.getRole());
     }
 }

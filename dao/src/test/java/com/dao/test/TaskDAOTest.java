@@ -108,14 +108,14 @@ public class TaskDAOTest {
         project = projectDAO.save(
                 new Project("Банковская система", department, true));
 
-        userAssignee = userDAO.save(new User("employee", "qwerty", Role.EMPLOYEE, true));
+        userAssignee = userDAO.save(new User("employee", "qwerty", true));
         Profile profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 89",
                 "+375294894561", "qwerty@mail.ru", "Java Python");
 
         assignee = employeeDAO.save(new Employee("Иванов Иван Иванович", true, userAssignee,
                 profileDAO.save(profile)));
 
-        userReporter = userDAO.save(new User("reporter", "qwerty123", Role.PROJECT_MANAGER, true));
+        userReporter = userDAO.save(new User("reporter", "qwerty123", true));
         profile = new Profile("Инженер-программист", "г.Минск ул.Приова 105",
                 "+375293494561", "reporter@mail.ru", "Java");
 
