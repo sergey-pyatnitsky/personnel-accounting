@@ -29,7 +29,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     @Override
     public List<Department> findByActive(boolean isActive) {
         Session session = sessionFactory.getCurrentSession();
-        Query query = session.createQuery("from Department where active = :isActive");
+        Query query = session.createQuery("from Department where isActive = :isActive");
         query.setParameter("isActive", isActive);
         return (List<Department>) query.list();
     }
@@ -53,6 +53,13 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         Session session = sessionFactory.getCurrentSession();
         session.saveOrUpdate(department);
         return department;
+    }
+
+    @Override
+    public List<Department> save(List<Department> departments) {
+        Session session = sessionFactory.getCurrentSession();
+        departments.forEach(session::saveOrUpdate);
+        return departments;
     }
 
     @Override

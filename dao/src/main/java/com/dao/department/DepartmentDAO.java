@@ -11,6 +11,7 @@ public interface DepartmentDAO {
     Department findByName(String name);
 
     Department save(Department department);
+    List<Department> save(List<Department> departments);
     Department update(Department department);
     boolean removeById(Long id);
     boolean remove(Department department);

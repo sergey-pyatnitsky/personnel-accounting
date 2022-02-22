@@ -32,4 +32,11 @@ public class User {
         this.password = password;
         this.isActive = isActive;
     }
+
+    public User(String username, String password, boolean isActive, List<Authority> authorityList) {
+        this.username = username;
+        this.password = password;
+        this.isActive = isActive;
+        this.authorityList = authorityList;
+    }
 }

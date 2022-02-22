@@ -14,6 +14,7 @@ public interface EmployeePositionDAO {
     List<EmployeePosition> findByActive(boolean isActive);
 
     EmployeePosition save(EmployeePosition employeePosition);
+    List<EmployeePosition> save(List<EmployeePosition> employeePositions);
     EmployeePosition update(EmployeePosition employeePosition);
     boolean removeById(Long id);
     boolean remove(EmployeePosition employeePosition);

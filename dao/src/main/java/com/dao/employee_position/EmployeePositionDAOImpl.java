@@ -85,6 +85,13 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
     }
 
     @Override
+    public List<EmployeePosition> save(List<EmployeePosition> employeePositions) {
+        Session session = sessionFactory.getCurrentSession();
+        employeePositions.forEach(session::saveOrUpdate);
+        return employeePositions;
+    }
+
+    @Override
     public EmployeePosition update(EmployeePosition employeePosition) {
         Session session = sessionFactory.getCurrentSession();
         return (EmployeePosition) session.merge(employeePosition);

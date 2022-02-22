@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -59,7 +60,7 @@ public class EmployeePositionDAOTest {
     private Employee employee;
 
     @After
-    public void deleteDepartmentEntity() {
+    public void deleteEntity() {
         logger.info("START deleteDepartmentEntity");
         try {
             employeePositionDAO.remove(employeePosition);
@@ -140,6 +141,43 @@ public class EmployeePositionDAOTest {
         Assert.assertEquals(employeePosition.getProject(), project);
         Assert.assertEquals(employeePosition.getDepartment(), department);
 
+        Assert.assertFalse(employeePosition.isActive());
+    }
+
+    @Test
+    public void saveList(){
+        logger.info("START saveList");
+
+        try {
+            employeePositionDAO.remove(employeePosition);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            employeePositionDAO.remove(secondEmployeePosition);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        List<EmployeePosition> employeePositions = new ArrayList<>();
+        employeePositions.add(new EmployeePosition(false, employee, position, project, department));
+        employeePositions.add(new EmployeePosition(false, employee, secondPosition, project, department));
+
+        employeePositions = employeePositionDAO.save(employeePositions);
+
+        secondEmployeePosition = employeePositions.get(employeePositions.size() - 1);
+
+        Assert.assertEquals(secondEmployeePosition.getEmployee(), employee);
+        Assert.assertEquals(secondEmployeePosition.getPosition(), secondPosition);
+        Assert.assertEquals(secondEmployeePosition.getProject(), project);
+        Assert.assertEquals(secondEmployeePosition.getDepartment(), department);
+        Assert.assertFalse(secondEmployeePosition.isActive());
+
+        employeePosition = employeePositions.get(employeePositions.size() - 2);
+        Assert.assertEquals(employeePosition.getEmployee(), employee);
+        Assert.assertEquals(employeePosition.getPosition(), position);
+        Assert.assertEquals(employeePosition.getProject(), project);
+        Assert.assertEquals(employeePosition.getDepartment(), department);
         Assert.assertFalse(employeePosition.isActive());
     }
 

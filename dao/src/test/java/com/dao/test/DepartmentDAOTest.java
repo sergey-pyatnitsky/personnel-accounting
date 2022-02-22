@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -57,6 +58,36 @@ public class DepartmentDAOTest {
         logger.info("START save");
         Assert.assertEquals(department.getName(), "Отдел Java разработки");
         Assert.assertTrue(department.isActive());
+    }
+
+    @Test
+    public void saveList(){
+        logger.info("START saveList");
+        deleteDepartmentEntity();
+
+        List<Department> departments = new ArrayList<>();
+        departments.add(new Department("Отдел Java разработки", true));
+        departments.add(new Department("Отдел Python разработки", true));
+
+        departments = departmentDAO.save(departments);
+
+        Department tempDepartment = departments.get(departments.size() - 1);
+        Assert.assertEquals("Отдел Python разработки", tempDepartment.getName());
+        Assert.assertTrue(tempDepartment.isActive());
+        try {
+            departmentDAO.remove(tempDepartment);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        tempDepartment = departments.get(departments.size() - 2);
+        Assert.assertEquals("Отдел Java разработки", tempDepartment.getName());
+        Assert.assertTrue(tempDepartment.isActive());
+        try {
+            departmentDAO.remove(tempDepartment);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

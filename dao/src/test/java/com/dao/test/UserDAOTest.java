@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
+import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = DAOConfiguration.class)
@@ -70,19 +71,26 @@ public class UserDAOTest {
     @Test
     public void find() {
         logger.info("START find");
-        Assert.assertEquals(userDAO.find(user.getUsername()), user);
+        User tempUser = userDAO.find(user.getUsername());
+        Assert.assertEquals(tempUser.getUsername(), "admin");
+        Assert.assertEquals(tempUser.getPassword(), "qwerty");
+        Assert.assertTrue(user.isActive());
     }
 
     @Test
     public void findAll() {
         logger.info("START findAll");
-        List<User> userListFromDB = userDAO.findAll();
-        user = userDAO.update(user);
-        secondUser = userDAO.update(secondUser);
-        userListFromDB.forEach(obj -> {
-            if (obj.getUsername().equals("admin")) Assert.assertEquals(obj, user);
-            else if (obj.getUsername().equals("employee")) Assert.assertEquals(obj, secondUser);
-        });
+        List<User> users = userDAO.findAll();
+
+        Optional<User> tempUser= users.stream().filter(obj -> obj.getUsername().equals("admin")).findFirst();
+        Assert.assertEquals(tempUser.get().getUsername(), "admin");
+        Assert.assertEquals(tempUser.get().getPassword(), "qwerty");
+        Assert.assertTrue(tempUser.get().isActive());
+
+        tempUser= users.stream().filter(obj -> obj.getUsername().equals("employee")).findFirst();
+        Assert.assertEquals(tempUser.get().getUsername(), "employee");
+        Assert.assertEquals(tempUser.get().getPassword(), "123qwerty");
+        Assert.assertFalse(tempUser.get().isActive());
     }
 
     @Test
@@ -90,7 +98,9 @@ public class UserDAOTest {
         logger.info("START update");
         user.setPassword("admin");
         user = userDAO.update(user);
-        Assert.assertEquals(userDAO.update(user), user);
+        Assert.assertEquals(user.getUsername(), "admin");
+        Assert.assertEquals(user.getPassword(), "admin");
+        Assert.assertTrue(user.isActive());
     }
 
     @Test
