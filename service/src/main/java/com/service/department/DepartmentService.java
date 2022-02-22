@@ -1,8 +1,6 @@
 package com.service.department;
 
-import com.core.domain.Department;
-import com.core.domain.Employee;
-import com.core.domain.Project;
+import com.core.domain.*;
 
 import java.util.List;
 
@@ -11,6 +9,12 @@ public interface DepartmentService {
     List<Employee> findEmployees(Department department);
     Employee assignToDepartment(Employee employee, Department department);
     Department changeDepartmentActiveStatus(Department department, boolean isActive);
+
+    Position addPosition(Position position);
+    Position mergePosition(Position position);
+
+    EmployeePosition addEmployeePosition(EmployeePosition employeePosition);
+    EmployeePosition mergeEmployeePosition(EmployeePosition employeePosition);
 
     Department find(Long id);
     List<Department> findByActive(boolean isActive);

@@ -127,4 +127,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     public boolean activate(Employee employee) {
         return employeeDAO.activate(employee);
     }
+
+    @Override
+    public ReportCard saveReportCard(ReportCard reportCard) {
+        return reportCardDAO.save(reportCard);
+    }
+
+    @Override
+    public ReportCard mergeReportCard(ReportCard reportCard) {
+        return reportCardDAO.update(reportCard);
+    }
 }

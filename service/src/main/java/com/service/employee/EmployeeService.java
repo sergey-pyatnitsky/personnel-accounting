@@ -13,6 +13,9 @@ public interface EmployeeService {
     Task addTaskInProject(Project project, Task task);
     Task changeTaskStatus(Task task, TaskStatus taskStatus);
 
+    ReportCard saveReportCard(ReportCard reportCard);
+    ReportCard mergeReportCard(ReportCard reportCard);
+
     Employee find(Long id);
     List<Employee> findAll();
     List<Employee> findByName(String name);

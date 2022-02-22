@@ -1,10 +1,9 @@
 package com.service.department;
 
-import com.core.domain.Department;
-import com.core.domain.Employee;
-import com.core.domain.Project;
+import com.core.domain.*;
 import com.dao.department.DepartmentDAO;
 import com.dao.employee_position.EmployeePositionDAO;
+import com.dao.position.PositionDAO;
 import com.dao.project.ProjectDAO;
 import com.dao.employee.EmployeeDAO;
 import org.springframework.stereotype.Service;
@@ -18,13 +17,16 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final ProjectDAO projectDAO;
     private final EmployeeDAO employeeDAO;
     private final EmployeePositionDAO employeePositionDAO;
+    private final PositionDAO positionDAO;
 
     public DepartmentServiceImpl(DepartmentDAO departmentDAO, ProjectDAO projectDAO,
-                                 EmployeeDAO employeeDAO, EmployeePositionDAO employeePositionDAO) {
+                                 EmployeeDAO employeeDAO, EmployeePositionDAO employeePositionDAO,
+                                 PositionDAO positionDAO) {
         this.departmentDAO = departmentDAO;
         this.projectDAO = projectDAO;
         this.employeeDAO = employeeDAO;
         this.employeePositionDAO = employeePositionDAO;
+        this.positionDAO = positionDAO;
     }
 
     @Override
@@ -118,5 +120,25 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional
     public boolean activate(Department department) {
         return departmentDAO.activate(department);
+    }
+
+    @Override
+    public Position addPosition(Position position) {
+        return positionDAO.save(position);
+    }
+
+    @Override
+    public Position mergePosition(Position position) {
+        return positionDAO.update(position);
+    }
+
+    @Override
+    public EmployeePosition addEmployeePosition(EmployeePosition employeePosition) {
+        return employeePositionDAO.save(employeePosition);
+    }
+
+    @Override
+    public EmployeePosition mergeEmployeePosition(EmployeePosition employeePosition) {
+        return employeePositionDAO.update(employeePosition);
     }
 }

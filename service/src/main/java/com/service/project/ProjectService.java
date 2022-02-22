@@ -9,6 +9,9 @@ public interface ProjectService {
     EmployeePosition changeEmployeeActiveStatusInProject(Employee employee, Project project, boolean isActive);
     List<Employee> findByProject(Project project);
 
+    Task addTask(Task task);
+    Task mergeTask(Task task);
+
     Project find(Long id);
     List<Project> findByActive(boolean isActive);
     List<Project> findAll();

@@ -4,6 +4,7 @@ import com.core.domain.*;
 import com.dao.employee_position.EmployeePositionDAO;
 import com.dao.position.PositionDAO;
 import com.dao.project.ProjectDAO;
+import com.dao.task.TaskDAO;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,11 +16,14 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectDAO projectDAO;
     private final EmployeePositionDAO employeePositionDAO;
     private final PositionDAO positionDAO;
+    private final TaskDAO taskDAO;
 
-    public ProjectServiceImpl(ProjectDAO projectDAO, EmployeePositionDAO employeePositionDAO, PositionDAO positionDAO) {
+    public ProjectServiceImpl(ProjectDAO projectDAO, EmployeePositionDAO employeePositionDAO,
+                              PositionDAO positionDAO, TaskDAO taskDAO) {
         this.projectDAO = projectDAO;
         this.employeePositionDAO = employeePositionDAO;
         this.positionDAO = positionDAO;
+        this.taskDAO = taskDAO;
     }
 
     @Override
@@ -115,5 +119,15 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public boolean activate(Project project) {
         return projectDAO.activate(project);
+    }
+
+    @Override
+    public Task addTask(Task task) {
+        return taskDAO.save(task);
+    }
+
+    @Override
+    public Task mergeTask(Task task) {
+        return taskDAO.update(task);
     }
 }
