@@ -8,7 +8,7 @@ public interface DepartmentService {
     List<Project> findProjects(Department department);
     List<Employee> findEmployees(Department department);
     Employee assignToDepartment(Employee employee, Department department);
-    Department changeDepartmentActiveStatus(Department department, boolean isActive);
+    Department changeDepartmentState(Department department, boolean isActive);
 
     Position addPosition(Position position);
     Position mergePosition(Position position);

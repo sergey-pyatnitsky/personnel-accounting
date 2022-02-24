@@ -5,12 +5,13 @@ import com.core.domain.*;
 import java.util.List;
 
 public interface ProjectService {
+    Position addNewPosition(Position position);
+    EmployeePosition changeEmployeePositionInProject(EmployeePosition employeePosition, Position position);
     EmployeePosition assignToProject(Employee employee, Project project, Position position);
-    EmployeePosition changeEmployeeActiveStatusInProject(Employee employee, Project project, boolean isActive);
+    EmployeePosition changeEmployeeStateInProject(EmployeePosition employeePosition, boolean isActive);
     List<Employee> findByProject(Project project);
-
-    Task addTask(Task task);
-    Task mergeTask(Task task);
+    List<EmployeePosition> findProjectEmployeePositions(Employee employee, Project project);
+    List<EmployeePosition> findEmployeePositions(Employee employee);
 
     Project find(Long id);
     List<Project> findByActive(boolean isActive);

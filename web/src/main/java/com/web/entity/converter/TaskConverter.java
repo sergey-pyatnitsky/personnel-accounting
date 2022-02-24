@@ -3,6 +3,7 @@ package com.web.entity.converter;
 import com.core.domain.Employee;
 import com.core.domain.Project;
 import com.core.domain.Task;
+import com.service.employee.EmployeeService;
 import com.service.project.ProjectService;
 import com.web.entity.dto.TaskDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.core.convert.converter.Converter;
 
 public class TaskConverter implements Converter<TaskDTO, Task> {
     private ConversionService conversionService;
-    private ProjectService projectService;
+    private EmployeeService employeeService;
 
     @Autowired
     public void setConversionService(ConversionService conversionService) {
@@ -19,8 +20,8 @@ public class TaskConverter implements Converter<TaskDTO, Task> {
     }
 
     @Autowired
-    public void setProjectService(ProjectService projectService) {
-        this.projectService = projectService;
+    public void setProjectService(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     @Override
@@ -36,6 +37,6 @@ public class TaskConverter implements Converter<TaskDTO, Task> {
         task.setAssignee(
                 conversionService.convert(source.getAssignee(), Employee.class));
         task.setTaskStatus(source.getStatus());
-        return projectService.mergeTask(task);
+        return employeeService.mergeTask(task);
     }
 }

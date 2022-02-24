@@ -8,13 +8,17 @@ import java.sql.Time;
 import java.util.List;
 
 public interface EmployeeService {
-    Employee addProfileData(Employee employee, Profile profile);
-    ReportCard assigneeTime(Date date, Time workingTime, Task task, Employee assignee);
-    Task addTaskInProject(Project project, Task task);
+    ReportCard trackTime(ReportCard reportCard);
     Task changeTaskStatus(Task task, TaskStatus taskStatus);
+    Task addTaskInProject(Project project, Task task);
+    Employee addProfileData(Employee employee, Profile profile);
+    Profile findProfileByEmployee(Employee employee);
 
     ReportCard saveReportCard(ReportCard reportCard);
     ReportCard mergeReportCard(ReportCard reportCard);
+
+    Task createTask(Task task);
+    Task mergeTask(Task task);
 
     Employee find(Long id);
     List<Employee> findAll();

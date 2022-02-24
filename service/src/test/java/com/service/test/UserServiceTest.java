@@ -1,8 +1,11 @@
 package com.service.test;
 
+import com.core.domain.Employee;
 import com.core.domain.User;
 import com.core.enums.Role;
+import com.dao.authority.AuthorityDAO;
 import com.service.configuration.ServiceConfiguration;
+import com.service.employee.EmployeeService;
 import com.service.user.UserService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -25,6 +28,12 @@ public class UserServiceTest {
     private UserService userService;
     private User user;
     private User secondUser;
+
+    @Autowired
+    private AuthorityDAO authorityDAO;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @After
     public void deleteUserEntity() {
@@ -52,10 +61,61 @@ public class UserServiceTest {
     }
 
     @Test
+    public void save() {
+        logger.info("START save");
+        Assert.assertEquals(user.getUsername(), "admin");
+        Assert.assertEquals(user.getPassword(), "qwerty");
+        Assert.assertTrue(user.isActive());
+    }
+
+    @Test
     public void changeAuthData() {
         logger.info("START changeAuthData");
-        User tempUser = userService.changeAuthData(user, "bestAdmin", "bestAdmin");
-        Assert.assertEquals(tempUser.getUsername(), "bestAdmin");
-        Assert.assertEquals(tempUser.getPassword(), "bestAdmin");
+        user = userService.changeAuthData(user, "bestAdminPass");
+        Assert.assertEquals(user.getUsername(), "admin");
+        Assert.assertEquals(user.getPassword(), "bestAdminPass");
+
+        user = userService.find(user.getUsername());
+        Assert.assertEquals(user.getUsername(), "admin");
+        Assert.assertEquals(user.getPassword(), "bestAdminPass");
+        Assert.assertTrue(user.isActive());
+    }
+
+    @Test
+    public void changeUserRole() {
+        logger.info("START changeUserRole");
+        user = userService.changeUserRole(user, Role.EMPLOYEE);
+
+        Assert.assertEquals(user.getUsername(), "admin");
+        Assert.assertEquals(user.getPassword(), "qwerty");
+        Assert.assertTrue(user.isActive());
+
+        Assert.assertEquals(authorityDAO.find("admin").getRole(), Role.EMPLOYEE);
+
+        user = userService.find(user.getUsername());
+        Assert.assertEquals(user.getUsername(), "admin");
+        Assert.assertEquals(user.getPassword(), "qwerty");
+        Assert.assertTrue(user.isActive());
+    }
+
+    @Test
+    public void registerUser() {
+        logger.info("START registerUser");
+        userService.remove(secondUser);
+        secondUser = userService.registerUser(secondUser, "Иванов Иван Иванович", Role.EMPLOYEE);
+
+        Assert.assertEquals(secondUser.getUsername(), "employee");
+        Assert.assertEquals(secondUser.getPassword(), "123qwerty");
+        Assert.assertFalse(secondUser.isActive());
+
+        secondUser = userService.find(secondUser.getUsername());
+        Assert.assertEquals(secondUser.getUsername(), "employee");
+        Assert.assertEquals(secondUser.getPassword(), "123qwerty");
+        Assert.assertFalse(secondUser.isActive());
+
+        Employee employee = employeeService.findByUser(secondUser);
+        Assert.assertEquals(employee.getName(), "Иванов Иван Иванович");
+
+        employeeService.remove(employee);
     }
 }

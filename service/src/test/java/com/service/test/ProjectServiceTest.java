@@ -47,10 +47,12 @@ public class ProjectServiceTest {
     @Autowired
     private EmployeePositionDAO employeePositionDAO;
     private EmployeePosition employeePosition;
+    private EmployeePosition secondEmployeePosition;
 
     @Autowired
     private PositionDAO positionDAO;
     private Position position;
+    private Position secondPosition;
 
     @After
     public void deleteProjectEntity() {
@@ -61,7 +63,17 @@ public class ProjectServiceTest {
             e.printStackTrace();
         }
         try {
+            employeePositionDAO.remove(secondEmployeePosition);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             positionDAO.remove(position);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            positionDAO.remove(secondPosition);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -115,23 +127,51 @@ public class ProjectServiceTest {
     @Test
     public void assignToProject() {
         logger.info("START assignToProject");
-        EmployeePosition tempEmployeePosition = projectService.assignToProject(employee, project, position);
+        employeePositionDAO.remove(employeePosition);
+        employeePosition = projectService.assignToProject(employee, project, position);
+
+        Assert.assertEquals(employeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(employeePosition.getCreateDate().toString(),
+                employeePosition.getCreateDate().toString());
+
+        EmployeePosition tempEmployeePosition = projectService.findProjectEmployeePositions(employee, project).stream()
+                .filter(obj -> obj.getId().equals(employeePosition.getId())).findFirst().orElse(null);
+
+        assert tempEmployeePosition != null;
         Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
         Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
                 employeePosition.getCreateDate().toString());
-        employeePosition = tempEmployeePosition;
     }
 
     @Test
-    public void changeEmployeeActiveStatusInProject() {
-        logger.info("START changeEmployeeActiveStatusInProject");
-        EmployeePosition tempEmployeePosition =
-                projectService.changeEmployeeActiveStatusInProject(employee, project, true);
+    public void findProjectEmployeePositions(){
+        logger.info("START findProjectEmployeePositions");
+        EmployeePosition tempEmployeePosition = projectService.findProjectEmployeePositions(employee, project).stream()
+                .filter(obj -> obj.getId().equals(employeePosition.getId())).findFirst().orElse(null);
+
+        assert tempEmployeePosition != null;
+        Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                employeePosition.getCreateDate().toString());
+    }
+
+    @Test
+    public void changeEmployeeStateInProject() {
+        logger.info("START changeEmployeeStateInProject");
+        employeePosition =
+                projectService.changeEmployeeStateInProject(employeePosition, true);
+        Assert.assertEquals(employeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(employeePosition.getCreateDate().toString(),
+                employeePosition.getCreateDate().toString());
+        Assert.assertTrue(employeePosition.isActive());
+
+        EmployeePosition tempEmployeePosition = projectService.findProjectEmployeePositions(employee, project).stream()
+                .filter(obj -> obj.getId().equals(employeePosition.getId())).findFirst().orElse(null);
+        assert tempEmployeePosition != null;
         Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
         Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
                 employeePosition.getCreateDate().toString());
         Assert.assertTrue(tempEmployeePosition.isActive());
-        employeePosition = tempEmployeePosition;
     }
 
     @Test
@@ -147,5 +187,44 @@ public class ProjectServiceTest {
         Employee tempEmployee = employee.get(employee.size() - 1);
         Assert.assertEquals(tempEmployee.getName(), "Иванов Иван Иванович");
         Assert.assertFalse(tempEmployee.isActive());
+    }
+
+    @Test
+    public void addNewPosition(){
+        logger.info("START addNewPosition");
+        Position position = projectService.addNewPosition(new Position("Архитектор БД"));
+        Assert.assertEquals(position.getName(), "Архитектор БД");
+
+        position = positionDAO.findByName("Архитектор БД");
+        Assert.assertEquals(position.getName(), "Архитектор БД");
+
+        positionDAO.remove(position);
+    }
+
+    @Test
+    public void changeEmployeePositionInProject(){
+        logger.info("START changeEmployeePositionInProject");
+        secondPosition = positionDAO.save(new Position("Архитектор БД"));
+        secondEmployeePosition = projectService.changeEmployeePositionInProject(
+                employeePosition, secondPosition);
+
+        Assert.assertEquals(secondEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(secondEmployeePosition.getCreateDate().toString(),
+                employeePosition.getCreateDate().toString());
+        Assert.assertFalse(secondEmployeePosition.isActive());
+
+        Assert.assertEquals(secondEmployeePosition.getPosition().getId(), secondPosition.getId());
+        Assert.assertEquals(secondEmployeePosition.getPosition().getName(), secondPosition.getName());
+
+        EmployeePosition tempEmployeePosition = projectService.findProjectEmployeePositions(employee, project).stream()
+                .filter(obj -> obj.getId().equals(employeePosition.getId())).findFirst().orElse(null);
+        assert tempEmployeePosition != null;
+        Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
+                employeePosition.getCreateDate().toString());
+        Assert.assertFalse(tempEmployeePosition.isActive());
+
+        Assert.assertEquals(tempEmployeePosition.getPosition().getId(), secondPosition.getId());
+        Assert.assertEquals(tempEmployeePosition.getPosition().getName(), secondPosition.getName());
     }
 }

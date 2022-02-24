@@ -150,17 +150,29 @@ public class DepartmentServiceTest {
         employee.setDepartment(null);
         employeeService.save(employee);
 
-        Employee tempEmployee = departmentService.assignToDepartment(employee, department);
+        employee = departmentService.assignToDepartment(employee, department);
+        Assert.assertEquals(employee.getName(), "Иванов Иван Иванович");
+        Assert.assertFalse(employee.isActive());
 
-        Assert.assertEquals(tempEmployee.getName(), "Иванов Иван Иванович");
-        Assert.assertFalse(tempEmployee.isActive());
+        employee = employeeService.findByDepartment(department).stream()
+                .filter(obj -> obj.getId().equals(employee.getId())).findFirst().orElse(null);
+        assert employee != null;
+        Assert.assertEquals(employee.getName(), "Иванов Иван Иванович");
+        Assert.assertFalse(employee.isActive());
+
+        projectService.findEmployeePositions(employee).stream().filter(obj -> !obj.getEmployee().equals(employee))
+                .forEach(obj -> Assert.assertFalse(obj.isActive()));
     }
 
     @Test
-    public void changeDepartmentActiveStatus() {
-        logger.info("START changeDepartmentActiveStatus");
-        department = departmentService.changeDepartmentActiveStatus(department, false);
+    public void changeDepartmentState() {
+        logger.info("START changeDepartmentState");
+        department = departmentService.changeDepartmentState(department, false);
         Assert.assertEquals(department.getName(), "Отдел Java разработки");
         Assert.assertFalse(department.isActive());
+
+        employeeService.findByDepartment(department).forEach(obj -> Assert.assertFalse(obj.isActive()));
+        projectService.findByDepartment(department).forEach(obj-> Assert.assertFalse(obj.isActive()));
     }
+
 }

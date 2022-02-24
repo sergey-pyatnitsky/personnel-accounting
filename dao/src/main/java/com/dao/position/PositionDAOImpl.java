@@ -31,7 +31,7 @@ public class PositionDAOImpl implements PositionDAO {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("from Position where name = :name");
         query.setParameter("name", name);
-        return (Position) query.getSingleResult();
+        return (Position) query.getResultList().stream().findFirst().orElse(null);
     }
 
     @Override

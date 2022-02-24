@@ -6,7 +6,9 @@ import com.core.enums.Role;
 import java.util.List;
 
 public interface UserService {
-    User changeAuthData(User user, String login, String password);
+    User changeAuthData(User user, String password);
+    User changeUserRole(User user, Role role);
+    User registerUser(User user, String name, Role role);
 
     User find(String username);
     List<User> findByActive(boolean isActive);
@@ -17,6 +19,7 @@ public interface UserService {
     boolean inactivate(User user);
     boolean activate(User user);
 
+    User save(User user);
     User save(User user, Role role);
     User update(User user);
     boolean remove(User user);

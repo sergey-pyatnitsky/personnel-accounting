@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -28,14 +29,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
-    public ReportCard assigneeTime(Date date, Time workingTime, Task task, Employee assignee) {
-        return reportCardDAO.save(new ReportCard(date,
-                task, assignee, workingTime));
+    public ReportCard trackTime(ReportCard reportCard) {
+        return reportCardDAO.save(reportCard);
     }
 
     @Override
-    @Transactional
+    public Task changeTaskStatus(Task task, TaskStatus taskStatus) {
+        if (task.getTaskStatus().equals(taskStatus)) return taskDAO.update(task);
+        else {
+            task.setTaskStatus(taskStatus);
+            return taskDAO.save(task);
+        }
+    }
+
+    @Override
     public Task addTaskInProject(Project project, Task task) {
         task.setProject(project);
         return taskDAO.save(task);
@@ -43,87 +50,78 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public Task changeTaskStatus(Task task, TaskStatus taskStatus) {
-        task.setTaskStatus(taskStatus);
-        return taskDAO.save(task);
-    }
-
-    @Override
-    @Transactional
     public Employee addProfileData(Employee employee, Profile profile) {
-        profile = profileDAO.save(profile);
-        employee.setProfile(profile);
+        employee = employeeDAO.update(employee);
+        employee.getProfile().setSkills(profile.getSkills());
+        employee.getProfile().setEmail(profile.getEmail());
+        employee.getProfile().setPhone(profile.getPhone());
+        employee.getProfile().setAddress(profile.getAddress());
+        employee.getProfile().setEducation(profile.getEducation());
         return employeeDAO.save(employee);
     }
 
     @Override
     @Transactional
+    public Profile findProfileByEmployee(Employee employee) {
+        return profileDAO.find(employeeDAO.find(employee.getId()).getProfile().getId());
+    }
+
+    @Override
     public Employee find(Long id) {
         return employeeDAO.find(id);
     }
 
     @Override
-    @Transactional
     public List<Employee> findAll() {
         return employeeDAO.findAll();
     }
 
     @Override
-    @Transactional
     public List<Employee> findByName(String name) {
         return employeeDAO.findByName(name);
     }
 
     @Override
-    @Transactional
     public List<Employee> findByActive(boolean isActive) {
         return employeeDAO.findByActive(isActive);
     }
 
     @Override
-    @Transactional
     public Employee findByUser(User user) {
         return employeeDAO.findByUser(user);
     }
 
     @Override
-    @Transactional
     public List<Employee> findByDepartment(Department department) {
         return employeeDAO.findByDepartment(department);
     }
 
     @Override
-    @Transactional
     public Employee save(Employee employee) {
         return employeeDAO.save(employee);
     }
 
     @Override
-    @Transactional
     public Employee update(Employee employee) {
         return employeeDAO.update(employee);
     }
 
     @Override
-    @Transactional
     public boolean removeById(Long id) {
         return employeeDAO.removeById(id);
     }
 
     @Override
-    @Transactional
     public boolean remove(Employee employee) {
         return employeeDAO.remove(employee);
     }
 
     @Override
-    @Transactional
     public boolean inactivate(Employee employee) {
         return employeeDAO.inactivate(employee);
     }
 
     @Override
-    @Transactional
     public boolean activate(Employee employee) {
         return employeeDAO.activate(employee);
     }
@@ -136,5 +134,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ReportCard mergeReportCard(ReportCard reportCard) {
         return reportCardDAO.update(reportCard);
+    }
+
+    @Override
+    public Task createTask(Task task) {
+        return taskDAO.save(task);
+    }
+
+    @Override
+    public Task mergeTask(Task task) {
+        return taskDAO.update(task);
     }
 }

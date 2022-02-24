@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,27 +28,48 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
-    public User changeAuthData(User user, String login, String password) {
-        user.setUsername(login);
-        user.setPassword(password);
-        return userDAO.save(user);
+    public User changeAuthData(User user, String password) {
+        if (!Objects.equals(user.getPassword(), password)) {
+            user.setPassword(password);
+            return userDAO.save(user);
+        }
+        return userDAO.update(user);
     }
 
     @Override
-    @Transactional
+    public User changeUserRole(User user, Role role) {
+        Authority authority = authorityDAO.find(user.getUsername());
+        if (authority.getRole() != role) {
+            authority.setRole(role);
+            authorityDAO.save(authority);
+        }
+        return userDAO.update(user);
+    }
+
+    @Override
+    public User registerUser(User user, String name, Role role) {
+        User tempUser = userDAO.find(user.getUsername());
+        if (tempUser == null) {
+            user = userDAO.save(user);
+            if (!role.equals(Role.SUPER_ADMIN)) {
+                Employee employee = new Employee(name, false, user, new Profile());
+                employeeDAO.save(employee);
+            }
+            return user;
+        } else return tempUser;
+    }
+
+    @Override
     public User find(String username) {
         return userDAO.find(username);
     }
 
     @Override
-    @Transactional
     public List<User> findByActive(boolean isActive) {
         return userDAO.findByActive(isActive);
     }
 
     @Override
-    @Transactional
     public List<User> findAll() {
         return userDAO.findAll();
     }
@@ -58,46 +80,45 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public List<User> findByRole(Role role) {
         List<Authority> authorities = authorityDAO.findByRole(role);
         List<User> users = new ArrayList<>();
-        authorities.forEach(obj -> {
-            users.add(userDAO.find(obj.getUsername()));
-        });
+        authorities.forEach(obj -> users.add(userDAO.find(obj.getUsername())));
         return users;
     }
 
-
     @Override
-    @Transactional
     public boolean inactivate(User user) {
         return userDAO.inactivate(user);
     }
 
     @Override
-    @Transactional
     public boolean activate(User user) {
         return userDAO.activate(user);
     }
 
     @Override
-    @Transactional
     public User update(User user) {
         return userDAO.update(user);
     }
 
     @Override
-    @Transactional
     public boolean remove(User user) {
-        return userDAO.remove(user);
+        if(authorityDAO.removeByUsername(user.getUsername()))
+            return userDAO.remove(user);
+        return false;
     }
 
     @Override
-    @Transactional
-    public User save(User user, Role role) {
-
-        user.getAuthorityList().add(authorityDAO.save(new Authority(user.getUsername(), role)));
+    public User save(User user) {
         return userDAO.save(user);
+    }
+
+    @Override
+    public User save(User user, Role role) {
+        Authority authority = new Authority(user.getUsername(), role);
+        user = userDAO.save(user);
+        authorityDAO.save(authority);
+        return user;
     }
 }
