@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
         User tempUser = userDAO.find(user.getUsername());
         if (tempUser == null) {
             user = userDAO.save(user);
+            authorityDAO.save(new Authority(user.getUsername(), role));
             if (!role.equals(Role.SUPER_ADMIN)) {
                 Employee employee = new Employee(name, false, user, new Profile());
                 employeeDAO.save(employee);

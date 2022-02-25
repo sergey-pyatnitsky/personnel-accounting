@@ -16,11 +16,6 @@ public class MainController {
         return "authorization/authorization";
     }
 
-    @RequestMapping("/registration")
-    public String showRegistrationPage() {
-        return "authorization/registration";
-    }
-
     @RequestMapping("/")
     public String showMainPage() {
         return "main-page/main-page";

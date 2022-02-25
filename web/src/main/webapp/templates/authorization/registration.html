@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta charset=UTF-8>
     <title>Регистрация</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -12,12 +12,13 @@
     <div class="login-block">
         <img th:src="@{/resources/images/auth-reg.png}">
         <h1>Введите свои данные</h1>
-        <form action="/">
+        <form th:action="@{/registration}" method="post">
             <div class="form-group">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-user ti-user"></i></span>
                     <label>
-                        <input type="text" class="form-control" placeholder="Логин">
+                        <input type="text" class="form-control" placeholder="Логин"
+                               th:field="*{employee.user.username}">
                     </label>
                 </div>
             </div>
@@ -25,18 +26,21 @@
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-lock ti-unlock"></i></span>
                     <label>
-                        <input type="password" class="form-control" placeholder="Пароль">
+                        <input type="password" class="form-control" placeholder="Пароль"
+                               th:field="*{employee.user.password}">
                     </label>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-lock ti-unlock"></i></span>
                     <label>
-                        <input type="secondPassword" class="form-control" placeholder="Повторите пароль">
+                        <input type="password" class="form-control" placeholder="Повторите пароль"
+                               th:field="*{employee.user.repeatPassword}">
                     </label>
 
                     <span class="input-group-addon"><i class="fa fa-lock ti-unlock"></i></span>
                     <label>
-                        <input class="form-control" placeholder="ФИО" type="name">
+                        <input type="text" class="form-control" placeholder="ФИО"
+                               th:field="${employee.name}">
                     </label>
                 </div>
 
