@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Профиль</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+          crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+          crossorigin="anonymous"></script>
+  <link th:href="@{/resources/css/profile-page.css}" rel="stylesheet" type="text/css">
+  <script th:src="@{/resources/js/telephone-directory.js}"></script>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="d-flex align-items-start my-own-container">
+  <div id="content" class="p-4 p-md-5 pt-5">
+    <h2 class="mb-4">Телефонный справочник</h2>
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-xl navbar-light">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+              Параметры поиска
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Поиск по имени</a></li>
+              <li><a class="dropdown-item" href="#">Поиск по номеру телефона</a></li>
+              <li><a class="dropdown-item" href="#">Поиск по адресу почты</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <form class="form-inline">
+          <input type="text" class="search form-control col-" placeholder="Введите данные">
+        </form>
+      </nav>
+    </div>
+    <span class="counter pull-right"></span>
+    <table class="table table-hover table-bordered results">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th class="col-md-4 col-xs-5">ФИО</th>
+        <th class="col-md-4 col-xs-4">Телефон</th>
+        <th class="col-md-4 col-xs-3">Почта</th>
+      </tr>
+      <tr class="warning no-result">
+        <td colspan="4"><i class="fa fa-warning"></i>Не найдено</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>Vatanay Özbeyli</td>
+        <td>UI & UX</td>
+        <td>Istanbul</td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>Burak Özkan</td>
+        <td>Software Developer</td>
+        <td>Istanbul</td>
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td>Egemen Özbeyli</td>
+        <td>Purchasing</td>
+        <td>Kocaeli</td>
+      </tr>
+      <tr>
+        <th scope="row">4</th>
+        <td>Engin Kızıl</td>
+        <td>Sales</td>
+        <td>Bozuyük</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

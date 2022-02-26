@@ -22,7 +22,7 @@ public class UserController {
         this.conversionService = conversionService;
     }
 
-    @GetMapping(value = "/registration")
+    @GetMapping("/registration")
     public String showRegistrationPage(Model model) {
         EmployeeDTO employeeDTO = new EmployeeDTO();
         model.addAttribute("employee", employeeDTO);
@@ -30,7 +30,7 @@ public class UserController {
         return "authorization/registration";
     }
 
-    @PostMapping(value = "/registration")
+    @PostMapping("/registration")
     public String registerUser(@ModelAttribute("employee")EmployeeDTO employeeDTO){
         employeeDTO.getUser().setActive(true);
         employeeDTO.getUser().setPassword("{bcrypt}" +
@@ -38,5 +38,10 @@ public class UserController {
         User user = userService.registerUser(conversionService.convert(employeeDTO.getUser(), User.class),
                 employeeDTO.getName(), Role.EMPLOYEE);
         return "redirect:/";
+    }
+
+    @GetMapping("/telephone-directory")
+    public String getTelephoneDirectory(){
+        return "telephone-directory";
     }
 }
