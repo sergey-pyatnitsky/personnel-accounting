@@ -1,7 +1,10 @@
-package com.personnel_accounting.entity.converter;
+package com.personnel_accounting.entity.converter.toDomain;
 
-import com.personnel_accounting.domain.*;
-import com.personnel_accounting.department.DepartmentService;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.EmployeePosition;
+import com.personnel_accounting.domain.Position;
+import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.entity.dto.EmployeePositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -10,12 +13,6 @@ import org.springframework.core.convert.converter.Converter;
 public class EmployeePositionConverter
         implements Converter<EmployeePositionDTO, EmployeePosition> {
     private ConversionService conversionService;
-    private DepartmentService departmentService;
-
-    @Autowired
-    public void setDepartmentService(DepartmentService departmentService) {
-        this.departmentService = departmentService;
-    }
 
     @Autowired
     public void setConversionService(ConversionService conversionService) {
@@ -35,6 +32,6 @@ public class EmployeePositionConverter
         employeePosition.setDepartment(
                 conversionService.convert(source.getDepartment(), Department.class));
         employeePosition.setActive(source.isActive());
-        return departmentService.mergeEmployeePosition(employeePosition);
+        return employeePosition;
     }
 }

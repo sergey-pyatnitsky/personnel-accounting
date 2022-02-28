@@ -1,6 +1,7 @@
 package com.personnel_accounting.configuration;
 
-import com.personnel_accounting.entity.converter.*;
+import com.personnel_accounting.entity.converter.toDTO.*;
+import com.personnel_accounting.entity.converter.toDomain.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,17 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements
         registry.addConverter(new ReportCardConverter());
         registry.addConverter(new TaskConverter());
         registry.addConverter(new UserConverter());
+        registry.addConverter(new ProfileConverter());
+
+        registry.addConverter(new DepartmentDTOConverter());
+        registry.addConverter(new EmployeeDTOConverter());
+        registry.addConverter(new EmployeePositionDTOConverter());
+        registry.addConverter(new PositionDTOConverter());
+        registry.addConverter(new ProjectDTOConverter());
+        registry.addConverter(new ReportCardDTOConverter());
+        registry.addConverter(new TaskDTOConverter());
+        registry.addConverter(new UserDTOConverter());
+        registry.addConverter(new ProfileDTOConverter());
     }
 
     @Override

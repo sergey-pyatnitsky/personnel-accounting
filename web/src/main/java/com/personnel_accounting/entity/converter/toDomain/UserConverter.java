@@ -1,9 +1,7 @@
-package com.personnel_accounting.entity.converter;
+package com.personnel_accounting.entity.converter.toDomain;
 
 import com.personnel_accounting.domain.User;
-import com.personnel_accounting.user.UserService;
 import com.personnel_accounting.entity.dto.UserDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 public class UserConverter implements Converter<UserDTO, User> {

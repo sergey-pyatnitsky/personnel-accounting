@@ -1,8 +1,7 @@
-package com.personnel_accounting.entity.converter;
+package com.personnel_accounting.entity.converter.toDomain;
 
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Project;
-import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.entity.dto.ProjectDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -10,16 +9,10 @@ import org.springframework.core.convert.converter.Converter;
 
 public class ProjectConverter implements Converter<ProjectDTO, Project> {
     private ConversionService conversionService;
-    private ProjectService projectService;
 
     @Autowired
     public void setConversionService(ConversionService conversionService) {
         this.conversionService = conversionService;
-    }
-
-    @Autowired
-    public void setProjectService(ProjectService projectService) {
-        this.projectService = projectService;
     }
 
     @Override
@@ -30,6 +23,6 @@ public class ProjectConverter implements Converter<ProjectDTO, Project> {
         project.setDepartment(
                 conversionService.convert(source.getDepartment(), Department.class));
         project.setActive(source.isActive());
-        return projectService.update(project);
+        return project;
     }
 }
