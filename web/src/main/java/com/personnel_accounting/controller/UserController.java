@@ -39,9 +39,4 @@ public class UserController {
                 employeeDTO.getName(), Role.EMPLOYEE);
         return "redirect:/";
     }
-
-    @GetMapping("/telephone-directory")
-    public String getTelephoneDirectory(){
-        return "telephone-directory";
-    }
 }
