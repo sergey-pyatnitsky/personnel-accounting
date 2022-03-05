@@ -1,55 +1,33 @@
-/*
 $(document).ready(function () {
-  $(".search").keyup(function () {
-    var searchTerm = $(".search").val();
-    var listItem = $('.results tbody').children('tr');
-    var searchSplit = searchTerm.replace(/ /g, "'):containsi('")
-
-    $.extend($.expr[':'], {
-      'containsi': function (elem, i, match, array) {
-        return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
-      }
-    });
-
-    $(".results tbody tr").not(":containsi('" + searchSplit + "')").each(function (e) {
-      $(this).attr('visible', 'false');
-    });
-
-    $(".results tbody tr:containsi('" + searchSplit + "')").each(function (e) {
-      $(this).attr('visible', 'true');
-    });
-
-    var jobCount = $('.results tbody tr[visible="true"]').length;
-    $('.counter').text(jobCount + ' item');
-
-    if (jobCount == '0') {
-      $('.no-result').show();
-    } else {
-      $('.no-result').hide();
-    }
-  });
-});*/
-
-$(document).ready(function () {
-
-  $("#search-form").submit(function (event) {
-
-    //stop submit the form, we will post it manually.
+  $('#employeeTable').hide();
+  $('#feedback').hide();
+  $("#bth-search").click(function (event) {
+    $('#feedback').hide();
     event.preventDefault();
-
     fire_ajax_submit();
-
   });
 
 });
 
 function fire_ajax_submit() {
+  var search = {};
+  let value = $("#search_select option:selected").val();
 
-  var search = {}
-  search["username"] = $("#username").val();
-  //search["email"] = $("#email").val();
+  if (value == "email") {
+    Object.assign(search, { profile: { email: $("#searach_criteria").val() } });
+  }
+  else if (value == "phone") {
+    Object.assign(search, { profile: { phone: $("#searach_criteria").val() } });
+  }
+  else {
+    search[value] = $("#searach_criteria").val();
+  }
 
-  $("#btn-search").prop("disabled", true);
+  var token = $("meta[name='_csrf']").attr("content");
+  var header = $("meta[name='_csrf_header']").attr("content");
+  $(document).ajaxSend(function (e, xhr, options) {
+    xhr.setRequestHeader(header, token);
+  });
 
   $.ajax({
     type: "POST",
@@ -60,24 +38,23 @@ function fire_ajax_submit() {
     cache: false,
     timeout: 600000,
     success: function (data) {
+      $('#tbody_search').remove();
+      $('#employeeTable').show();
 
-      var json = "<h4>Ajax Response</h4><pre>"
-        + JSON.stringify(data, null, 4) + "</pre>";
-      $('#feedback').html(json);
-
-      console.log("SUCCESS : ", data);
-      $("#btn-search").prop("disabled", false);
-
+      $('#employeeTable').append(`
+      <tbody id='tbody_search'>${data.map(n => `
+        <tr>
+          <td>${n.id}</td>
+          <td>${n.name}</td>
+          <td>${n.profile.phone}</td>
+          <td>${n.profile.email}</td>
+        </tr>`).join('')}
+      </tbody>
+    `);
     },
     error: function (e) {
-
-      var json = "<h4>Ajax Response</h4><pre>"
-        + e.responseText + "</pre>";
-      $('#feedback').html(json);
-
-      console.log("ERROR : ", e);
-      $("#btn-search").prop("disabled", false);
-
+      $('#employeeTable').hide();
+      $('#feedback').show();
     }
   });
 

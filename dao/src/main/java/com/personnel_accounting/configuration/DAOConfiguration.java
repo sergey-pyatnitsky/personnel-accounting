@@ -49,7 +49,7 @@ public class DAOConfiguration {
         Properties hibernateProperties = new Properties();
         hibernateProperties.setProperty("hibernate.dialect", env.getProperty("hb.hibernate.dialect"));
         hibernateProperties.setProperty("hibernate.show_sql", env.getProperty("hb.hibernate.show_sql"));
-
+        hibernateProperties.setProperty("hibernate.enable_lazy_load_no_trans", "true");
         sessionFactory.setHibernateProperties(hibernateProperties);
 
         return sessionFactory;

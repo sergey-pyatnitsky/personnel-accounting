@@ -1,96 +1,68 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <title>Телефонный справочник</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <link th:href="@{/resources/css/profile-page.css}" rel="stylesheet" type="text/css">
-  <script th:src="@{/resources/js/telephone-directory.js}"></script>
+  <script type="text/javascript" th:src="@{/resources/js/telephone-directory.js}"></script>
 </head>
+
 <body>
-<div th:replace="~{fragments/navbar :: navbar}"></div>
-<div class="container" style="min-height: 500px">
-  <div class="starter-template">
-    <h1>Телефонный справочник</h1>
-    <form th:action="@{/api/telephone-directory/search}" method="post" class="form-horizontal" id="search-form">
-      <div class="row mt-5">
-        <div class="col-2">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-              Параметры поиска
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li><a class="dropdown-item" href="#">Действие</a></li>
-              <li><a class="dropdown-item" href="#">Другое действие</a></li>
-              <li><a class="dropdown-item" href="#">Что-то еще здесь</a></li>
-            </ul>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div class="container" style="min-height: 500px">
+    <div class="starter-template">
+      <h1>Телефонный справочник</h1>
+      <form class="form-horizontal" id="search-form">
+        <div class="row mt-5">
+          <div class="col-3">
+            <div class="form-group">
+              <select class="form-control" id="search_select">
+                <option value="name">По имени</option>
+                <option value="phone">По номеру телефона</option>
+                <option value="email">По адресу почты</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-5">
+            <input type="text" class="form-control" id="searach_criteria" />
+          </div>
+          <div class="col-1">
+            <button type="submit" id="bth-search" class="btn btn-primary btn-lg">Поиск</button>
           </div>
         </div>
-        <div class="col-5">
-          <input type="text" class="form-control" id="username" />
+        <div class="row mt-5">
+          <div class="col">
+            <table class="table table-hover table-bordered results" id="employeeTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th class="col-md-4 col-xs-5">ФИО</th>
+                  <th class="col-md-4 col-xs-4">Телефон</th>
+                  <th class="col-md-4 col-xs-3">Почта</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
         </div>
-        <div class="col-1">
-          <button type="submit" id="bth-search" class="btn btn-primary btn-lg">Search</button>
-        </div>
+      </form>
+      <div id="feedback">
+        <p>Не найдено!</p>
       </div>
-      <div class="row mt-5">
-        <div class="col">
-          <span class="counter pull-right"></span>
-          <table class="table table-hover table-bordered results">
-            <thead>
-            <tr>
-              <th>#</th>
-              <th class="col-md-4 col-xs-5">ФИО</th>
-              <th class="col-md-4 col-xs-4">Телефон</th>
-              <th class="col-md-4 col-xs-3">Почта</th>
-            </tr>
-            <tr class="warning no-result">
-              <td colspan="4"><i class="fa fa-warning"></i>Не найдено</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Vatanay Özbeyli</td>
-              <td>UI & UX</td>
-              <td>Istanbul</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Burak Özkan</td>
-              <td>Software Developer</td>
-              <td>Istanbul</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Egemen Özbeyli</td>
-              <td>Purchasing</td>
-              <td>Kocaeli</td>
-            </tr>
-            <tr>
-              <th scope="row">4</th>
-              <td>Engin Kızıl</td>
-              <td>Sales</td>
-              <td>Bozuyük</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </form>
-    <div id="feedback"></div>
+    </div>
   </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
-        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
-        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
-        crossorigin="anonymous"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-</div>
 </body>
+
 </html>

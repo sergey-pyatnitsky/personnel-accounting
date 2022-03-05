@@ -12,6 +12,9 @@ public interface ProfileDAO {
     Profile findByPhone(String phone);
     Profile findByEmail(String email);
 
+    List<Profile> findByPhonePart(String phonePart);//TODO test
+    List<Profile> findByEmailPart(String emailPart);//TODO test
+
     Profile save(Profile profile);
     Profile update(Profile profile);
     boolean removeById(Long id);

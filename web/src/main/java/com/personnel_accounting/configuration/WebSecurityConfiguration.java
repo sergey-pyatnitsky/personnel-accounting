@@ -30,7 +30,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/resources/**").permitAll()
                 .anyRequest().authenticated().and()
                 .formLogin().loginPage("/login").permitAll().and()
-                .logout().logoutSuccessUrl("/login?logout").permitAll();
+                .logout().logoutSuccessUrl("/login?logout").permitAll().and()
+                .csrf().disable().cors();
     }
 
 }

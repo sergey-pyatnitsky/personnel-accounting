@@ -69,6 +69,24 @@ public class ProfileDAOImpl implements ProfileDAO {
     }
 
     @Override
+    public List<Profile> findByPhonePart(String phonePart) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "from Profile where phone like:phonePart");
+        query.setParameter("phonePart", "%" + phonePart + "%");
+        return query.list();
+    }
+
+    @Override
+    public List<Profile> findByEmailPart(String emailPart) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "from Profile where email like:emailPart");
+        query.setParameter("emailPart", "%" + emailPart + "%");
+        return query.list();
+    }
+
+    @Override
     public Profile save(Profile profile) {
         Session session = sessionFactory.getCurrentSession();
         session.saveOrUpdate(profile);

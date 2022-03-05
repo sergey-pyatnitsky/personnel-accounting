@@ -12,6 +12,10 @@ public interface EmployeeService {
     Employee addProfileData(Employee employee, Profile profile);
     Profile findProfileByEmployee(Employee employee);
 
+    List<Employee> findByNamePart(String namePart);//TODO test
+    List<Employee> findByPhonePart(String phonePart);//TODO test
+    List<Employee> findByEmailPart(String emailPart);//TODO test
+
     ReportCard saveReportCard(ReportCard reportCard);
     ReportCard mergeReportCard(ReportCard reportCard);
 

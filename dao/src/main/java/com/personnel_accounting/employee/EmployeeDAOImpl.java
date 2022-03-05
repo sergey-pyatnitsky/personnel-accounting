@@ -2,6 +2,7 @@ package com.personnel_accounting.employee;
 
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -44,6 +45,15 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
+    public List<Employee> findByNamePart(String namePart) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "from Employee where name like:namePart");
+        query.setParameter("namePart", "%" + namePart + "%");
+        return query.list();
+    }
+
+    @Override
     public List<Employee> findByActive(boolean isActive) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(
@@ -68,6 +78,15 @@ public class EmployeeDAOImpl implements EmployeeDAO {
                 "from Employee where department = :department");
         query.setParameter("department", department);
         return query.list();
+    }
+
+    @Override
+    public Employee findByProfile(Profile profile) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "from Employee where profile = :profile");
+        query.setParameter("profile", profile);
+        return (Employee) query.getSingleResult();
     }
 
     @Override

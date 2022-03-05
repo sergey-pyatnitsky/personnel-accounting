@@ -1,12 +1,10 @@
 package com.personnel_accounting.controller;
 
-import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.employee.EmployeeService;
-import com.personnel_accounting.entity.AjaxResponseBody;
-import com.personnel_accounting.entity.SearchCriteria;
 import com.personnel_accounting.entity.dto.EmployeeDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.personnel_accounting.entity.dto.ProfileDTO;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +16,8 @@ import java.util.stream.Collectors;
 
 @RestController
 public class EmployeeRESTController {
-    private EmployeeService employeeService;
-    private ConversionService conversionService;
+    private final EmployeeService employeeService;
+    private final ConversionService conversionService;
 
     public EmployeeRESTController(EmployeeService employeeService, ConversionService conversionService) {
         this.employeeService = employeeService;
@@ -27,22 +25,34 @@ public class EmployeeRESTController {
     }
 
     @PostMapping("/api/telephone-directory/search")
-    public ResponseEntity<?> getSearchResultViaAjax(@RequestBody String search, Errors errors) {
-        AjaxResponseBody result = new AjaxResponseBody();
-        //If error, just return a 400 bad request, along with the error message
-        if (errors.hasErrors()) {
-            result.setMsg(errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
-            return ResponseEntity.badRequest().body(result);
+    public ResponseEntity<?> getSearchResultViaAjax(@RequestBody EmployeeDTO employeeDTO, Errors errors) {
+        List<EmployeeDTO> employees = null;
+        if (employeeDTO.getName() != null) {
+            employees = employeeService.findByNamePart(employeeDTO.getName()).stream()
+                    .map(employee -> {
+                        EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                        tempEmployee.setProfile(conversionService.convert(
+                                employeeService.findProfileByEmployee(employee), ProfileDTO.class));
+                        return tempEmployee;
+                    }).collect(Collectors.toList());
+        } else if (employeeDTO.getProfile().getPhone() != null) {
+            employees = employeeService.findByPhonePart(employeeDTO.getProfile().getPhone()).stream()
+                    .map(employee -> {
+                        EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                        tempEmployee.setProfile(conversionService.convert(
+                                employeeService.findProfileByEmployee(employee), ProfileDTO.class));
+                        return tempEmployee;
+                    }).collect(Collectors.toList());
+        } else if (employeeDTO.getProfile().getEmail() != null) {
+            employees = employeeService.findByEmailPart(employeeDTO.getProfile().getEmail()).stream()
+                    .map(employee -> {
+                        EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                        tempEmployee.setProfile(conversionService.convert(
+                                employeeService.findProfileByEmployee(employee), ProfileDTO.class));
+                        return tempEmployee;
+                    }).collect(Collectors.toList());
         }
-        List<EmployeeDTO> employees = employeeService.findByName(search).stream()
-                .map(employee -> conversionService.convert(employee, EmployeeDTO.class)).collect(Collectors.toList());
-        if (employees.isEmpty()) {
-            result.setMsg("no user found!");
-        } else {
-            result.setMsg("success");
-        }
-        result.setResult(employees);
-
-        return ResponseEntity.ok(result);
+        return employees != null && !employees.isEmpty() ? new ResponseEntity<>(employees, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

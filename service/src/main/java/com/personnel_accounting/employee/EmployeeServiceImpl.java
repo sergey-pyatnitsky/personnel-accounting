@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -60,6 +61,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public Profile findProfileByEmployee(Employee employee) {
         return profileDAO.find(employeeDAO.find(employee.getId()).getProfile().getId());
+    }
+
+    @Override
+    public List<Employee> findByNamePart(String namePart) {
+        return employeeDAO.findByNamePart(namePart.trim());
+    }
+
+    @Override
+    public List<Employee> findByPhonePart(String phonePart) {
+        return profileDAO.findByPhonePart(phonePart.trim()).stream()
+                .map(employeeDAO::findByProfile).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Employee> findByEmailPart(String emailPart) {
+        return profileDAO.findByEmailPart(emailPart.trim()).stream()
+                .map(employeeDAO::findByProfile).collect(Collectors.toList());
     }
 
     @Override

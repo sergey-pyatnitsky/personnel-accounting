@@ -2,6 +2,7 @@ package com.personnel_accounting.employee;
 
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.User;
 
 import java.util.List;
@@ -10,9 +11,11 @@ public interface EmployeeDAO {
     Employee find(Long id);
     List<Employee> findAll();
     List<Employee> findByName(String name);
+    List<Employee> findByNamePart(String namePart);//TODO test
     List<Employee> findByActive(boolean isActive);
     Employee findByUser(User user);
     List<Employee> findByDepartment(Department department);
+    Employee findByProfile(Profile profile);//TODO test
 
     Employee save(Employee employee);
     List<Employee> save(List<Employee> employees);
