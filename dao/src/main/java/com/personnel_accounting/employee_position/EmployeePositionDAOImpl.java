@@ -98,6 +98,40 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
     }
 
     @Override
+    public boolean activate(EmployeePosition employeePosition) {
+        Session session = sessionFactory.getCurrentSession();
+        employeePosition = (EmployeePosition) session.merge(employeePosition);
+        if (employeePosition == null) return false;
+        else if (employeePosition.isActive()) return true;
+        else {
+            try {
+                employeePosition.setActive(true);
+                session.saveOrUpdate(employeePosition);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean inactivate(EmployeePosition employeePosition) {
+        Session session = sessionFactory.getCurrentSession();
+        employeePosition = (EmployeePosition) session.merge(employeePosition);
+        if (employeePosition == null) return false;
+        else if (!employeePosition.isActive()) return true;
+        else {
+            try {
+                employeePosition.setActive(false);
+                session.saveOrUpdate(employeePosition);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public boolean removeById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         EmployeePosition employeePosition = session.get(EmployeePosition.class, id);

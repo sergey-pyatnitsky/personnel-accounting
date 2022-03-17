@@ -4,37 +4,54 @@ $(document).ready(function () {
   $("#bth-search").click(function (event) {
     $('#feedback').hide();
     event.preventDefault();
-    fire_ajax_submit();
+    search_employee();
   });
 
 });
 
-function fire_ajax_submit() {
-  var search = {};
+function search_employee() {
   let value = $("#search_select option:selected").val();
 
-  if (value == "email") {
-    Object.assign(search, { profile: { email: $("#searach_criteria").val() } });
-  }
-  else if (value == "phone") {
-    Object.assign(search, { profile: { phone: $("#searach_criteria").val() } });
-  }
-  else {
-    search[value] = $("#searach_criteria").val();
-  }
+  if (value == "email") search_by_email($("#searach_criteria").val());
+  else if (value == "phone") search_by_phone($("#searach_criteria").val());
+  else search_by_name($("#searach_criteria").val());
+}
 
-  var token = $("meta[name='_csrf']").attr("content");
-  var header = $("meta[name='_csrf_header']").attr("content");
-  $(document).ajaxSend(function (e, xhr, options) {
-    xhr.setRequestHeader(header, token);
-  });
-
+function search_by_email(search_value) {
   $.ajax({
     type: "POST",
     contentType: "application/json",
-    url: "/api/telephone-directory/search",
-    data: JSON.stringify(search),
-    dataType: 'json',
+    url: "/api/employee/telephone-directory/search/by_email/" + search_value,
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+      $('#tbody_search').remove();
+      $('#employeeTable').show();
+
+      $('#employeeTable').append(`
+        <tbody id='tbody_search'>${data.map(n => `
+          <tr>
+            <td>${n.id}</td>
+            <td>${n.name}</td>
+            <td>${n.profile.phone}</td>
+            <td>${n.profile.email}</td>
+          </tr>`).join('')}
+        </tbody>
+      `);
+    },
+    error: function (error) {
+      console.log(error);
+      $('#employeeTable').hide();
+      $('#feedback').show();
+    }
+  });
+}
+
+function search_by_phone(search_value) {
+  $.ajax({
+    type: "POST",
+    contentType: "application/json",
+    url: "/api/employee/telephone-directory/search/by_phone/" + search_value,
     cache: false,
     timeout: 600000,
     success: function (data) {
@@ -52,10 +69,40 @@ function fire_ajax_submit() {
       </tbody>
     `);
     },
-    error: function (e) {
+    error: function (error) {
+      console.log(error);
       $('#employeeTable').hide();
       $('#feedback').show();
     }
   });
+}
 
+function search_by_name(search_value) {
+  $.ajax({
+    type: "POST",
+    contentType: "application/json",
+    url: "/api/employee/telephone-directory/search/by_name/" + search_value,
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+      $('#tbody_search').remove();
+      $('#employeeTable').show();
+
+      $('#employeeTable').append(`
+      <tbody id='tbody_search'>${data.map(n => `
+        <tr>
+          <td>${n.id}</td>
+          <td>${n.name}</td>
+          <td>${n.profile.phone}</td>
+          <td>${n.profile.email}</td>
+        </tr>`).join('')}
+      </tbody>
+    `);
+    },
+    error: function (error) {
+      console.log(error);
+      $('#employeeTable').hide();
+      $('#feedback').show();
+    }
+  });
 }

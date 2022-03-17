@@ -17,6 +17,10 @@
     text-align:center;
     border-radius:5px
 }
+
+.reg_input{
+    text-align:left;
+}
 .login-block h1,.login-block h6
 {
     font-family:Open Sans,sans-serif;

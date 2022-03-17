@@ -41,11 +41,11 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     }
 
     @Override
-    public Department findByName(String name) {
+    public List<Department> findByName(String name) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("from Department where name = :nameDepartment");
         query.setParameter("nameDepartment", name);
-        return (Department) query.getSingleResult();
+        return query.getResultList();
     }
 
     @Override

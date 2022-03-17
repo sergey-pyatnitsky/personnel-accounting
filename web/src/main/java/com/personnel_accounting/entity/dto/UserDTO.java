@@ -7,7 +7,6 @@ import lombok.Data;
 public class UserDTO {
     private String username;
     private String password;
-    private String repeatPassword;
     private Role role;
     private boolean isActive;
 }

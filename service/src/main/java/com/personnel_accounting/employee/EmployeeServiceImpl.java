@@ -1,6 +1,7 @@
 package com.personnel_accounting.employee;
 
 import com.personnel_accounting.domain.*;
+import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.profile.ProfileDAO;
 import com.personnel_accounting.report_card.ReportCardDAO;
@@ -8,6 +9,7 @@ import com.personnel_accounting.task.TaskDAO;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,12 +19,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final TaskDAO taskDAO;
     private final ReportCardDAO reportCardDAO;
     private final ProfileDAO profileDAO;
+    private final EmployeePositionDAO employeePositionDAO;
 
-    public EmployeeServiceImpl(EmployeeDAO employeeDAO, TaskDAO taskDAO, ReportCardDAO reportCardDAO, ProfileDAO profileDAO) {
+    public EmployeeServiceImpl(EmployeeDAO employeeDAO, TaskDAO taskDAO, ReportCardDAO reportCardDAO, ProfileDAO profileDAO, EmployeePositionDAO employeePositionDAO) {
         this.employeeDAO = employeeDAO;
         this.taskDAO = taskDAO;
         this.reportCardDAO = reportCardDAO;
         this.profileDAO = profileDAO;
+        this.employeePositionDAO = employeePositionDAO;
     }
 
     @Override
@@ -121,7 +125,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public boolean removeById(Long id) {
+    public boolean removeById(Long id) { //TODO test
+        Date date = new Date(System.currentTimeMillis());
+        Employee employee = employeeDAO.find(id);
+        employeePositionDAO.findByEmployee(employee)
+                .forEach(employeePosition -> {
+                    employeePosition.setActive(false);
+                    employeePosition.setModifiedDate(date);
+                    employeePosition.setEndDate(date);
+                });
+        List<Task> tasks = taskDAO.findByAssignee(employee);
+        tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.IN_PROGRESS).collect(Collectors.toList())
+                .forEach(task -> {
+                    task.setModifiedDate(date);
+                    task.setAssignee(null);
+                    task.setTaskStatus(TaskStatus.OPEN);
+                });
+        tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.DONE).collect(Collectors.toList())
+                .forEach(task -> {
+                    task.setModifiedDate(date);
+                    task.setTaskStatus(TaskStatus.CLOSED);
+                    task.setAssignee(null);
+                });
         return employeeDAO.removeById(id);
     }
 
@@ -130,13 +155,35 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeDAO.remove(employee);
     }
 
-    @Override
+    @Override //TODO test
     public boolean inactivate(Employee employee) {
+        Date date = new Date(System.currentTimeMillis());
+        employeePositionDAO.findByEmployee(employee).forEach(employeePosition -> {
+            employeePosition.setModifiedDate(date);
+            employeePosition.setActive(false);
+        });
+        List<Task> tasks = taskDAO.findByAssignee(employee);
+        tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.IN_PROGRESS).collect(Collectors.toList())
+                .forEach(task -> {
+                    task.setModifiedDate(date);
+                    task.setAssignee(null);
+                    task.setTaskStatus(TaskStatus.OPEN);
+                });
+        tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.DONE).collect(Collectors.toList())
+                .forEach(task -> {
+                    task.setModifiedDate(date);
+                    task.setTaskStatus(TaskStatus.CLOSED);
+                    task.setAssignee(null);
+                });
         return employeeDAO.inactivate(employee);
     }
 
-    @Override
+    @Override //TODO test
     public boolean activate(Employee employee) {
+        employeePositionDAO.findByEmployee(employee).forEach(employeePosition -> {
+            employeePosition.setModifiedDate(new Date(System.currentTimeMillis()));
+            employeePosition.setActive(true);
+        });
         return employeeDAO.activate(employee);
     }
 

@@ -1,0 +1,38 @@
+package com.personnel_accounting.controller.PageController;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class PageController {
+
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "authorization/authorization";
+    }
+
+    @GetMapping("/logout")
+    public String showLogoutPage() {
+        return "authorization/authorization";
+    }
+
+    @GetMapping("/")
+    public String showMainPage() {
+        return "main-page/main-page";
+    }
+
+    @GetMapping("/profile")
+    public String showProfile(){
+        return "profile-page";
+    }
+
+    @GetMapping("/registration")
+    public String showRegistrationPage() {
+        return "authorization/registration";
+    }
+
+    @GetMapping("/telephone-directory")
+    public String getTelephoneDirectory(){
+        return "telephone-directory";
+    }
+}

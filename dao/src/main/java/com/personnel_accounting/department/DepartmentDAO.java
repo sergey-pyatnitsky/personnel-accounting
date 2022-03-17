@@ -8,7 +8,7 @@ public interface DepartmentDAO {
     Department find(Long id);
     List<Department> findByActive(boolean isActive);
     List<Department> findAll();
-    Department findByName(String name);
+    List<Department> findByName(String name);
 
     Department save(Department department);
     List<Department> save(List<Department> departments);

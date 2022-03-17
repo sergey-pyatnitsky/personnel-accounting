@@ -5,6 +5,9 @@ import com.personnel_accounting.domain.*;
 import java.util.List;
 
 public interface DepartmentService {
+    Department addDepartment(Department department);
+    boolean closeDepartment(Department department);
+
     List<Project> findProjects(Department department);
     List<Employee> findEmployees(Department department);
     Employee assignToDepartment(Employee employee, Department department);
@@ -19,11 +22,12 @@ public interface DepartmentService {
     Department find(Long id);
     List<Department> findByActive(boolean isActive);
     List<Department> findAll();
-    Department findByName(String name);
+    List<Department> findByName(String name);
 
     Department save(Department department);
     Department update(Department department);
     boolean remove(Department department);
+    boolean removeById(Long id);
     boolean inactivate(Department department);
     boolean activate(Department department);
 }

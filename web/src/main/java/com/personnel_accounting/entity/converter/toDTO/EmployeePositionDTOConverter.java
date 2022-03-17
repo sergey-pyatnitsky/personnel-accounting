@@ -11,6 +11,10 @@ public class EmployeePositionDTOConverter implements Converter<EmployeePosition,
         EmployeePositionDTO employeePositionDTO = new EmployeePositionDTO();
         employeePositionDTO.setId(source.getId());
         employeePositionDTO.setActive(source.isActive());
+        if(source.getStartDate() != null)
+            employeePositionDTO.setStart_date(source.getStartDate().toString());
+        if(source.getEndDate() != null)
+            employeePositionDTO.setEnd_date(source.getEndDate().toString());
         return employeePositionDTO;
     }
 }

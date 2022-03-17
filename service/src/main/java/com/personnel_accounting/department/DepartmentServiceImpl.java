@@ -3,12 +3,17 @@ package com.personnel_accounting.department;
 import com.personnel_accounting.domain.*;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
+import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.project.ProjectDAO;
+import com.personnel_accounting.task.TaskDAO;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
@@ -17,15 +22,42 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final EmployeeDAO employeeDAO;
     private final EmployeePositionDAO employeePositionDAO;
     private final PositionDAO positionDAO;
+    private final TaskDAO taskDAO;
 
     public DepartmentServiceImpl(DepartmentDAO departmentDAO, ProjectDAO projectDAO,
                                  EmployeeDAO employeeDAO, EmployeePositionDAO employeePositionDAO,
-                                 PositionDAO positionDAO) {
+                                 PositionDAO positionDAO, TaskDAO taskDAO) {
         this.departmentDAO = departmentDAO;
         this.projectDAO = projectDAO;
         this.employeeDAO = employeeDAO;
         this.employeePositionDAO = employeePositionDAO;
         this.positionDAO = positionDAO;
+        this.taskDAO = taskDAO;
+    }
+
+    @Override //TODO test
+    public Department addDepartment(Department department) {
+        return departmentDAO.findByName(department.getName())
+                .stream().noneMatch(obj -> obj.getEndDate() == null)
+                ? departmentDAO.save(department)
+                : department;
+    }
+
+    @Override //TODO test
+    public boolean closeDepartment(Department department) {
+        Department tempDepartment = departmentDAO.update(department);
+        if (tempDepartment.getStartDate() == null)
+            return departmentDAO.remove(tempDepartment);
+        else {
+            List<Project> projects = projectDAO.findByDepartment(tempDepartment);
+            if (projects.size() == 0 || projects.stream().noneMatch(obj -> obj.getEndDate() == null)) {
+                tempDepartment.setEndDate(new Date(System.currentTimeMillis()));
+                tempDepartment.setModifiedDate(new Date(System.currentTimeMillis()));
+                departmentDAO.save(tempDepartment);
+                return true;
+            }
+            return false;
+        }
     }
 
     @Override
@@ -41,11 +73,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional
     public Employee assignToDepartment(Employee employee, Department department) {
-        if(employee.getDepartment() == null){
+        if (employee.getDepartment() == null) {
             employee.setDepartment(department);
             return employeeDAO.save(employee);
-        }
-        else if (!employee.getDepartment().getId().equals(department.getId())) {
+        } else if (!employee.getDepartment().getId().equals(department.getId())) {
             List<EmployeePosition> employeePositions = employeePositionDAO.findByEmployee(employee);
             employeePositions.forEach(obj -> obj.setActive(false));
             employeePositionDAO.save(employeePositions);
@@ -86,7 +117,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public Department findByName(String name) {
+    public List<Department> findByName(String name) {
         return departmentDAO.findByName(name);
     }
 
@@ -106,12 +137,31 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public boolean removeById(Long id) {
+        return departmentDAO.removeById(id);
+    }
+
+    @Override //TODO test
     public boolean inactivate(Department department) {
+        department.setModifiedDate(new Date(System.currentTimeMillis()));
+        projectDAO.findByDepartment(department).forEach(project -> {
+            taskDAO.findByProject(project).forEach(task -> task.setTaskStatus(TaskStatus.CLOSED));
+            employeePositionDAO.findByProject(project).forEach(employeePositionDAO::inactivate);
+            projectDAO.inactivate(project);
+        });
         return departmentDAO.inactivate(department);
     }
 
-    @Override
+    @Override //TODO test
     public boolean activate(Department department) {
+        department.setModifiedDate(new Date(System.currentTimeMillis()));
+        department.setStartDate(new Date(System.currentTimeMillis()));
+
+        List<Project> projects = projectDAO.findByDepartment(department);
+        projects.forEach(project -> {
+            employeePositionDAO.findByProject(project).forEach(employeePositionDAO::activate);
+            projectDAO.activate(project);
+        });
         return departmentDAO.activate(department);
     }
 

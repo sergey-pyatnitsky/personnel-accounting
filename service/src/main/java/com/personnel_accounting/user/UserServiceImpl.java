@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(User user, String name, Role role) {
+    public boolean registerUser(User user, String name, Role role) { //FIXME test
         User tempUser = userDAO.find(user.getUsername());
         if (tempUser == null) {
             user = userDAO.save(user);
@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
                 Employee employee = new Employee(name, false, user, new Profile());
                 employeeDAO.save(employee);
             }
-            return user;
-        } else return tempUser;
+            return true;
+        } else return false;
     }
 
     @Override
@@ -84,6 +84,11 @@ public class UserServiceImpl implements UserService {
         List<User> users = new ArrayList<>();
         authorities.forEach(obj -> users.add(userDAO.find(obj.getUsername())));
         return users;
+    }
+
+    @Override
+    public Role findRoleByUsername(String username) { //TODO test
+        return authorityDAO.find(username).getRole();
     }
 
     @Override

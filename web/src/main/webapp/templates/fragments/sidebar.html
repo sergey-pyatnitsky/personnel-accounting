@@ -1,30 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+
 <body>
-<nav th:fragment="sidebar" id="sidebar" class="navbar navbar-expand-xll navbar-light bg-light sidebar">
+  <nav th:fragment="sidebar" id="sidebar" class="navbar navbar-expand-xll navbar-light bg-light sidebar">
     <ul class="list-unstyled components mb-5" id="menu-list">
-        <li>
-            <a href="registration.html"> Homepage</a>
-        </li>
-        <li>
-            <a href="registration.html"> Dashboard</a>
-        </li>
-        <li>
-            <a href="registration.html"> Friends</a>
-        </li>
-        <li>
-            <a href="registration.html"> Subcription</a>
-        </li>
-        <li>
-            <a href="registration.html"> Settings</a>
-        </li>
-        <li>
-            <a href="registration.html"> Information</a>
-        </li>
-        <li>
-            <a href="/telephone-directory">Телефонный справочник</a>
-        </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+          aria-expanded="false">Пользователи
+          <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a id="activate-user">Активация</a></li>
+          <li><a id="edit-user">Редактирование</a></li>
+          <li><a id="view-user">Просмотр</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+          aria-expanded="false">Отделы
+          <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a id="add-department">Создание</a></li>
+          <li><a id="edit-department">Редактирование</a></li>
+          <li><a id="activate-department">Активация</a></li>
+          <li><a id="view-department">Просмотр</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+          aria-expanded="false">Проекты
+          <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a id="add-project">Создание</a></li>
+          <li><a id="edit-project">Редактирование</a></li>
+          <li><a id="activate-project">Акцивацияя</a></li>
+          <li><a id="view-project">Просмотр</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+          aria-expanded="false">Задачи
+          <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a id="add-task">Создание</a></li>
+          <li><a id="edit-task">Редактирование</a></li>
+          <li><a id="view-task">Просмотр</a></li>
+        </ul>
+      </li>
+      <li>
+        <a id="my-tasks">Мои задачи</a>
+      </li>
+      <li>
+        <a href="/telephone-directory">Телефонный справочник</a>
+      </li>
     </ul>
-</nav>
+  </nav>
 </body>
+
 </html>
