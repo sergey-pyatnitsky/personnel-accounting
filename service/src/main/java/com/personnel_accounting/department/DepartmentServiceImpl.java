@@ -1,6 +1,10 @@
 package com.personnel_accounting.department;
 
-import com.personnel_accounting.domain.*;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.EmployeePosition;
+import com.personnel_accounting.domain.Position;
+import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
@@ -12,8 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
@@ -143,7 +145,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override //TODO test
     public boolean inactivate(Department department) {
-        department.setModifiedDate(new Date(System.currentTimeMillis()));
         projectDAO.findByDepartment(department).forEach(project -> {
             taskDAO.findByProject(project).forEach(task -> task.setTaskStatus(TaskStatus.CLOSED));
             employeePositionDAO.findByProject(project).forEach(employeePositionDAO::inactivate);
@@ -154,9 +155,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override //TODO test
     public boolean activate(Department department) {
-        department.setModifiedDate(new Date(System.currentTimeMillis()));
-        department.setStartDate(new Date(System.currentTimeMillis()));
-
         List<Project> projects = projectDAO.findByDepartment(department);
         projects.forEach(project -> {
             employeePositionDAO.findByProject(project).forEach(employeePositionDAO::activate);

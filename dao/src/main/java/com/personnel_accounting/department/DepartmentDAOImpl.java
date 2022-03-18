@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
 import java.util.List;
 
 @Repository
@@ -98,13 +99,14 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         }
     }
 
-    @Override
+    @Override //FIXME test
     public boolean inactivateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Department department = session.get(Department.class, id);
         if (department == null) return false;
         else if (department.isActive()) {
             try {
+                department.setModifiedDate(new Date(System.currentTimeMillis()));
                 department.setActive(false);
                 session.saveOrUpdate(department);
             } catch (Exception e) {
@@ -114,7 +116,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         return true;
     }
 
-    @Override
+    @Override //FIXME test
     public boolean inactivate(Department department) {
         Session session = sessionFactory.getCurrentSession();
         department = (Department) session.merge(department);
@@ -122,6 +124,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         else if (!department.isActive()) return true;
         else {
             try {
+                department.setModifiedDate(new Date(System.currentTimeMillis()));
                 department.setActive(false);
                 session.saveOrUpdate(department);
             } catch (Exception e) {
@@ -131,13 +134,16 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         return true;
     }
 
-    @Override
+    @Override //FIXME test
     public boolean activateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Department department = session.get(Department.class, id);
         if (department == null) return false;
         else if (!department.isActive()) {
             try {
+                Date date = new Date(System.currentTimeMillis());
+                department.setModifiedDate(date);
+                if(department.getCreateDate() == null) department.setCreateDate(date);
                 department.setActive(true);
                 session.saveOrUpdate(department);
             } catch (Exception e) {
@@ -147,7 +153,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         return true;
     }
 
-    @Override
+    @Override //FIXME test
     public boolean activate(Department department) {
         Session session = sessionFactory.getCurrentSession();
         department = (Department) session.merge(department);
@@ -155,6 +161,9 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         else if (department.isActive()) return true;
         else {
             try {
+                Date date = new Date(System.currentTimeMillis());
+                department.setModifiedDate(date);
+                if(department.getCreateDate() == null) department.setCreateDate(date);
                 department.setActive(true);
                 session.saveOrUpdate(department);
             } catch (Exception e) {

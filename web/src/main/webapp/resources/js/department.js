@@ -79,7 +79,7 @@ function show_edit_department() {
               <tr>
                 <th class="col-1">#</th>
                 <th class="col-4">Наименование</th>
-                <th class="col-2">Дата открытия</th>
+                <th class="col-2" style="width: 15%">Дата открытия</th>
                 <th class="col-2">Активация</th>
                 <th class="col-2">Действие</th>
               </tr>
@@ -151,7 +151,7 @@ function close_department(departmentId, current_element) {
     data: JSON.stringify(department),
     cache: false,
     timeout: 600000,
-    success: function (data) {
+    success: function () {
       $('.alert').empty();
       $('.alert').append(`<div class="alert alert-success" role="alert">
         Отдел с ID ` + department.id + ` удалён</div>`);
@@ -218,7 +218,7 @@ function show_activate_department() {
                 <th class="col-1">#</th>
                 <th class="col-4">Наименование</th>
                 <th class="col-2">Дата открытия</th>
-                <th class="col-2">Активация</th>
+                <th class="col-2" style="width: 15%">Активация</th>
                 <th class="col-2">Действие</th>
               </tr>
             </thead>

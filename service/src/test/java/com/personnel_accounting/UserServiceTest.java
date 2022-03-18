@@ -102,7 +102,7 @@ public class UserServiceTest {
     public void registerUser() {
         logger.info("START registerUser");
         userService.remove(secondUser);
-        secondUser = userService.registerUser(secondUser, "Иванов Иван Иванович", Role.EMPLOYEE);
+        //secondUser = userService.registerUser(secondUser, "Иванов Иван Иванович", Role.EMPLOYEE);
 
         Assert.assertEquals(secondUser.getUsername(), "employee");
         Assert.assertEquals(secondUser.getPassword(), "123qwerty");

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
 import java.util.List;
 
 @Repository
@@ -107,13 +108,14 @@ public class ProjectDAOImpl implements ProjectDAO {
         }
     }
 
-    @Override
+    @Override //FIXME test
     public boolean inactivateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Project project = session.get(Project.class, id);
         if (project == null) return false;
         else if (project.isActive()) {
             try {
+                project.setModifiedDate(new Date(System.currentTimeMillis()));
                 project.setActive(false);
                 session.saveOrUpdate(project);
             } catch (Exception e) {
@@ -123,7 +125,7 @@ public class ProjectDAOImpl implements ProjectDAO {
         return true;
     }
 
-    @Override
+    @Override //FIXME test
     public boolean inactivate(Project project) {
         Session session = sessionFactory.getCurrentSession();
         project = (Project) session.merge(project);
@@ -131,6 +133,7 @@ public class ProjectDAOImpl implements ProjectDAO {
         else if (!project.isActive()) return true;
         else {
             try {
+                project.setModifiedDate(new Date(System.currentTimeMillis()));
                 project.setActive(false);
                 session.saveOrUpdate(project);
             } catch (Exception e) {
@@ -140,13 +143,17 @@ public class ProjectDAOImpl implements ProjectDAO {
         return true;
     }
 
-    @Override
+    @Override //FIXME test
     public boolean activateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Project project = session.get(Project.class, id);
         if (project == null) return false;
         else if (!project.isActive()) {
             try {
+                Date date = new Date(System.currentTimeMillis());
+                project.setActive(true);
+                project.setModifiedDate(date);
+                if(project.getStartDate() == null) project.setStartDate(date);
                 project.setActive(true);
                 session.saveOrUpdate(project);
             } catch (Exception e) {
@@ -156,7 +163,7 @@ public class ProjectDAOImpl implements ProjectDAO {
         return true;
     }
 
-    @Override
+    @Override //FIXME test
     public boolean activate(Project project) {
         Session session = sessionFactory.getCurrentSession();
         project = (Project) session.merge(project);
@@ -164,7 +171,10 @@ public class ProjectDAOImpl implements ProjectDAO {
         else if (project.isActive()) return true;
         else {
             try {
+                Date date = new Date(System.currentTimeMillis());
                 project.setActive(true);
+                project.setModifiedDate(date);
+                if(project.getStartDate() == null) project.setStartDate(date);
                 session.saveOrUpdate(project);
             } catch (Exception e) {
                 return false;

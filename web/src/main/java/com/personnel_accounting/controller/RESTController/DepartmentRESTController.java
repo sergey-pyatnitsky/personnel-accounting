@@ -39,7 +39,7 @@ public class DepartmentRESTController {
                 : new ResponseEntity<>(conversionService.convert(department, DepartmentDTO.class), HttpStatus.OK);
     }
 
-    @GetMapping("/api/department/get_all/open")
+    @GetMapping("/api/department/get_all/open") //FIXME convert to dto
     public ResponseEntity<?> getAllOpenDepartments() {
         return new ResponseEntity<>(
                 departmentService.findAll()
@@ -49,7 +49,7 @@ public class DepartmentRESTController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/api/department/get_all/closed")
+    @GetMapping("/api/department/get_all/closed") //FIXME convert to dto
     public ResponseEntity<?> getAllClosedDepartments() {
         return new ResponseEntity<>(
                 departmentService.findAll()
