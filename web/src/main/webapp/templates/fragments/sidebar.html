@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
 
 <body>
   <nav th:fragment="sidebar" id="sidebar" class="navbar navbar-expand-xll navbar-light bg-light sidebar">
     <ul class="list-unstyled components mb-5" id="menu-list">
-      <li class="dropdown">
+      <li class="dropdown" sec:authorize="hasAuthority('SUPER_ADMIN')">
         <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
           aria-expanded="false">Пользователи
           <span class="caret"></span></a>
@@ -14,7 +14,7 @@
           <li><a id="view-user">Просмотр</a></li>
         </ul>
       </li>
-      <li class="dropdown">
+      <li class="dropdown" sec:authorize="hasAuthority('ADMIN')">
         <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
           aria-expanded="false">Отделы
           <span class="caret"></span></a>
@@ -25,7 +25,7 @@
           <li><a id="view-department">Просмотр</a></li>
         </ul>
       </li>
-      <li class="dropdown">
+      <li class="dropdown" sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD')">
         <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
           aria-expanded="false">Проекты
           <span class="caret"></span></a>
@@ -36,7 +36,7 @@
           <li><a id="view-project">Просмотр</a></li>
         </ul>
       </li>
-      <li class="dropdown">
+      <li class="dropdown" sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER')">
         <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
           aria-expanded="false">Задачи
           <span class="caret"></span></a>
@@ -46,7 +46,7 @@
           <li><a id="view-task">Просмотр</a></li>
         </ul>
       </li>
-      <li>
+      <li sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'EMPLOYEE')">
         <a id="my-tasks">Мои задачи</a>
       </li>
       <li>
