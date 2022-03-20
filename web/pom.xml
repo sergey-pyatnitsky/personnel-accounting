@@ -12,63 +12,59 @@
     <artifactId>web</artifactId>
     <packaging>war</packaging>
     <properties>
+        <service.version>1.0-SNAPSHOT</service.version>
+        <spring-webmvc.version>5.3.16</spring-webmvc.version>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+        <thymeleaf-spring5.version>3.0.15.RELEASE</thymeleaf-spring5.version>
+        <spring-security-web.version>5.6.2</spring-security-web.version>
+        <spring-security-config.version>5.6.2</spring-security-config.version>
+        <spring-security-taglibs.version>5.6.2</spring-security-taglibs.version>
+        <thymeleaf-extras-springsecurity5.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity5.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
         <dependency>
+            <groupId>com.personnel_accounting</groupId>
+            <artifactId>service</artifactId>
+            <version>${service.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>5.3.14</version>
+            <version>${spring-webmvc.version}</version>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <version>${javax.servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>com.personnel_accounting</groupId>
-            <artifactId>service</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf-spring5</artifactId>
-            <version>3.0.13.RELEASE</version>
+            <version>${thymeleaf-spring5.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.6.1</version>
+            <version>${spring-security-web.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>5.6.1</version>
+            <version>${spring-security-config.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
-            <version>5.6.1</version>
+            <version>${spring-security-taglibs.version}</version>
         </dependency>
-
-        <!--<dependency>
-            <groupId>org.thymeleaf.extras</groupId>
-            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
-            <version>3.1.0.M1</version>
-        </dependency>-->
-
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity5</artifactId>
-            <version>3.0.4.RELEASE</version>
+            <version>${thymeleaf-extras-springsecurity5.version}</version>
         </dependency>
     </dependencies>
 </project>
