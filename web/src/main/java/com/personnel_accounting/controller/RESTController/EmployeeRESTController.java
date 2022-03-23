@@ -1,9 +1,12 @@
 package com.personnel_accounting.controller.RESTController;
 
 import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeService;
+import com.personnel_accounting.entity.dto.DepartmentDTO;
 import com.personnel_accounting.entity.dto.EmployeeDTO;
+import com.personnel_accounting.entity.dto.ProjectDTO;
 import com.personnel_accounting.entity.dto.UserDTO;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.user.UserService;
@@ -44,14 +47,32 @@ public class EmployeeRESTController {
 
     @GetMapping("/api/employee/get_all")
     public ResponseEntity<?> getEmployees() {
-        List<EmployeeDTO> employees = employeeService.findAll()
-                .stream().map(employee -> {
-                    EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
-                    tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
-                    tempEmployee.getUser().setRole(userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
-                    return tempEmployee;
-                }).collect(Collectors.toList());
-        return new ResponseEntity<>(employees, HttpStatus.OK);
+        return new ResponseEntity<>(
+                employeeService.findAll()
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.getUser().setRole(userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
+                            return tempEmployee;
+                        }).collect(Collectors.toList())
+                        .stream().filter(employeeDTO ->
+                                employeeDTO.getUser().getRole() != Role.SUPER_ADMIN
+                                        && employeeDTO.getUser().getRole() != Role.ADMIN).collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/api/employee/get_all/admins")
+    public ResponseEntity<?> getAllAdmins() {
+        return new ResponseEntity<>(
+                employeeService.findAll()
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.getUser().setRole(userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
+                            return tempEmployee;
+                        }).collect(Collectors.toList())
+                        .stream().filter(employeeDTO -> employeeDTO.getUser().getRole() == Role.ADMIN).collect(Collectors.toList()),
+                HttpStatus.OK);
     }
 
     @DeleteMapping("/api/employee/remove/{id}")

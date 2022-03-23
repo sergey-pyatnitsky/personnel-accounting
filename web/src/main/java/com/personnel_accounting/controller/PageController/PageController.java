@@ -22,7 +22,7 @@ public class PageController {
     }
 
     @GetMapping("/profile")
-    public String showProfile(){
+    public String showProfilePage(){
         return "profile-page";
     }
 
@@ -32,7 +32,12 @@ public class PageController {
     }
 
     @GetMapping("/telephone-directory")
-    public String getTelephoneDirectory(){
+    public String getTelephoneDirectoryPage(){
         return "telephone-directory";
+    }
+
+    @GetMapping("/user")
+    public String getUserPage(){
+        return "user";
     }
 }

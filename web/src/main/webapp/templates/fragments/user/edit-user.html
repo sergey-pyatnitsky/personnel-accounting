@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
+
+<body>
+<div class="container-fluid" th:fragment="edit-user" id="content-edit-user">
+  <h3 class="mb-4">Редактирование пользователей</h3>
+  <div class="alert"></div>
+  <div th:replace="~{fragments/user/radio-user :: radio-user}"></div>
+  <div class="row" id="edit_users_table" style="display: none;">
+    <div class="col">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th class="col-1">#</th>
+          <th class="col-2">Логин</th>
+          <th class="col-3">ФИО</th>
+          <th class="col-2">Роль</th>
+          <th class="col-1">Активация</th>
+          <th class="col-2">Действие</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Изменение пользователя</h5>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="inputNameEditModal">ФИО</label>
+              <input type="text" class="form-control" id="inputNameEditModal" placeholder="Отдел Java разработки">
+            </div>
+            <div class="form-group">
+              <label for="roleSelectEditModal">Роль пользователя</label><br>
+              <select class="form-control" id="roleSelectEditModal">
+                <option value="Администратор" sec:authorize="hasAuthority('SUPER_ADMIN')">Администратор</option>
+                <option value="Глава отдела">Глава отдела</option>
+                <option value="Проектный менеджер">Проектный менеджер</option>
+                <option value="Сотрудник">Сотрудник</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-primary" id="modal_save" data-dismiss="modal">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

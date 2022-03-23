@@ -22,7 +22,7 @@
 <body>
   <div th:replace="~{fragments/navbar :: navbar}"></div>
   <div class="d-flex align-items-start my-own-container">
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div th:replace="~{fragments/sidebar/sidebar :: sidebar}"></div>
     <div id="content" class="p-4 p-md-5 pt-5">
       <h2 class="mb-4">Sidebar #04</h2>
       <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>

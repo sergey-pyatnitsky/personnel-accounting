@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
+
+<body>
+<nav th:fragment="sidebar" id="sidebar" class="navbar navbar-expand-xll navbar-light bg-light sidebar">
+  <ul class="list-unstyled components mb-5" id="menu-list">
+    <a role="button" href="/user" sec:authorize="hasAnyAuthority('SUPER_ADMIN', 'ADMIN')">Сотрудники</a>
+    <a role="button" href="/department" sec:authorize="hasAuthority('ADMIN')">Отделы</a>
+    <a role="button" href="/project" sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD')">Проекты</a>
+    <a role="button" href="/task"
+       sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER')">Задачи</a>
+    <a role="button" href="/my-task"
+       sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'EMPLOYEE')">Мои задачи</a>
+    <a role="button" href="/telephone-directory"
+       sec:authorize="hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'EMPLOYEE')">Телефонный
+      справочник</a>
+  </ul>
+</nav>
+</body>
+
+</html>
