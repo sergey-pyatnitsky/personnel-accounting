@@ -72,7 +72,6 @@ $(document).ready(function () {
           get_employees();
           show_edit_user_content("1", employees);
         }
-
       });
     });
 
@@ -191,6 +190,7 @@ function show_view_user_content(radio, array) {
 }
 
 function show_alert(radio, array) {
+  $(".alert").replaceWith(`<div class="alert"></div>`);
   if (radio == "1" && array == "") {
     $(".alert").replaceWith(`
       <div class="alert alert-warning" role="alert">Список пользователей пуст!</div>`);
