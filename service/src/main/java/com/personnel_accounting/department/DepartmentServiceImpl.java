@@ -40,7 +40,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override //TODO test
     public Department addDepartment(Department department) {
         return departmentDAO.findByName(department.getName())
-                .stream().noneMatch(obj -> obj.getEndDate() == null)
+                .stream().allMatch(obj -> obj.getEndDate() != null)
                 ? departmentDAO.save(department)
                 : department;
     }

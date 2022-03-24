@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+
+<body>
+<div class="container-fluid p-4 p-md-5 pt-5" th:fragment="activate-department" id="content-activate-department">
+  <h3 class="mb-4">Активация отделов</h3>
+  <div class="alert"></div>
+  <div class="row" id="activate_departments_table" style="display: none;">
+    <div class="col">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th class="col-1">#</th>
+          <th class="col-4">Наименование</th>
+          <th class="col-2">Дата открытия</th>
+          <th class="col-2" style="width: 15%">Активация</th>
+          <th class="col-2">Действие</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>

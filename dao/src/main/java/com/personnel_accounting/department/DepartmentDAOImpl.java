@@ -163,7 +163,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
             try {
                 Date date = new Date(System.currentTimeMillis());
                 department.setModifiedDate(date);
-                if(department.getCreateDate() == null) department.setCreateDate(date);
+                if(department.getStartDate() == null) department.setStartDate(date);
                 department.setActive(true);
                 session.saveOrUpdate(department);
             } catch (Exception e) {

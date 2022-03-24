@@ -40,4 +40,7 @@ public class PageController {
     public String getUserPage(){
         return "user";
     }
+
+    @GetMapping("/department")
+    public String getDepartmentPage(){return "department";}
 }

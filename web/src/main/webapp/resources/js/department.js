@@ -1,10 +1,15 @@
+let open_departments = null, close_departments = null;
+
 $(document).ready(function () {
+  hide_preloader();
+  hideAllContent();
+
   $("#add-department").click(function (event) {
     event.preventDefault();
-    clearHelloBlock();
-    show_add_department();
+    show_add_department_content();
 
     $("body").on("click", "#department_save_btn", function (event) {
+      event.stopImmediatePropagation();
       event.preventDefault();
       add_department();
     });
@@ -12,8 +17,8 @@ $(document).ready(function () {
 
   $("#edit-department").click(function (event) {
     event.preventDefault();
-    clearHelloBlock();
-    show_edit_department();
+    get_open_department();
+    show_edit_department_content("1", open_departments);
 
     let current_row = null;
     $("body").on('show.bs.modal', "#departmentEditModal", function (event) {
@@ -29,152 +34,212 @@ $(document).ready(function () {
     });
 
     $("body").on("click", "#close_department_btn", function () {
-      close_department($($(this).parent()).parent().find("#departmentId").text(), $($(this).parent()).parent());
+      close_department($($(this).parent()).parent().find("#departmentId").text());
+      $($(this).parent()).parent().remove();
     });
   });
 
   $("#activate-department").click(function (event) {
     event.preventDefault();
-    clearHelloBlock();
-    show_activate_department();
+    event.stopImmediatePropagation();
+    get_open_department();
+    show_activate_department_content("1", open_departments);
 
-    let current_row = null;
     $("body").on('click', "#activate_department_btn", function () {
-      current_row = $($(this).parent()).parent();
-      activate_department(current_row);
+      activate_department($($(this).parent()).parent());
     });
   });
 
   $("#view-department").click(function (event) {
     event.preventDefault();
-    clearHelloBlock();
-    show_view_open_department();
+    get_open_department();
+    show_view_department_content("1", open_departments);
 
     $("body").on('click', 'input[name="department_radio"]', function () {
-      if ($(this).val() == "1") show_view_open_department()
-      else show_view_closed_department();
+      if ($(this).val() == "1") {
+        get_open_department();
+        show_view_department_content("1", open_departments)
+      }
+      else {
+        get_close_department();
+        show_view_department_content("2", close_departments);
+      }
     });
   });
 });
 
-function clearHelloBlock() {
-  $("#content").empty();
+function show_add_department_content() {
+  hideAllContent();
+  $("#content-add-department").show();
+  $('#departmentNameInput').val('');
+  $(".alert").replaceWith(`<div class="alert"></div>`);
 }
 
-function show_edit_department() {
+function show_edit_department_content(radio, array) {
+  hideAllContent();
+  $("#content-edit-department").show();
+  $("#edit_departments_table").hide();
+  set_radio_checked(radio, "content-edit-department");
+  if (show_alert(radio, array) == true) {
+    $("#edit_departments_table").show();
+    let content = ``;
+    for (let pair of array.entries()) {
+      let department = pair[1];
+      content += `<tr><th scope="row" id='departmentId'>` + department.id + `</th>`;
+      content += `<td id='name'>` + department.name + `</td>`;
+      department.start_date != null
+        ? content += `<td>` + department.start_date + `</td>`
+        : content += `<td>Отдел неактивен</td> `;
+      if (department.active == false)
+        content += `<td id='isActive'>-</td>`;
+      else
+        content += `<td id = 'isActive'> +</td> `;
+      content +=
+        `<td>
+          <button type="button" class="btn btn-danger btn-rounded btn-sm my-0"
+            data-toggle="modal" data-target="#departmentEditModal">Изменить</button>
+          <button type="button" class="btn btn-danger btn-rounded btn-sm my-0" 
+            id='close_department_btn'>Закрыть
+          </button>
+        </td></tr>`;
+    }
+    $("#edit_departments_table tbody").empty();
+    $("#edit_departments_table tbody").append(content);
+  }
+}
+
+function show_activate_department_content(radio, array) {
+  hideAllContent();
+  $("#content-activate-department").show();
+  $("#activate_departments_table").hide();
+  set_radio_checked(radio, "content-activate-department");
+  if (show_alert(radio, array) == true) {
+    $("#activate_departments_table").show();
+    let content = ``;
+    for (let pair of array.entries()) {
+      let department = pair[1];
+      content += `<tr><th scope="row" id='departmentId'>` + department.id + `</th>`;
+      content += `<td>` + department.name + `</td>`;
+      department.start_date != null
+        ? content += `<td>` + department.start_date + `</td>`
+        : content += `<td>Отдел неактивен</td> `;
+      if (department.active == false)
+        content +=
+          `<td id='isActive'>-</td>
+          <td>
+            <button type="button" class="btn btn-danger btn-rounded btn-sm my-0"
+                id="activate_department_btn">Активировать</button>
+          </td>`;
+      else
+        content +=
+          `<td id='isActive'>+</td>
+          <td>
+            <button type="button" class="btn btn-danger btn-rounded btn-sm my-0"
+                id="activate_department_btn">Деактивировать</button>
+          </td></tr>`;
+    }
+    $("#activate_departments_table tbody").empty();
+    $("#activate_departments_table tbody").append(content);
+  }
+}
+
+function show_view_department_content(radio, array) {
+  hideAllContent();
+  $("#content-view-department").show();
+  $("#view_departments_table").hide();
+  set_radio_checked(radio, "content-view-department");
+  if (show_alert(radio, array) == true) {
+    $("#view_departments_table").show();
+    let content = ``;
+    for (let pair of array.entries()) {
+      let department = pair[1];
+      content += `<tr><th scope="row">` + department.id + `</th>`;
+      content += `<td>` + department.name + `</td>`;
+      if (department.active == false)
+        content += `<td>-</td>`;
+      else
+        content += `<td>+</td>`;
+      department.start_date != null
+        ? content += `<td>` + department.start_date + `</td>`
+        : content += `<td>Отдел неактивен</td> `;
+      content += `</tr>`
+    }
+    $("#view_departments_table tbody").empty();
+    $("#view_departments_table tbody").append(content);
+  }
+}
+
+function add_department() {
+  show_preloader();
+  let department = {};
+  department.name = $('#departmentNameInput').val();
+  $.ajax({
+    type: "POST",
+    contentType: "application/json",
+    url: "/api/department/add",
+    data: JSON.stringify(department),
+    async: false,
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+      $('.alert').empty();
+      $('.alert').append(`<div class="alert alert-success" role="alert">
+         Отдел "` + data.name + `" с ID ` + data.id + ` создан</div>`);
+      $('#departmentNameInput').val('');
+    },
+    error: function (error) {
+      console.log(error);
+      $('.alert').empty();
+      error.status == 423
+        ? $('.alert').append(`<div class="alert alert-danger" role = "alert">
+      Данный отдел уже существует!</div>`)
+        : $('.alert').append(`<div class="alert alert-danger" role = "alert">
+      Ошибка добавления отдела!</div>`);
+    }
+  });
+  hide_preloader();
+}
+
+function get_open_department() {
+  show_preloader();
   $.ajax({
     type: "GET",
     contentType: "application/json",
     url: "/api/department/get_all/open",
+    async: false,
     cache: false,
     timeout: 600000,
     success: function (data) {
-      let content = `<div class="container-fluid">
-      <h3 class="mb-4">Редактирование отделов</h3>
-      <div class="alert"></div>
-      <div class="row">
-        <div class="col">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th class="col-1">#</th>
-                <th class="col-4">Наименование</th>
-                <th class="col-2" style="width: 15%">Дата открытия</th>
-                <th class="col-2">Активация</th>
-                <th class="col-2">Действие</th>
-              </tr>
-            </thead>
-            <tbody>`;
-      for (let pair of data.entries()) {
-        let department = pair[1];
-        content += `<tr><th scope="row" id='departmentId'>` + department.id + `</th>`;
-        content += `<td id='name'>` + department.name + `</td>`;
-        department.start_date != null
-          ? content += `<td>` + department.start_date + `</td>`
-          : content += `<td>Отдел неактивен</td> `;
-        if (department.active == false)
-          content += `<td id='isActive'>-</td>`;
-        else
-          content += `<td id = 'isActive'> +</td> `;
-        content +=
-          `<td>
-            <button type="button" class="btn btn-danger btn-rounded btn-sm my-0"
-              data-toggle="modal" data-target="#departmentEditModal">Изменить</button>
-            <button type="button" class="btn btn-danger btn-rounded btn-sm my-0" 
-              id='close_department_btn'>Закрыть
-            </button>
-          </td>`;
-        content += `</tr>`
-      }
-      content += `</tbody></table></div></div></div>`;
-      content +=
-        `<div class="modal fade" id="departmentEditModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
-            aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Изменение отдела</h5>
-              </div>
-              <div class="modal-body">
-                <form>
-                  <div class="form-group">
-                    <label>Наименование отдела</label>
-                    <input type="text" class="form-control" id="department_modal_name" placeholder="Отдел Java разработки">
-                  </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                <button type="button" class="btn btn-primary" id="save_department_modal_btn" data-dismiss="modal">Сохранить</button>
-              </div>
-            </div>
-          </div>
-        </div>`;
-      $("#content").append(content);
+      open_departments = data;
     },
     error: function (error) {
       console.log(error);
-      $('.alert').empty();
-      $('.alert').append(`<div class="alert alert-danger"role="alert">
-        Ошибка!</div>`);
     }
   });
+  hide_preloader();
 }
 
-function close_department(departmentId, current_element) {
-  let department = {};
-  department.id = departmentId;
+function get_close_department() {
+  show_preloader();
   $.ajax({
-    type: "DELETE",
+    type: "GET",
     contentType: "application/json",
-    url: "/api/department/close/" + departmentId,
-    data: JSON.stringify(department),
+    url: "/api/department/get_all/closed",
+    async: false,
     cache: false,
     timeout: 600000,
-    success: function () {
-      $('.alert').empty();
-      $('.alert').append(`<div class="alert alert-success" role="alert">
-        Отдел с ID ` + department.id + ` удалён</div>`);
-      current_element.remove();
+    success: function (data) {
+      close_departments = data;
     },
     error: function (error) {
       console.log(error);
-      $('.alert').empty();
-      if (error.status == 423)
-        $('.alert').append(`<div class="alert alert-danger" role = "alert">
-           Данный отдел активен и недоступен  для закрытия!</div>`)
-      else if (error.status == 409)
-        $('.alert').append(`<div class="alert alert-danger" role = "alert">
-           В данном отделе существуют незакрытые проекты и недоступен  для закрытия!</div>`)
-      else
-        $('.alert').append(`<div class="alert alert-danger" role = "alert">
-           Ошибка закрытия отдела!</div>`)
     }
   });
-
+  hide_preloader();
 }
 
 function edit_department(current_row) {
+  show_preloader();
   let department = {};
   department.name = current_row.find('#name').text();
   department.id = current_row.find('#departmentId').text()
@@ -183,6 +248,7 @@ function edit_department(current_row) {
     contentType: "application/json",
     url: "/api/department/edit/" + department.id,
     data: JSON.stringify(department),
+    async: false,
     cache: false,
     timeout: 600000,
     success: function () {
@@ -197,68 +263,11 @@ function edit_department(current_row) {
         Ошибка изменения отдела!</div>`);
     }
   });
-}
-
-function show_activate_department() {
-  $.ajax({
-    type: "GET",
-    contentType: "application/json",
-    url: "/api/department/get_all/open",
-    cache: false,
-    timeout: 600000,
-    success: function (data) {
-      let content = `<div class="container-fluid">
-      <h3 class="mb-4">Активация отделов</h3>
-      <div class="alert"></div>
-      <div class="row">
-        <div class="col">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th class="col-1">#</th>
-                <th class="col-4">Наименование</th>
-                <th class="col-2">Дата открытия</th>
-                <th class="col-2" style="width: 15%">Активация</th>
-                <th class="col-2">Действие</th>
-              </tr>
-            </thead>
-            <tbody>`;
-      for (let pair of data.entries()) {
-        let department = pair[1];
-        content += `<tr><th scope="row" id='departmentId'>` + department.id + `</th>`;
-        content += `<td>` + department.name + `</td>`;
-        department.start_date != null
-          ? content += `<td>` + department.start_date + `</td>`
-          : content += `<td>Отдел неактивен</td> `;
-        if (department.active == false)
-          content +=
-            `<td id='isActive'>-</td>
-            <td>
-              <button type="button" class="btn btn-danger btn-rounded btn-sm my-0"
-                  id="activate_department_btn">Активировать</button>
-            </td>`;
-        else
-          content +=
-            `<td id='isActive'>+</td>
-            <td>
-              <button type="button" class="btn btn-danger btn-rounded btn-sm my-0"
-                  id="activate_department_btn">Деактивировать</button>
-            </td>`;
-        content += `</tr>`
-      }
-      content += `</tbody></table></div></div></div> `;
-      $("#content").append(content);
-    },
-    error: function (error) {
-      console.log(error);
-      $('.alert').empty();
-      $('.alert').append(`<div class="alert alert-danger"role="alert">
-        Ошибка!</div>`);
-    }
-  });
+  hide_preloader();
 }
 
 function activate_department(current_row) {
+  show_preloader();
   let action = current_row.find('#activate_department_btn').text()
   let department = {};
   department.id = current_row.find('#departmentId').text();
@@ -268,6 +277,7 @@ function activate_department(current_row) {
       contentType: "application/json",
       url: "/api/department/activate/" + department.id,
       data: JSON.stringify(department),
+      async: false,
       cache: false,
       timeout: 600000,
       success: function () {
@@ -291,6 +301,7 @@ function activate_department(current_row) {
       contentType: "application/json",
       url: "/api/department/inactivate/" + department.id,
       data: JSON.stringify(department),
+      async: false,
       cache: false,
       timeout: 600000,
       success: function () {
@@ -309,224 +320,71 @@ function activate_department(current_row) {
       }
     });
   }
+  hide_preloader();
 }
 
-function show_view_open_department() {
-  $.ajax({
-    type: "GET",
-    contentType: "application/json",
-    url: "/api/department/get_all/open",
-    cache: false,
-    timeout: 600000,
-    success: function (data) {
-      let content = '';
-      if (data == "") {
-        content =
-          `<div class="container-fluid">
-            <h3 class="mb-4">Просмотр отделов</h3>
-            <div class="alert alert-warning" role="alert">Список пуст!</div>
-          </div>
-          <div class="row">
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="department_radio" id="getOpenDepartmentsRadio" value="1"
-                    checked>
-                  <label class="form-check-label" for="getOpenDepartmentsRadio">Открытые отделы</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="department_radio" id="getClosedDepartmentsRadio"
-                    value="2">
-                  <label class="form-check-label" for="getClosedDepartmentsRadio">Закрытые отделы</label>
-                </div>
-              </div>
-            </div>`;
-      }
-      else {
-        content =
-          `<div class="container-fluid">
-            <h3 class="mb-4">Просмотр отделов</h3>
-            <div class="alert"></div>
-            <div class="row">
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="department_radio" id="getOpenDepartmentsRadio" value="1"
-                    checked>
-                  <label class="form-check-label" for="getOpenDepartmentsRadio">Открытые отделы</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="department_radio" id="getClosedDepartmentsRadio"
-                    value="2">
-                  <label class="form-check-label" for="getClosedDepartmentsRadio">Закрытые отделы</label>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th class="col-1">#</th>
-                      <th class="col-4">Наименование</th>
-                      <th class="col-2">Активация</th>
-                      <th class="col-2">Дата открытия</th>
-                    </tr>
-                  </thead>
-                  <tbody>`;
-        for (let pair of data.entries()) {
-          let department = pair[1];
-          content += `<tr><th scope="row">` + department.id + `</th>`;
-          content += `<td>` + department.name + `</td>`;
-          if (department.active == false)
-            content += `<td>-</td>`;
-          else
-            content += `<td>+</td>`;
-          department.start_date != null
-            ? content += `<td>` + department.start_date + `</td>`
-            : content += `<td>Отдел неактивен</td> `;
-          content += `</tr>`
-        }
-        content += `</tbody></table></div></div></div>`;
-      }
-      clearHelloBlock();
-      $("#content").append(content);
-    },
-    error: function (error) {
-      console.log(error);
-      $('.alert').empty();
-      $('.alert').append(`<div div class="alert alert-danger"role = "alert" >
-          Ошибка!</div>`);
-    }
-  });
-}
-
-function show_view_closed_department() {
-  $.ajax({
-    type: "GET",
-    contentType: "application/json",
-    url: "/api/department/get_all/closed",
-    cache: false,
-    timeout: 600000,
-    success: function (data) {
-      let content = '';
-      if (data == "") {
-        content =
-          `<div class="container-fluid">
-            <h3 class="mb-4">Просмотр отделов</h3>
-            <div class="alert alert-warning" role="alert">Список пуст!</div>
-          </div>
-          <div class="row">
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="department_radio" id="getOpenDepartmentsRadio" 
-                    value="1">
-                  <label class="form-check-label" for="getOpenDepartmentsRadio">Открытые отделы</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="department_radio" id="getClosedDepartmentsRadio"
-                    value="2" checked>
-                  <label class="form-check-label" for="getClosedDepartmentsRadio">Закрытые отделы</label>
-                </div>
-              </div>
-            </div>`;
-      }
-      else {
-        content =
-          `<div class="container-fluid">
-            <h3 class="mb-4">Просмотр отделов</h3>
-            <div class="alert"></div>
-            <div class="row">
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="department_radio" id="getOpenDepartmentsRadio" 
-                    value="1">
-                  <label class="form-check-label" for="getOpenDepartmentsRadio">Открытые отделы</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="department_radio" id="getClosedDepartmentsRadio"
-                    value="2" checked>
-                  <label class="form-check-label" for="getClosedDepartmentsRadio">Закрытые отделы</label>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th class="col-1">#</th>
-                      <th class="col-4">Наименование</th>
-                      <th class="col-2">Дата открытия</th>
-                      <th class="col-2">Дата закрытия</th>
-                    </tr>
-                  </thead>
-                  <tbody>`;
-        for (let pair of data.entries()) {
-          let department = pair[1];
-          content += `<tr><th scope="row" id='departmentId'>` + department.id + `</th>`;
-          content += `<td id='name'>` + department.name + `</td>`;
-          content += `<td>` + department.start_date + `</td> `;
-          content += `<td>` + department.end_date + `</td> `;
-          content += `</tr></tbody>`
-        }
-        content += `</tbody></table></div></div></div>`;
-      }
-      clearHelloBlock();
-      $("#content").append(content);
-    },
-    error: function (error) {
-      console.log(error);
-      $('.alert').empty();
-      $('.alert').append(`<div div class="alert alert-danger"role = "alert" >
-          Ошибка!</div>`);
-    }
-  });
-}
-
-function show_add_department() {
-  $("#content").append(`<div class="container-fluid">
-  <h3 class="mb-4">Добавление отдела</h3>
-  <div class="row alert"></div>
-  <div class="row">
-    <div class="col-5">
-      <form>
-        <div class="form-group">
-          <label>Наименование</label>
-          <input type="text" class="form-control" id="departmentNameInput"
-            placeholder="Отдел Java разработки">
-        </div>
-        <div class="form-group" style="padding-top:5%;">
-          <button class="btn btn-primary btn-block" type="submit" id='department_save_btn'>Сохранить</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>`);
-}
-
-function add_department() {
+function close_department(departmentId) {
+  show_preloader();
   let department = {};
-  department.name = $('#departmentNameInput').val();
+  department.id = departmentId;
   $.ajax({
-    type: "POST",
+    type: "DELETE",
     contentType: "application/json",
-    url: "/api/department/add",
+    url: "/api/department/close/" + departmentId,
     data: JSON.stringify(department),
     cache: false,
     timeout: 600000,
-    success: function (data) {
+    success: function () {
       $('.alert').empty();
       $('.alert').append(`<div class="alert alert-success" role="alert">
-         Отдел "` + data.name + `" с ID ` + data.id + ` создан</div>`);
-      $('#departmentNameInput').val('');
+        Отдел с ID ` + department.id + ` удалён</div>`);
     },
     error: function (error) {
       console.log(error);
       $('.alert').empty();
-      error.status == 423
-        ? $('.alert').append(`<div class="alert alert-danger" role = "alert">
-      Данный отдел уже существует!</div>`)
-        : $('.alert').append(`<div class="alert alert-danger" role = "alert">
-      Ошибка добавления отдела!</div>`);
+      if (error.status == 423)
+        $('.alert').append(`<div class="alert alert-danger" role = "alert">
+           Данный отдел активен и недоступен  для закрытия!</div>`)
+      else if (error.status == 409)
+        $('.alert').append(`<div class="alert alert-danger" role = "alert">
+           В данном отделе существуют незакрытые проекты и недоступен  для закрытия!</div>`)
+      else
+        $('.alert').append(`<div class="alert alert-danger" role = "alert">
+           Ошибка закрытия отдела!</div>`)
     }
   });
+  hide_preloader();
+}
+
+function show_alert(radio, array) {
+  $(".alert").replaceWith(`<div class="alert"></div>`);
+  if (radio == "1" && array == "") {
+    $(".alert").replaceWith(`
+      <div class="alert alert-warning" role="alert">Список открытых отделов пуст!</div>`);
+    return false;
+  }
+  else if (radio == "2" && array == "") {
+    $(".alert").replaceWith(`
+      <div class="alert alert-warning" role="alert">Список закрытых отделов пуст!</div>`);
+    return false;
+  }
+  else if (array == null) {
+    $(".alert").replaceWith(`
+      <div class="alert alert-danger"role="alert">Ошибка!</div>`);
+    return false;
+  }
+  else return true;
+}
+
+function set_radio_checked(radio, context) {
+  radio == "1"
+    ? $('#' + context + ' input[name=department_radio][value="1"]').prop("checked", true)
+    : $('#' + context + ' input[name=department_radio][value="2"]').prop("checked", true);
+}
+
+function hideAllContent() {
+  $("#content-add-department").hide();
+  $("#content-edit-department").hide();
+  $("#content-activate-department").hide();
+  $("#content-view-department").hide();
 }
