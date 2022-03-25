@@ -1,12 +1,18 @@
 package com.personnel_accounting.controller.RESTController;
 
+import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.User;
+import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.entity.dto.DepartmentDTO;
 import com.personnel_accounting.entity.dto.ProjectDTO;
+import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.project.ProjectService;
+import com.personnel_accounting.user.UserService;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,15 +28,23 @@ import java.util.stream.Collectors;
 @RestController
 public class ProjectRESTController {
     private final ProjectService projectService;
+    private final UserService userService;
+    private final EmployeeService employeeService;
     private final ConversionService conversionService;
 
-    public ProjectRESTController(ProjectService projectService, ConversionService conversionService) {
+    public ProjectRESTController(ProjectService projectService, UserService userService, EmployeeService employeeService, ConversionService conversionService) {
         this.projectService = projectService;
+        this.userService = userService;
+        this.employeeService = employeeService;
         this.conversionService = conversionService;
     }
 
     @PostMapping("/api/project/add")
-    public ResponseEntity<?> addProject(@RequestBody ProjectDTO projectDTO) {
+    public ResponseEntity<?> addProject(@RequestBody ProjectDTO projectDTO, Authentication authentication) {
+        User user = userService.find(authentication.getName());
+        if(userService.getAuthorityByUsername(user.getUsername()).getRole() == Role.DEPARTMENT_HEAD)
+            projectDTO.getDepartment().setId(projectService.findDepartmentByUser(user).getId());
+        employeeService.findByUser(user);
         Project project = conversionService.convert(projectDTO, Project.class);
         project = projectService.addProject(project, projectDTO.getDepartment().getId());
         return project.getId() == null

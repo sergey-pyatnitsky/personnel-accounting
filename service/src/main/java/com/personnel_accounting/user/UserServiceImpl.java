@@ -26,6 +26,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Authority getAuthorityByUsername(String username) {
+        return authorityDAO.find(username);
+    }
+
+    @Override
     public User changeAuthData(User user, String password) {
         if (!Objects.equals(user.getPassword(), password)) {
             user.setPassword(password);

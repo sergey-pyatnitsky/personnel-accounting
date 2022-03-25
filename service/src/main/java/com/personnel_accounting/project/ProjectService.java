@@ -5,10 +5,13 @@ import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.EmployeePosition;
 import com.personnel_accounting.domain.Position;
 import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.User;
 
 import java.util.List;
 
 public interface ProjectService {
+    Department findDepartmentByUser(User user);
+
     Project addProject(Project project, Long departmentId);
     boolean closeProject(Project project);
 

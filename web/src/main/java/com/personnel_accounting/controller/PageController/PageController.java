@@ -43,4 +43,7 @@ public class PageController {
 
     @GetMapping("/department")
     public String getDepartmentPage(){return "department";}
+
+    @GetMapping("/project")
+    public String getProjectPage(){return "project";}
 }

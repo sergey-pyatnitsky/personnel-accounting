@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
+
+<body>
+<div class="container-fluid p-4 p-md-5 pt-5" th:fragment="edit-project" id="content-edit-project">
+  <h3 class="mb-4">Редактирование проектов</h3>
+  <div class="alert"></div>
+  <div class="row" id="edit_project_table" style="display: none;">
+    <div class="col">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th class="col-1">#</th>
+          <th class="col-4">Наименование</th>
+          <th class="col-4">Отдел</th>
+          <th class="col-1" style="width: 15%">Дата создания</th>
+          <th class="col-1">Активация</th>
+          <th class="col-2">Действие</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal fade" id="projectEditModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Изменение отдела</h5>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="project_modal_name">Наименование проекта</label>
+              <input type="text" class="form-control" id="project_modal_name" placeholder="Отдел Java разработки">
+            </div>
+            <div id="departmentDivSelectEditModal" class="form-group"
+                 sec:authorize="hasAuthority('ADMIN')" th:onload="get_departments()">
+              <label for="departmentSelectEditModal">Отдел</label>
+              <select class="form-control" id="departmentSelectEditModal"></select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-primary" id="save_project_modal_btn" data-dismiss="modal">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

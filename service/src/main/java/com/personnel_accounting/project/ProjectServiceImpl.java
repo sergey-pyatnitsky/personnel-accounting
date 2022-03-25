@@ -7,6 +7,8 @@ import com.personnel_accounting.domain.EmployeePosition;
 import com.personnel_accounting.domain.Position;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.Task;
+import com.personnel_accounting.domain.User;
+import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.position.PositionDAO;
@@ -24,14 +26,17 @@ public class ProjectServiceImpl implements ProjectService {
     private final DepartmentDAO departmentDAO;
     private final EmployeePositionDAO employeePositionDAO;
     private final PositionDAO positionDAO;
+    private final EmployeeDAO employeeDAO;
     private final TaskDAO taskDAO;
 
     public ProjectServiceImpl(ProjectDAO projectDAO, DepartmentDAO departmentDAO,
-                              EmployeePositionDAO employeePositionDAO, PositionDAO positionDAO, TaskDAO taskDAO) {
+                              EmployeePositionDAO employeePositionDAO, PositionDAO positionDAO,
+                              EmployeeDAO employeeDAO, TaskDAO taskDAO) {
         this.projectDAO = projectDAO;
         this.departmentDAO = departmentDAO;
         this.employeePositionDAO = employeePositionDAO;
         this.positionDAO = positionDAO;
+        this.employeeDAO = employeeDAO;
         this.taskDAO = taskDAO;
     }
 
@@ -45,6 +50,11 @@ public class ProjectServiceImpl implements ProjectService {
                 !obj.getDepartment().getId().equals(departmentId) && obj.getDepartment().isActive())
                 ? assignProjectToDepartmentId(project, departmentId)
                 : project;
+    }
+
+    @Override //TODO test
+    public Department findDepartmentByUser(User user) {
+        return employeePositionDAO.findByEmployee(employeeDAO.findByUser(user)).stream().findFirst().get().getDepartment();
     }
 
     @Override //TODO test

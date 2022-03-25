@@ -7,6 +7,8 @@ import com.personnel_accounting.enums.Role;
 import java.util.List;
 
 public interface UserService {
+    Authority getAuthorityByUsername(String username);
+
     User changeAuthData(User user, String password);
     User changeUserRole(User user, Role role);
     boolean registerUser(User user, String name, Role role);
