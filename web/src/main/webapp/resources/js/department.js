@@ -1,8 +1,51 @@
 let open_departments = null, close_departments = null;
+let free_employee = null, assigned_employee = null;
 
 $(document).ready(function () {
   hide_preloader();
   hideAllContent();
+
+  $("#assign-user").click(function (event) {
+    event.preventDefault();
+    get_free_employee();
+    $("#department_column").hide();
+    show_assign_user_content("1", free_employee);
+
+    $("body").on('click', 'input[name="user_radio"]', function () {
+      if ($(this).val() == "1") {
+        $("#department_column").hide();
+        get_free_employee();
+        show_assign_user_content("1", free_employee)
+      }
+      else {
+        $("#department_column").show();
+        get_assigned_employee();
+        show_assign_user_content("2", assigned_employee);
+      }
+    });
+
+    let current_row = null;
+    $("body").on('show.bs.modal', "#assignUserModal", function (event) {
+      current_row = $(event.relatedTarget).closest('tr');
+      let modal = $(this);
+      get_open_department();
+      let content = ``;
+      for (let pair of open_departments.entries()) {
+        let department = pair[1];
+        content += `<option value="` + (pair[0] + 1) + `">` + department.id + `-` + department.name + `</option>`;
+      }
+      $("#departmentSelect").empty();
+      $("#departmentSelect").append(content);
+
+      current_row.find('#department_column').is(':visible') ?
+        modal.find('#departmentSelect select').val(current_row.find('#department_column').text()) : null;
+
+      $("#assign_modal_save_btn").click(function () {
+        current_row.find('#department_column').text($("#departmentSelect option:selected").text());
+        assign_user(current_row, $("#departmentSelect option:selected").text());
+      })
+    });
+  });
 
   $("#add-department").click(function (event) {
     event.preventDefault();
@@ -68,6 +111,33 @@ $(document).ready(function () {
   });
 });
 
+function show_assign_user_content(radio, array) {
+  hideAllContent();
+  $("#content-assign-user").show();
+  $("#assign_users_table").hide();
+  set_radio_checked(radio, "content-assign-user", "user_radio");
+  if (show_user_alert(radio, array) == true) {
+    $("#assign_users_table").show();
+    let content = ``;
+    for (let pair of array.entries()) {
+      let employee = pair[1];
+      content += `<tr><th scope="row" id = "employeeId">` + employee.id + `</th>`;
+      content += `<td id="username">` + employee.user.username + `</td>`;
+      content += `<td>` + employee.name + `</td>`;
+      content += `<td>` + role_enum[employee.user.role] + `</td>`;
+      employee.department != null
+        ? content += `<td id="department_cell">` + employee.department.id + `-` + employee.department.name + `</td>` +
+        `<td><button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal" 
+          data-target="#assignUserModal" id="transfer_user_btn">Перевод</button></td>`
+        : content +=
+        `<td><button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal" 
+          data-target="#assignUserModal" id="transfer_user_btn">Назначить</button></td>`;
+    }
+    $("#assign_users_table tbody").empty();
+    $("#assign_users_table tbody").append(content);
+  }
+}
+
 function show_add_department_content() {
   hideAllContent();
   $("#content-add-department").show();
@@ -79,7 +149,7 @@ function show_edit_department_content(radio, array) {
   hideAllContent();
   $("#content-edit-department").show();
   $("#edit_departments_table").hide();
-  set_radio_checked(radio, "content-edit-department");
+  set_radio_checked(radio, "content-edit-department", "department_radio");
   if (show_alert(radio, array) == true) {
     $("#edit_departments_table").show();
     let content = ``;
@@ -112,7 +182,7 @@ function show_activate_department_content(radio, array) {
   hideAllContent();
   $("#content-activate-department").show();
   $("#activate_departments_table").hide();
-  set_radio_checked(radio, "content-activate-department");
+  set_radio_checked(radio, "content-activate-department", "department_radio");
   if (show_alert(radio, array) == true) {
     $("#activate_departments_table").show();
     let content = ``;
@@ -147,7 +217,7 @@ function show_view_department_content(radio, array) {
   hideAllContent();
   $("#content-view-department").show();
   $("#view_departments_table").hide();
-  set_radio_checked(radio, "content-view-department");
+  set_radio_checked(radio, "content-view-department", "department_radio");
   if (show_alert(radio, array) == true) {
     $("#view_departments_table").show();
     let content = ``;
@@ -195,6 +265,44 @@ function add_department() {
       Данный отдел уже существует!</div>`)
         : $('.alert').append(`<div class="alert alert-danger" role = "alert">
       Ошибка добавления отдела!</div>`);
+    }
+  });
+  hide_preloader();
+}
+
+function get_free_employee() {
+  show_preloader();
+  $.ajax({
+    type: "GET",
+    contentType: "application/json",
+    url: "/api/employee/get_all/free",
+    async: false,
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+      free_employee = data;
+    },
+    error: function (error) {
+      console.log(error);
+    }
+  });
+  hide_preloader();
+}
+
+function get_assigned_employee() {
+  show_preloader();
+  $.ajax({
+    type: "GET",
+    contentType: "application/json",
+    url: "/api/employee/get_all/assigned",
+    async: false,
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+      assigned_employee = data;
+    },
+    error: function (error) {
+      console.log(error);
     }
   });
   hide_preloader();
@@ -264,6 +372,35 @@ function edit_department(current_row) {
     }
   });
   hide_preloader();
+}
+
+function assign_user(current_row, department_text,) {
+  let employee = {}, department = {};
+  Object.assign(employee, { department });
+  employee.id = current_row.find('#employeeId').text();
+  employee.department.id = department_text.split("-")[0];
+  $.ajax({
+    type: "POST",
+    contentType: "application/json",
+    url: "/api/employee/assign/department",
+    data: JSON.stringify(employee),
+    cache: false,
+    timeout: 600000,
+    success: function () {
+      $('.alert').empty();
+      $('.alert').append(`<div class="alert alert-success" role="alert">
+        Пользователь с ID `+ employee.id + ` назначен на отдел с ID ` + employee.department.id + `</div>`);
+      current_row.find('#department_cell').text($("#departmentSelect option:selected").text());
+      if ($("#transfer_user_btn").text() != "Перевод")
+        current_row.remove();
+    },
+    error: function (error) {
+      console.log(error);
+      $('.alert').empty();
+      $('.alert').append(`<div class="alert alert-danger"role="alert">
+        Ошибка назначение пользователя!</div>`);
+    }
+  });
 }
 
 function activate_department(current_row) {
@@ -356,6 +493,26 @@ function close_department(departmentId) {
   hide_preloader();
 }
 
+function show_user_alert(radio, array) {
+  $(".alert").replaceWith(`<div class="alert"></div>`);
+  if (radio == "1" && array == "") {
+    $(".alert").replaceWith(`
+      <div class="alert alert-warning" role="alert">Список свободных сотрудников пуст!</div>`);
+    return false;
+  }
+  else if (radio == "2" && array == "") {
+    $(".alert").replaceWith(`
+      <div class="alert alert-warning" role="alert">Список пользователей пуст!</div>`);
+    return false;
+  }
+  else if (array == null) {
+    $(".alert").replaceWith(`
+      <div class="alert alert-danger"role="alert">Ошибка!</div>`);
+    return false;
+  }
+  else return true;
+}
+
 function show_alert(radio, array) {
   $(".alert").replaceWith(`<div class="alert"></div>`);
   if (radio == "1" && array == "") {
@@ -376,10 +533,10 @@ function show_alert(radio, array) {
   else return true;
 }
 
-function set_radio_checked(radio, context) {
+function set_radio_checked(radio, context, radioID) {
   radio == "1"
-    ? $('#' + context + ' input[name=department_radio][value="1"]').prop("checked", true)
-    : $('#' + context + ' input[name=department_radio][value="2"]').prop("checked", true);
+    ? $('#' + context + ' input[name=' + radioID + '][value="1"]').prop("checked", true)
+    : $('#' + context + ' input[name=' + radioID + '][value="2"]').prop("checked", true);
 }
 
 function hideAllContent() {
@@ -387,4 +544,5 @@ function hideAllContent() {
   $("#content-edit-department").hide();
   $("#content-activate-department").hide();
   $("#content-view-department").hide();
+  $("#content-assign-user").hide();
 }

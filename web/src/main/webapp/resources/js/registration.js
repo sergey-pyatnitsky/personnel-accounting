@@ -2,7 +2,7 @@ $(document).ready(function () {
   $('#reg_button').click(function () {
     if ($("#password").val() != $("#repeat_password").val()) {
       $('.alert_reg').empty();
-      $('.alert_reg').append(`<div class="alert alert-danger"role="alert">
+      $('.alert_reg').append(`<div class="alert alert-danger" role="alert">
       Пароли не совпадают!</div>`);
     }
     else {
@@ -13,7 +13,6 @@ $(document).ready(function () {
 
 function reg_user() {
   let employee = {};
-  //Object.assign(employee, { password: $("#name").val() });
   employee.name = $('#name').val();
   Object.assign(employee, { user: { username: $('#username').val(), password: $("#password").val() } });
 
@@ -33,12 +32,12 @@ function reg_user() {
     timeout: 600000,
     success: function () {
       $('.alert_reg').empty();
-      $('.alert_reg').append(`<div class="alert alert-success"role="alert">
+      $('.alert_reg').append(`<div class="alert alert-success" role="alert">
           Зарегестрировано!</div>`);
     },
     error: function () {
       $('.alert_reg').empty();
-      $('.alert_reg').append(`<div class="alert alert-danger"role="alert">
+      $('.alert_reg').append(`<div class="alert alert-danger" role="alert">
           Данный пользователь уже существует!</div>`);
     }
   });

@@ -1,12 +1,12 @@
 package com.personnel_accounting.controller.RESTController;
 
+import com.personnel_accounting.department.DepartmentService;
+import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
-import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.entity.dto.DepartmentDTO;
 import com.personnel_accounting.entity.dto.EmployeeDTO;
-import com.personnel_accounting.entity.dto.ProjectDTO;
 import com.personnel_accounting.entity.dto.UserDTO;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.user.UserService;
@@ -23,12 +23,14 @@ import java.util.stream.Collectors;
 @RestController
 public class EmployeeRESTController {
     private final EmployeeService employeeService;
+    private final DepartmentService departmentService;
     private final UserService userService;
     private final ConversionService conversionService;
 
-    public EmployeeRESTController(EmployeeService employeeService, UserService userService,
-                                  ConversionService conversionService) {
+    public EmployeeRESTController(EmployeeService employeeService, DepartmentService departmentService,
+                                  UserService userService, ConversionService conversionService) {
         this.employeeService = employeeService;
+        this.departmentService = departmentService;
         this.userService = userService;
         this.conversionService = conversionService;
     }
@@ -73,6 +75,47 @@ public class EmployeeRESTController {
                         }).collect(Collectors.toList())
                         .stream().filter(employeeDTO -> employeeDTO.getUser().getRole() == Role.ADMIN).collect(Collectors.toList()),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("/api/employee/get_all/free")
+    public ResponseEntity<?> getAllFreeEmployees() {
+        return new ResponseEntity<>(
+                employeeService.findAll()
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.getUser().setRole(userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
+                            tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
+                            return tempEmployee;
+                        }).collect(Collectors.toList())
+                        .stream().filter(employeeDTO -> employeeDTO.getDepartment() == null).collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/api/employee/get_all/assigned")
+    public ResponseEntity<?> getAllAssignedEmployees() {
+        return new ResponseEntity<>(
+                employeeService.findAll()
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.getUser().setRole(userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
+                            tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
+                            return tempEmployee;
+                        }).collect(Collectors.toList())
+                        .stream().filter(employeeDTO -> employeeDTO.getDepartment() != null).collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+
+    @PostMapping("/api/employee/assign/department")
+    public ResponseEntity<?> assignEmployeeToDepartment(@RequestBody EmployeeDTO employeeDTO){
+        Employee employee = conversionService.convert(employeeService.find(employeeDTO.getId()), Employee.class);
+        Department department = departmentService.find(employeeDTO.getDepartment().getId());
+        employee.setDepartment(department);
+        employee = departmentService.assignToDepartment(employee, department);
+        return employee.getDepartment().getId().equals(employeeDTO.getDepartment().getId())
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/api/employee/remove/{id}")

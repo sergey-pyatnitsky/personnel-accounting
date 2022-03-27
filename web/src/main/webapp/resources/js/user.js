@@ -1,10 +1,3 @@
-const role_enum = Object.freeze({
-  ADMIN: 'Администратор',
-  DEPARTMENT_HEAD: 'Глава отдела',
-  PROJECT_MANAGER: 'Проектный менеджер',
-  EMPLOYEE: 'Сотрудник'
-});
-
 let employees = null, admins = null;
 
 $(document).ready(function () {
