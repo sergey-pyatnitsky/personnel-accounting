@@ -85,6 +85,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
+    public List<Employee> getEmployeesWithProjectByDepartment(Department department) { //TODO test
+        return employeeDAO.findByDepartment(department)
+                .stream().filter(employee ->
+                    employeePositionDAO.findByEmployee(employee)
+                            .stream().filter(employeePosition -> employeePosition.getProject() != null)
+                            .findFirst().orElse(null) != null
+                ).collect(Collectors.toList());
+    }
+
+    @Override
     public Employee find(Long id) {
         return employeeDAO.find(id);
     }

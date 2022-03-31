@@ -2,7 +2,9 @@ package com.personnel_accounting.controller.RESTController;
 
 import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Position;
 import com.personnel_accounting.entity.dto.DepartmentDTO;
+import com.personnel_accounting.entity.dto.PositionDTO;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,14 @@ public class DepartmentRESTController {
         return department.getId() == null
                 ? new ResponseEntity<>(HttpStatus.LOCKED)
                 : new ResponseEntity<>(conversionService.convert(department, DepartmentDTO.class), HttpStatus.OK);
+    }
+
+    @PostMapping("/api/position/add")
+    public ResponseEntity<?> addPosition(@RequestBody PositionDTO positionDTO) {
+        Position position = departmentService.addPosition(conversionService.convert(positionDTO, Position.class));
+        return position.getId() == null
+                ? new ResponseEntity<>(HttpStatus.LOCKED)
+                : new ResponseEntity<>(position, HttpStatus.OK);
     }
 
     @GetMapping("/api/department/get_all/open")

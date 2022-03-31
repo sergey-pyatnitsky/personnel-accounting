@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
+
+<body>
+<div class="container-fluid p-4 p-md-5 pt-5" th:fragment="assign-user" id="content-assign-user">
+  <h3 class="mb-4">Назначение пользователя на проект</h3>
+  <div class="alert"></div>
+  <div class="row">
+    <div class="col">
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="user_radio" id="assignEmployeeRadio" value="1">
+        <label class="form-check-label" for="assignEmployeeRadio">Назначить сотрудники на проект</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="user_radio" id="removeEmployeeRadio" value="2">
+        <label class="form-check-label" for="removeEmployeeRadio">Снять сотрудника с проекта</label>
+      </div>
+    </div>
+  </div>
+  <div class="row" id="select_department" sec:authorize="hasAuthority('ADMIN')" >
+    <form>
+      <div class="form-group" th:onload="get_departments()">
+        <label for="departmentSelect">Отдел</label>
+        <select class="form-control" id="departmentSelect"></select>
+      </div>
+      <div class="form-group" style="padding-top:5%;">
+        <button class="btn btn-primary btn-block" type="submit" id="get_employee_btn">Загрузить</button>
+      </div>
+    </form>
+  </div>
+  <div class="row" id="assign_users_table" style="display: none;">
+    <div class="col">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th class="col-1">#</th>
+          <th class="col-2">Логин</th>
+          <th class="col-3">ФИО</th>
+          <th class="col-2">Роль</th>
+          <th class="col-3" style="display: none;" id="department_column">Отдел</th>
+          <th class="col-1">Действие</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal fade" id="assignUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header" id="assign_user_to_project" style="display: none;">
+          <h5 class="modal-title">Назначение пользователя на проект</h5>
+        </div>
+        <div class="modal-header" id="remove_user_from_project" style="display: none;">
+          <h5 class="modal-title">Снять пользователя с проекта</h5>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="projectSelect">Выберите проект</label>
+              <select class="form-control" id="projectSelect"></select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-primary" id="assign_modal_save_btn"
+                  data-dismiss="modal">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

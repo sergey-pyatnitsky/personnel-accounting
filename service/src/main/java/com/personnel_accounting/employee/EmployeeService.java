@@ -6,6 +6,8 @@ import com.personnel_accounting.enums.TaskStatus;
 import java.util.List;
 
 public interface EmployeeService {
+    List<Employee> getEmployeesWithProjectByDepartment(Department department);
+
     ReportCard trackTime(ReportCard reportCard);
     Task changeTaskStatus(Task task, TaskStatus taskStatus);
     Task addTaskInProject(Project project, Task task);

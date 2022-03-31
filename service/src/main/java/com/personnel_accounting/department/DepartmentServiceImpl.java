@@ -163,9 +163,12 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departmentDAO.activate(department);
     }
 
-    @Override
+    @Override //TODO test
     public Position addPosition(Position position) {
-        return positionDAO.save(position);
+        return positionDAO.findAll().stream().filter(obj -> obj.getName().equals(position.getName()))
+                .findFirst().orElse(null) == null
+                ? position
+                : positionDAO.save(position);
     }
 
     @Override

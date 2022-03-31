@@ -13,7 +13,6 @@
 
     <properties>
         <lombok.version>1.18.22</lombok.version>
-        <spring-orm.version>5.3.16</spring-orm.version>
         <hibernate-core.version>5.6.5.Final</hibernate-core.version>
     </properties>
 
@@ -22,11 +21,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-            <version>${spring-orm.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>

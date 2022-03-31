@@ -1,6 +1,5 @@
 package com.personnel_accounting.controller.RESTController;
 
-import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeService;
@@ -42,7 +41,7 @@ public class ProjectRESTController {
     @PostMapping("/api/project/add")
     public ResponseEntity<?> addProject(@RequestBody ProjectDTO projectDTO, Authentication authentication) {
         User user = userService.find(authentication.getName());
-        if(userService.getAuthorityByUsername(user.getUsername()).getRole() == Role.DEPARTMENT_HEAD)
+        if (userService.getAuthorityByUsername(user.getUsername()).getRole() == Role.DEPARTMENT_HEAD)
             projectDTO.getDepartment().setId(projectService.findDepartmentByUser(user).getId());
         employeeService.findByUser(user);
         Project project = conversionService.convert(projectDTO, Project.class);
@@ -98,9 +97,11 @@ public class ProjectRESTController {
         project.setName(projectDTO.getName());
         project.setModifiedDate(new Date(System.currentTimeMillis()));
         project = projectService.save(project);
-        if (!Objects.equals(project.getDepartment().getId(), projectDTO.getDepartment().getId())) {
+        if (!Objects.equals(project.getDepartment().getId(), projectDTO.getDepartment().getId())
+                && projectDTO.getDepartment().getId() != null) {
             project = projectService.assignProjectToDepartmentId(project, projectDTO.getDepartment().getId());
-            if (!Objects.equals(project.getDepartment().getId(), projectDTO.getDepartment().getId()))
+            if (!Objects.equals(project.getDepartment().getId(), projectDTO.getDepartment().getId())
+                    && projectDTO.getDepartment().getId() != null)
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>(HttpStatus.OK);

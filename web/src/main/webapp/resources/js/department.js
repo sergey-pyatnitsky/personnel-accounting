@@ -58,6 +58,17 @@ $(document).ready(function () {
     });
   });
 
+  $("#add-position").click(function (event) {
+    event.preventDefault();
+    show_add_position_content();
+
+    $("body").on("click", "#position_save_btn", function (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      add_position();
+    });
+  });
+
   $("#edit-department").click(function (event) {
     event.preventDefault();
     get_open_department();
@@ -142,6 +153,13 @@ function show_add_department_content() {
   hideAllContent();
   $("#content-add-department").show();
   $('#departmentNameInput').val('');
+  $(".alert").replaceWith(`<div class="alert"></div>`);
+}
+
+function show_add_position_content() {
+  hideAllContent();
+  $("#content-add-position").show();
+  $('#positionNameInput').val('');
   $(".alert").replaceWith(`<div class="alert"></div>`);
 }
 
@@ -268,6 +286,34 @@ function add_department() {
     }
   });
   hide_preloader();
+}
+
+function add_position() {
+  let position = {};
+  position.name = $('#positionNameInput').val();
+  $.ajax({
+    type: "POST",
+    contentType: "application/json",
+    url: "/api/position/add",
+    data: JSON.stringify(department),
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+      $('.alert').empty();
+      $('.alert').append(`<div class="alert alert-success" role="alert">
+         Должность "` + data.name + `" с ID ` + data.id + ` создана</div>`);
+      $('#positionNameInput').val('');
+    },
+    error: function (error) {
+      console.log(error);
+      $('.alert').empty();
+      error.status == 423
+        ? $('.alert').append(`<div class="alert alert-danger" role = "alert">
+      Данная должность уже существует!</div>`)
+        : $('.alert').append(`<div class="alert alert-danger" role = "alert">
+      Ошибка добавления должности!</div>`);
+    }
+  });
 }
 
 function get_free_employee() {
@@ -545,4 +591,5 @@ function hideAllContent() {
   $("#content-activate-department").hide();
   $("#content-view-department").hide();
   $("#content-assign-user").hide();
+  $("#content-add-position").hide();
 }

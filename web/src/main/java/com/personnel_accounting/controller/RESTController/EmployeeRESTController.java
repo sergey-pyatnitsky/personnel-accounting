@@ -9,10 +9,12 @@ import com.personnel_accounting.entity.dto.DepartmentDTO;
 import com.personnel_accounting.entity.dto.EmployeeDTO;
 import com.personnel_accounting.entity.dto.UserDTO;
 import com.personnel_accounting.enums.Role;
+import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,13 +26,16 @@ import java.util.stream.Collectors;
 public class EmployeeRESTController {
     private final EmployeeService employeeService;
     private final DepartmentService departmentService;
+    private final ProjectService projectService;
     private final UserService userService;
     private final ConversionService conversionService;
 
     public EmployeeRESTController(EmployeeService employeeService, DepartmentService departmentService,
-                                  UserService userService, ConversionService conversionService) {
+                                  ProjectService projectService, UserService userService,
+                                  ConversionService conversionService) {
         this.employeeService = employeeService;
         this.departmentService = departmentService;
+        this.projectService = projectService;
         this.userService = userService;
         this.conversionService = conversionService;
     }
@@ -55,6 +60,7 @@ public class EmployeeRESTController {
                             EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
                             tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
                             tempEmployee.getUser().setRole(userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
+                            tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
                             return tempEmployee;
                         }).collect(Collectors.toList())
                         .stream().filter(employeeDTO ->
@@ -90,6 +96,29 @@ public class EmployeeRESTController {
                         }).collect(Collectors.toList())
                         .stream().filter(employeeDTO -> employeeDTO.getDepartment() == null).collect(Collectors.toList()),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("/api/employee/get_all/department/{id}")
+    public ResponseEntity<?> getAllEmployeeByDepartment(@PathVariable Long id, Authentication authentication) {
+        Department department;
+        if(id != 0) department = departmentService.find(id);
+        else department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
+        List<Employee> employees = employeeService.findByDepartment(department);
+        return employees.size() != 0
+                ? new ResponseEntity<>(employees, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+
+    @GetMapping("/api/employee/get_with_project/department/{id}")
+    public ResponseEntity<?> getEmployeesWithProjectByDepartment(@PathVariable Long id, Authentication authentication) {
+        Department department;
+        if(id != 0) department = departmentService.find(id);
+        else department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
+
+        List<Employee> employees = employeeService.getEmployeesWithProjectByDepartment(department);
+        return employees.size() != 0
+                ? new ResponseEntity<>(employees, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @GetMapping("/api/employee/get_all/assigned")

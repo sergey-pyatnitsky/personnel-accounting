@@ -54,7 +54,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override //TODO test
     public Department findDepartmentByUser(User user) {
-        return employeePositionDAO.findByEmployee(employeeDAO.findByUser(user)).stream().findFirst().get().getDepartment();
+        return employeeDAO.findByUser(user).getDepartment();
     }
 
     @Override //TODO test

@@ -14,6 +14,7 @@
     <properties>
         <core.version>1.0-SNAPSHOT</core.version>
         <spring-context.version>5.3.16</spring-context.version>
+        <spring-orm.version>5.3.16</spring-orm.version>
         <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
         <HikariCP.version>5.0.1</HikariCP.version>
         <flyway-mysql.version>8.5.4</flyway-mysql.version>
@@ -29,6 +30,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring-context.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring-orm.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
