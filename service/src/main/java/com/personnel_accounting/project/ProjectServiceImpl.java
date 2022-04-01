@@ -9,6 +9,7 @@ import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeDAO;
+import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.position.PositionDAO;
@@ -112,9 +113,11 @@ public class ProjectServiceImpl implements ProjectService {
             if (obj.getProject().getId().equals(project.getId()))
                 return employeePositionDAO.update(obj);
         }
-        return employeePositionDAO.save(
-                new EmployeePosition(false, employee, positionDAO.save(position),
-                        project, project.getDepartment()));
+        EmployeePosition employeePosition = new EmployeePosition(false, employee, positionDAO.save(position),
+                project, project.getDepartment());
+        employeePosition.setActive(true);
+        employeePosition.setStartDate(new Date(System.currentTimeMillis()));
+        return employeePositionDAO.save(employeePosition);
     }
 
     @Override //TODO test
@@ -133,6 +136,9 @@ public class ProjectServiceImpl implements ProjectService {
     public EmployeePosition changeEmployeeStateInProject(EmployeePosition employeePosition, boolean isActive) {
         if (employeePosition.isActive() != isActive) {
             employeePosition.setActive(isActive);
+            Date date = new Date(System.currentTimeMillis());
+            employeePosition.setModifiedDate(date);
+            employeePosition.setEndDate(date);
             return employeePositionDAO.save(employeePosition);
         }
         return employeePositionDAO.update(employeePosition);

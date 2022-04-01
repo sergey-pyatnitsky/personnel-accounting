@@ -5,6 +5,7 @@ import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Position;
 import com.personnel_accounting.entity.dto.DepartmentDTO;
 import com.personnel_accounting.entity.dto.PositionDTO;
+import com.personnel_accounting.entity.dto.ProjectDTO;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -49,6 +51,14 @@ public class DepartmentRESTController {
                 : new ResponseEntity<>(position, HttpStatus.OK);
     }
 
+    @GetMapping("/api/position/get_all")
+    public ResponseEntity<?> getPositions() {
+        List<Position> position = departmentService.findAllPositions();
+        return position.size() == 0
+                ? new ResponseEntity<>(HttpStatus.CONFLICT)
+                : new ResponseEntity<>(position, HttpStatus.OK);
+    }
+
     @GetMapping("/api/department/get_all/open")
     public ResponseEntity<?> getAllOpenDepartments() {
         return new ResponseEntity<>(
@@ -67,6 +77,16 @@ public class DepartmentRESTController {
                         .stream().map(department -> conversionService.convert(department, DepartmentDTO.class))
                         .collect(Collectors.toList()),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("/api/department/projects/open/{id}")
+    public ResponseEntity<?> getAllOpenProjectsByDepartment(@PathVariable Long id) {
+        List<ProjectDTO> projectList = departmentService.findProjects(departmentService.find(id))
+                .stream().filter(obj -> obj.getEndDate() == null).collect(Collectors.toList())
+                .stream().map(project -> conversionService.convert(project, ProjectDTO.class)).collect(Collectors.toList());
+        return projectList.size() != 0
+                ? new ResponseEntity<>(projectList, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @PutMapping("/api/department/activate/{id}")

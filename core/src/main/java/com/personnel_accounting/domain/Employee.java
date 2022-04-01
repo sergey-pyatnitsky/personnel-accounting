@@ -2,6 +2,7 @@ package com.personnel_accounting.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,14 +34,17 @@ public class Employee {
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH}
             , fetch = FetchType.LAZY)
     @JoinColumn(name = "username", unique = true, nullable = false)
+    @ToString.Exclude
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
+    @ToString.Exclude
     private Department department;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id", nullable = false)
+    @ToString.Exclude
     private Profile profile;
 
     @Column(name = "name", nullable = false)
@@ -56,9 +60,11 @@ public class Employee {
     private Date modifiedDate;
 
     @OneToMany(mappedBy = "employee")
+    @ToString.Exclude
     private List<EmployeePosition> employeePositionList;
 
     @OneToMany(mappedBy = "employee")
+    @ToString.Exclude
     private List<ReportCard> reportCardList;
 
     public Employee(String name, boolean isActive, User user, Profile profile) {

@@ -37,7 +37,7 @@
           <th class="col-2">Логин</th>
           <th class="col-3">ФИО</th>
           <th class="col-2">Роль</th>
-          <th class="col-3" style="display: none;" id="department_column">Отдел</th>
+          <th class="col-3">Отдел</th>
           <th class="col-1">Действие</th>
         </tr>
         </thead>
@@ -49,17 +49,19 @@
        aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header" id="assign_user_to_project" style="display: none;">
-          <h5 class="modal-title">Назначение пользователя на проект</h5>
-        </div>
-        <div class="modal-header" id="remove_user_from_project" style="display: none;">
-          <h5 class="modal-title">Снять пользователя с проекта</h5>
+        <div class="modal-header" id="assign_user_to_project">
+          <h5 class="modal-title" id="modal_header_title"></h5>
         </div>
         <div class="modal-body">
+          <div id="modal_alert"></div>
           <form>
             <div class="form-group">
               <label for="projectSelect">Выберите проект</label>
               <select class="form-control" id="projectSelect"></select>
+            </div>
+            <div class="form-group" id="positionSelectDiv">
+              <label for="positionSelect">Выберите должность</label>
+              <select class="form-control" id="positionSelect"></select>
             </div>
           </form>
         </div>

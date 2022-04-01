@@ -3,10 +3,12 @@ package com.personnel_accounting.controller.RESTController;
 import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.EmployeePosition;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.entity.dto.DepartmentDTO;
 import com.personnel_accounting.entity.dto.EmployeeDTO;
+import com.personnel_accounting.entity.dto.EmployeePositionDTO;
 import com.personnel_accounting.entity.dto.UserDTO;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.project.ProjectService;
@@ -26,16 +28,13 @@ import java.util.stream.Collectors;
 public class EmployeeRESTController {
     private final EmployeeService employeeService;
     private final DepartmentService departmentService;
-    private final ProjectService projectService;
     private final UserService userService;
     private final ConversionService conversionService;
 
     public EmployeeRESTController(EmployeeService employeeService, DepartmentService departmentService,
-                                  ProjectService projectService, UserService userService,
-                                  ConversionService conversionService) {
+                                  UserService userService, ConversionService conversionService) {
         this.employeeService = employeeService;
         this.departmentService = departmentService;
-        this.projectService = projectService;
         this.userService = userService;
         this.conversionService = conversionService;
     }
@@ -101,9 +100,15 @@ public class EmployeeRESTController {
     @GetMapping("/api/employee/get_all/department/{id}")
     public ResponseEntity<?> getAllEmployeeByDepartment(@PathVariable Long id, Authentication authentication) {
         Department department;
-        if(id != 0) department = departmentService.find(id);
+        if (id != 0) department = departmentService.find(id);
         else department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
-        List<Employee> employees = employeeService.findByDepartment(department);
+        List<EmployeeDTO> employees = employeeService.findByDepartment(department).stream().map(obj -> {
+            EmployeeDTO employeeDTO = conversionService.convert(obj, EmployeeDTO.class);
+            employeeDTO.setDepartment(conversionService.convert(obj.getDepartment(), DepartmentDTO.class));
+            employeeDTO.setUser(conversionService.convert(obj.getUser(), UserDTO.class));
+            employeeDTO.getUser().setRole(userService.findRoleByUsername(employeeDTO.getUser().getUsername()));
+            return employeeDTO;
+        }).collect(Collectors.toList());
         return employees.size() != 0
                 ? new ResponseEntity<>(employees, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -112,10 +117,17 @@ public class EmployeeRESTController {
     @GetMapping("/api/employee/get_with_project/department/{id}")
     public ResponseEntity<?> getEmployeesWithProjectByDepartment(@PathVariable Long id, Authentication authentication) {
         Department department;
-        if(id != 0) department = departmentService.find(id);
-        else department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
+        if (id != 0) department = departmentService.find(id);
+        else
+            department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
 
-        List<Employee> employees = employeeService.getEmployeesWithProjectByDepartment(department);
+        List<EmployeeDTO> employees = employeeService.getEmployeesWithProjectByDepartment(department).stream().map(obj -> {
+            EmployeeDTO employeeDTO = conversionService.convert(obj, EmployeeDTO.class);
+            employeeDTO.setDepartment(conversionService.convert(obj.getDepartment(), DepartmentDTO.class));
+            employeeDTO.setUser(conversionService.convert(obj.getUser(), UserDTO.class));
+            employeeDTO.getUser().setRole(userService.findRoleByUsername(employeeDTO.getUser().getUsername()));
+            return employeeDTO;
+        }).collect(Collectors.toList());
         return employees.size() != 0
                 ? new ResponseEntity<>(employees, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -137,7 +149,7 @@ public class EmployeeRESTController {
     }
 
     @PostMapping("/api/employee/assign/department")
-    public ResponseEntity<?> assignEmployeeToDepartment(@RequestBody EmployeeDTO employeeDTO){
+    public ResponseEntity<?> assignEmployeeToDepartment(@RequestBody EmployeeDTO employeeDTO) {
         Employee employee = conversionService.convert(employeeService.find(employeeDTO.getId()), Employee.class);
         Department department = departmentService.find(employeeDTO.getDepartment().getId());
         employee.setDepartment(department);
@@ -189,4 +201,5 @@ public class EmployeeRESTController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(employeeDTOList, HttpStatus.OK);
     }
+
 }

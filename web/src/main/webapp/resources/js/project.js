@@ -1,4 +1,4 @@
-let open_projects = null, close_projects = null, departments = null, employee = null;
+let open_projects = null, close_projects = null, departments = null, employee = null, positions = null;
 
 $(document).ready(function () {
   hide_preloader();
@@ -11,43 +11,62 @@ $(document).ready(function () {
   $("#assign-user").click(function (event) {
     event.preventDefault();
     $("#content-assign-user").show();
-    $("#assign_user_to_project").show();
     getEmployeeDataForAssign("1");
-    show_assign_user_content("1");
+    show_assign_user_content("1", employee);
     $("body").on('click', 'input[name="user_radio"]', function () {
       if ($(this).val() == "1") {
-        $("#assign_user_to_project").show();
-        $("#remove_user_from_project").hide();
         getEmployeeDataForAssign("1");
-        show_assign_user_content("1")
+        show_assign_user_content("1", employee);
       }
       else {
-        $("#remove_user_from_project").show();
-        $("#assign_user_to_project").hide();
         getEmployeeDataForAssign("2");
-        show_assign_user_content("2");
+        show_assign_user_content("2", employee);
       }
     });
-
     let current_row = null;
     $("body").on('show.bs.modal', "#assignUserModal", function (event) {
       current_row = $(event.relatedTarget).closest('tr');
       let modal = $(this);
-      get_open_department();
-      let content = ``;
-      for (let pair of open_departments.entries()) {
-        let department = pair[1];
-        content += `<option value="` + (pair[0] + 1) + `">` + department.id + `-` + department.name + `</option>`;
-      }
-      $("#departmentSelect").empty();
-      $("#departmentSelect").append(content);
 
-      current_row.find('#department_column').is(':visible') ?
-        modal.find('#departmentSelect select').val(current_row.find('#department_column').text()) : null;
+      if (current_row.find("#assign_user_btn").text() == "Назначить") {
+        $("#positionSelectDiv").show();
+        get_projects_by_department(current_row.find("#department_cell").text().split("-")[0]);
+        modal.find("#modal_header_title").text("Назначение пользователя на проект");
+        let content = ``;
+        for (let pair of open_projects.entries()) {
+          let project = pair[1];
+          content += `<option value="` + (pair[0] + 1) + `">` + project.id + `-` + project.name + `</option>`;
+        }
+        $("#projectSelect").empty();
+        $("#projectSelect").append(content);
+
+        get_positions();
+        content = ``;
+        for (let pair of positions.entries()) {
+          let position = pair[1];
+          content += `<option value="` + (pair[0] + 1) + `">` + position.id + `-` + position.name + `</option>`;
+        }
+        $("#positionSelect").empty();
+        $("#positionSelect").append(content);
+      } else {
+        get_projects_by_employee(current_row.find("#employeeId").text());
+        modal.find("#modal_header_title").text("Снять пользователя с проекта");
+        let content = ``;
+        for (let pair of open_projects.entries()) {
+          let project = pair[1];
+          content += `<option value="` + (pair[0] + 1) + `">` + project.id + `-` + project.name + `</option>`;
+        }
+        $("#projectSelect").empty();
+        $("#projectSelect").append(content);
+        $("#positionSelectDiv").hide();
+      }
 
       $("#assign_modal_save_btn").click(function () {
-        current_row.find('#department_column').text($("#departmentSelect option:selected").text());
-        assign_user(current_row, $("#departmentSelect option:selected").text());
+        if (current_row.find("#assign_user_btn").text() == "Назначить")
+          assign_user(current_row, $("#projectSelect option:selected").text(),
+            $("#positionSelect option:selected").text());
+        else
+          cancel_user(current_row, $("#projectSelect option:selected").text());
       })
     });
   });
@@ -130,8 +149,17 @@ $(document).ready(function () {
 
 function getEmployeeDataForAssign(value) {
   if ($("#get_employee_btn").length != 0) {
-    $("#get_employee_btn").click(function () {
-      let department_id = $("#departmentSelect option:selected").text().split("-")[0];
+    get_departments();
+    let content = ``;
+    for (let pair of departments.entries()) {
+      let department = pair[1];
+      content += `<option value="` + (pair[0] + 1) + `">` + department.id + `-` + department.name + `</option>`;
+    }
+    $("#select_department #departmentSelect").empty();
+    $("#select_department #departmentSelect").append(content);
+    $("#get_employee_btn").click(function (event) {
+      event.preventDefault();
+      let department_id = $("#select_department #departmentSelect option:selected").text().split("-")[0];
       value == "1" ? getEmployeeByDepartment(department_id) : getEmployeeWithProjectByDepartment(department_id);
     })
   } else {
@@ -144,7 +172,7 @@ function show_assign_user_content(radio, array) {
   $("#content-assign-user").show();
   $("#assign_users_table").hide();
   set_radio_checked(radio, "content-assign-user", "user_radio");
-  if ($("alert").is(':empty')) {
+  if ($('#content-assign-user alert').html() == undefined && show_user_alert(radio, array) == true) {
     $("#assign_users_table").show();
     let content = ``;
     for (let pair of array.entries()) {
@@ -156,7 +184,7 @@ function show_assign_user_content(radio, array) {
       content += `<td id="department_cell">` + employee.department.id + `-` + employee.department.name + `</td>`;
       content += `<td><button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal" 
           data-target="#assignUserModal" id="assign_user_btn">`;
-      radio == "1" ? content += `Перевод` : content += `Снять`;
+      radio == "1" ? content += `Назначить` : content += `Снять`;
       content += `</button></td>`;
 
     }
@@ -165,11 +193,31 @@ function show_assign_user_content(radio, array) {
   }
 }
 
+function show_user_alert(radio, array) {
+  $(".alert").replaceWith(`<div class="alert"></div>`);
+  if (radio == "1" && array == "") {
+    $(".alert").replaceWith(`
+      <div class="alert alert-warning" role="alert">Список свободных сотрудников пуст!</div>`);
+    return false;
+  }
+  else if (radio == "2" && array == "") {
+    $(".alert").replaceWith(`
+      <div class="alert alert-warning" role="alert">Список сотрудников с проектами пуст!</div>`);
+    return false;
+  }
+  else if (array == null) {
+    $(".alert").replaceWith(`
+      <div class="alert alert-danger"role="alert">Ошибка!</div>`);
+    return false;
+  }
+  else return true;
+}
+
 function show_edit_project_content(radio, array) {
   hideAllContent();
   $("#content-edit-project").show();
   $("#edit_project_table").hide();
-  set_radio_checked(radio, "content-edit-project");
+  set_radio_checked(radio, "content-edit-project", "project_radio");
   if (show_alert(radio, array) == true) {
     $("#edit_project_table").show();
     let content = ``;
@@ -202,7 +250,7 @@ function show_activate_project_content(radio, array) {
   hideAllContent();
   $("#content-activate-project").show();
   $("#activate_departments_table").hide();
-  set_radio_checked(radio, "content-activate-project");
+  set_radio_checked(radio, "content-activate-project", "project_radio");
   if (show_alert(radio, array) == true) {
     $("#activate_project_table").show();
     let content = ``;
@@ -238,7 +286,7 @@ function show_view_project_content(radio, array) {
   hideAllContent();
   $("#content-view-project").show();
   $("#view_projects_table").hide();
-  set_radio_checked(radio, "content-view-project");
+  set_radio_checked(radio, "content-view-project", "project_radio");
   if (show_alert(radio, array) == true) {
     $("#view_projects_table").show();
     let content = ``;
@@ -406,6 +454,64 @@ function edit_project(current_row) {
   });
 }
 
+function assign_user(current_row, project_text, position_id) {
+  let employee_position = {}, project = {}, employee = {}, position = {};
+  Object.assign(employee_position, { project });
+  Object.assign(employee_position, { employee });
+  Object.assign(employee_position, { position });
+  employee_position.employee.id = current_row.find('#employeeId').text();
+  employee_position.project.id = project_text.split("-")[0];
+  employee_position.position.id = position_id.split("-")[0];
+  $.ajax({
+    type: "POST",
+    contentType: "application/json",
+    url: "/api/project/assign/employee",
+    data: JSON.stringify(employee_position),
+    cache: false,
+    timeout: 600000,
+    success: function () {
+      $('.alert').empty();
+      $('.alert').append(`<div class="alert alert-success" role="alert">
+        Пользователь с ID `+ employee_position.employee.id +
+        ` назначен на проект с ID ` + employee_position.project.id + `</div>`);
+    },
+    error: function (error) {
+      console.log(error);
+      $('.alert').empty();
+      $('.alert').append(`<div class="alert alert-danger"role="alert">
+        Ошибка назначение пользователя!</div>`);
+    }
+  });
+}
+
+function cancel_user(current_row, project_text) {
+  let employee_position = {}, project = {}, employee = {};
+  Object.assign(employee_position, { project });
+  Object.assign(employee_position, { employee });
+  employee_position.employee.id = current_row.find('#employeeId').text();
+  employee_position.project.id = project_text.split("-")[0];
+  $.ajax({
+    type: "POST",
+    contentType: "application/json",
+    url: "/api/project/cancel/employee",
+    data: JSON.stringify(employee_position),
+    cache: false,
+    timeout: 600000,
+    success: function () {
+      $('.alert').empty();
+      $('.alert').append(`<div class="alert alert-success" role="alert">
+        Пользователь с ID `+ employee_position.employee.id +
+        ` снят с проекта с ID ` + employee_position.project.id + `</div>`);
+    },
+    error: function (error) {
+      console.log(error);
+      $('.alert').empty();
+      $('.alert').append(`<div class="alert alert-danger"role="alert">
+        Ошибка снятия пользователя с проекта!</div>`);
+    }
+  });
+}
+
 function get_departments() {
   show_preloader();
   $.ajax({
@@ -447,6 +553,50 @@ function get_open_project() {
   hide_preloader();
 }
 
+function get_projects_by_department(department_id) {
+  show_preloader();
+  $.ajax({
+    type: "GET",
+    contentType: "application/json",
+    url: "/api/department/projects/open/" + department_id,
+    async: false,
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+      open_projects = data;
+    },
+    error: function (error) {
+      console.log(error);
+      $('#modal_alert').empty();
+      error.status == 409
+        ? $('#modal_alert').append(`<div class="alert alert-danger" role = "alert">
+      Список проектов в отделе пуст!</div>`)
+        : $('#modal_alert').append(`<div class="alert alert-danger" role = "alert">
+      Ошибка!</div>`);
+    }
+  });
+  hide_preloader();
+}
+
+function get_positions() {
+  show_preloader();
+  $.ajax({
+    type: "GET",
+    contentType: "application/json",
+    url: "/api/position/get_all",
+    async: false,
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+      data != "" ? positions = data : positions = "";
+    },
+    error: function (error) {
+      console.log(error);
+    }
+  });
+  hide_preloader();
+}
+
 function get_close_project() {
   show_preloader();
   $.ajax({
@@ -457,7 +607,7 @@ function get_close_project() {
     cache: false,
     timeout: 600000,
     success: function (data) {
-      close_projects = data;
+      data != "" ? close_projects = data : close_project = "";
     },
     error: function (error) {
       console.log(error);
@@ -476,7 +626,7 @@ function getEmployeeByDepartment(selected_department) {
     cache: false,
     timeout: 600000,
     success: function (data) {
-      employee = data;
+      data != "" ? employee = data : employee = "";
     },
     error: function (error) {
       console.log(error);
@@ -485,6 +635,31 @@ function getEmployeeByDepartment(selected_department) {
         ? $('.alert').append(`<div class="alert alert-danger" role = "alert">
       Список сотрудников с проектавми пуст!</div>`)
         : $('.alert').append(`<div class="alert alert-danger" role = "alert">
+      Ошибка!</div>`);
+    }
+  });
+  hide_preloader();
+}
+
+function get_projects_by_employee(employee_id) {
+  show_preloader();
+  $.ajax({
+    type: "GET",
+    contentType: "application/json",
+    url: "/api/project/by_employee/open/" + employee_id,
+    async: false,
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+      data != "" ? open_projects = data : open_projects = "";
+    },
+    error: function (error) {
+      console.log(error);
+      $('#modal_alert').empty();
+      error.status == 409
+        ? $('#modal_alert').append(`<div class="alert alert-danger" role = "alert">
+      Список проектов пользователя пуст!</div>`)
+        : $('#modal_alert').append(`<div class="alert alert-danger" role = "alert">
       Ошибка!</div>`);
     }
   });
@@ -501,7 +676,7 @@ function getEmployeeWithProjectByDepartment(selected_department) {
     cache: false,
     timeout: 600000,
     success: function (data) {
-      employee = data;
+      data != "" ? employee = data : employee = "";
     },
     error: function (error) {
       console.log(error);
@@ -588,10 +763,10 @@ function show_department_alert(array) {
   else return true;
 }
 
-function set_radio_checked(radio, context) {
+function set_radio_checked(radio, context, radioID) {
   radio == "1"
-    ? $('#' + context + ' input[name=project_radio][value="1"]').prop("checked", true)
-    : $('#' + context + ' input[name=project_radio][value="2"]').prop("checked", true);
+    ? $('#' + context + ' input[name=' + radioID + '][value="1"]').prop("checked", true)
+    : $('#' + context + ' input[name=' + radioID + '][value="2"]').prop("checked", true);
 }
 
 function hideAllContent() {

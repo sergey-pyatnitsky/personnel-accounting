@@ -1,9 +1,12 @@
 package com.personnel_accounting.controller.RESTController;
 
+import com.personnel_accounting.department.DepartmentService;
+import com.personnel_accounting.domain.EmployeePosition;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.entity.dto.DepartmentDTO;
+import com.personnel_accounting.entity.dto.EmployeePositionDTO;
 import com.personnel_accounting.entity.dto.ProjectDTO;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.project.ProjectService;
@@ -12,15 +15,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -29,12 +27,16 @@ public class ProjectRESTController {
     private final ProjectService projectService;
     private final UserService userService;
     private final EmployeeService employeeService;
+    private final DepartmentService departmentService;
     private final ConversionService conversionService;
 
-    public ProjectRESTController(ProjectService projectService, UserService userService, EmployeeService employeeService, ConversionService conversionService) {
+    public ProjectRESTController(ProjectService projectService, UserService userService,
+                                 EmployeeService employeeService, DepartmentService departmentService,
+                                 ConversionService conversionService) {
         this.projectService = projectService;
         this.userService = userService;
         this.employeeService = employeeService;
+        this.departmentService = departmentService;
         this.conversionService = conversionService;
     }
 
@@ -61,6 +63,19 @@ public class ProjectRESTController {
                             projectDTO.setDepartment(conversionService.convert(project.getDepartment(), DepartmentDTO.class));
                             return projectDTO;
                         }).collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/api/project/by_employee/open/{id}")
+    public ResponseEntity<?> getAllOpenProjectsByEmployee(@PathVariable Long id) {
+        return new ResponseEntity<>(
+                projectService.findEmployeePositions(employeeService.find(id))
+                        .stream().filter(employeePosition ->
+                                employeePosition.isActive() && employeePosition.getEndDate() == null)
+                        .collect(Collectors.toList())
+                        .stream().map(employeePosition ->
+                                conversionService.convert(employeePosition.getProject(), ProjectDTO.class))
+                        .collect(Collectors.toList()),
                 HttpStatus.OK);
     }
 
@@ -112,6 +127,28 @@ public class ProjectRESTController {
         Project project = projectService.find(id);
         if (project.isActive()) return new ResponseEntity<>(HttpStatus.LOCKED);
         return projectService.closeProject(projectService.find(id))
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+
+    @PostMapping("/api/project/assign/employee")
+    public ResponseEntity<?> assignEmployeeToProject(@RequestBody EmployeePositionDTO employeePositionDTO) {
+        return projectService.assignToProject(
+                employeeService.find(employeePositionDTO.getEmployee().getId()),
+                projectService.find(employeePositionDTO.getProject().getId()),
+                departmentService.findPosition(employeePositionDTO.getPosition().getId())).getId() != null
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+
+    @PostMapping("/api/project/cancel/employee")
+    public ResponseEntity<?> cancelEmployeeFromProject(@RequestBody EmployeePositionDTO employeePositionDTO) {
+        EmployeePosition employeePosition = projectService.findEmployeePositions(
+                        employeeService.find(employeePositionDTO.getEmployee().getId()))
+                .stream().filter(obj ->
+                        obj.getEmployee().getId().equals(employeePositionDTO.getEmployee().getId())
+                                && obj.getProject().getId().equals(employeePositionDTO.getProject().getId())).findFirst().get();
+        return !projectService.changeEmployeeStateInProject(employeePosition, false).isActive()
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.CONFLICT);
     }

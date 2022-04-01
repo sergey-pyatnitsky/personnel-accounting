@@ -295,7 +295,7 @@ function add_position() {
     type: "POST",
     contentType: "application/json",
     url: "/api/position/add",
-    data: JSON.stringify(department),
+    data: JSON.stringify(position),
     cache: false,
     timeout: 600000,
     success: function (data) {
@@ -420,7 +420,7 @@ function edit_department(current_row) {
   hide_preloader();
 }
 
-function assign_user(current_row, department_text,) {
+function assign_user(current_row, department_text) {
   let employee = {}, department = {};
   Object.assign(employee, { department });
   employee.id = current_row.find('#employeeId').text();

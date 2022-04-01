@@ -16,6 +16,9 @@ public interface DepartmentService {
     Position addPosition(Position position);
     Position mergePosition(Position position);
 
+    List<Position> findAllPositions();
+    Position findPosition(Long id);
+
     EmployeePosition addEmployeePosition(EmployeePosition employeePosition);
     EmployeePosition mergeEmployeePosition(EmployeePosition employeePosition);
 
