@@ -3,12 +3,11 @@ package com.personnel_accounting.controller.RESTController;
 import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
-import com.personnel_accounting.domain.EmployeePosition;
+import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.entity.dto.DepartmentDTO;
 import com.personnel_accounting.entity.dto.EmployeeDTO;
-import com.personnel_accounting.entity.dto.EmployeePositionDTO;
 import com.personnel_accounting.entity.dto.UserDTO;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.project.ProjectService;
@@ -18,7 +17,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Date;
 import java.util.List;
@@ -28,13 +33,16 @@ import java.util.stream.Collectors;
 public class EmployeeRESTController {
     private final EmployeeService employeeService;
     private final DepartmentService departmentService;
+    private final ProjectService projectService;
     private final UserService userService;
     private final ConversionService conversionService;
 
     public EmployeeRESTController(EmployeeService employeeService, DepartmentService departmentService,
-                                  UserService userService, ConversionService conversionService) {
+                                  ProjectService projectService, UserService userService,
+                                  ConversionService conversionService) {
         this.employeeService = employeeService;
         this.departmentService = departmentService;
+        this.projectService = projectService;
         this.userService = userService;
         this.conversionService = conversionService;
     }
@@ -101,7 +109,8 @@ public class EmployeeRESTController {
     public ResponseEntity<?> getAllEmployeeByDepartment(@PathVariable Long id, Authentication authentication) {
         Department department;
         if (id != 0) department = departmentService.find(id);
-        else department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
+        else
+            department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
         List<EmployeeDTO> employees = employeeService.findByDepartment(department).stream().map(obj -> {
             EmployeeDTO employeeDTO = conversionService.convert(obj, EmployeeDTO.class);
             employeeDTO.setDepartment(conversionService.convert(obj.getDepartment(), DepartmentDTO.class));
@@ -109,6 +118,17 @@ public class EmployeeRESTController {
             employeeDTO.getUser().setRole(userService.findRoleByUsername(employeeDTO.getUser().getUsername()));
             return employeeDTO;
         }).collect(Collectors.toList());
+        return employees.size() != 0
+                ? new ResponseEntity<>(employees, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+
+    @GetMapping("/api/employee/get_all/by_project/{id}")
+    public ResponseEntity<?> getAllEmployeeByProject(@PathVariable Long id) {
+        Project project = projectService.find(id);
+        List<EmployeeDTO> employees = projectService.findByProject(project)
+                .stream().filter(Employee::isActive).collect(Collectors.toList())
+                .stream().map(employee -> conversionService.convert(employee, EmployeeDTO.class)).collect(Collectors.toList());
         return employees.size() != 0
                 ? new ResponseEntity<>(employees, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.CONFLICT);

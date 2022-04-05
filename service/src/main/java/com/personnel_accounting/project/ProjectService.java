@@ -5,7 +5,9 @@ import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.EmployeePosition;
 import com.personnel_accounting.domain.Position;
 import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.domain.User;
+import com.personnel_accounting.enums.TaskStatus;
 
 import java.util.List;
 
@@ -29,6 +31,9 @@ public interface ProjectService {
     List<Project> findAll();
     List<Project> findByName(String name);
     List<Project> findByDepartment(Department department);
+
+    List<Task> findTaskInProjectByStatus(Project project, TaskStatus taskStatus);
+    List<Task> findTasksByEmployeeInProjectWithStatus(Employee employee, Project project, TaskStatus taskStatus);
 
     Project save(Project project);
     Project update(Project project);

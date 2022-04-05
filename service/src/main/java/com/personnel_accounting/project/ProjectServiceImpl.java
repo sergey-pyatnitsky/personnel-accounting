@@ -9,7 +9,6 @@ import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeDAO;
-import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.position.PositionDAO;
@@ -85,6 +84,24 @@ public class ProjectServiceImpl implements ProjectService {
             }
             return false;
         }
+    }
+
+    @Override
+    public List<Task> findTaskInProjectByStatus(Project project, TaskStatus taskStatus) {
+        return taskDAO.findByProject(project)
+                .stream().filter(task -> task.getTaskStatus().equals(taskStatus))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<Task> findTasksByEmployeeInProjectWithStatus(Employee employee, Project project, TaskStatus taskStatus) {
+        List<Task> tasks = taskDAO.findByProject(project)
+                .stream().filter(task -> task.getTaskStatus().equals(taskStatus)
+                        && task.getAssignee().getId().equals(employee.getId()))
+                .collect(Collectors.toList());
+        tasks.forEach(obj -> obj.getProject().getDepartment());
+        return tasks;
     }
 
     @Override

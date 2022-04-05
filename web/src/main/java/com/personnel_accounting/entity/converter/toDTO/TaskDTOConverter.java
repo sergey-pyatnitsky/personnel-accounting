@@ -13,6 +13,8 @@ public class TaskDTOConverter implements Converter<Task, TaskDTO> {
         taskDTO.setName(source.getName());
         taskDTO.setDescription(source.getDescription());
         taskDTO.setStatus(source.getTaskStatus());
+        if(source.getCreateDate() != null)
+            taskDTO.setCreate_date(source.getCreateDate().toString());
         return taskDTO;
     }
 }

@@ -1,15 +1,21 @@
 package com.personnel_accounting.employee;
 
-import com.personnel_accounting.domain.*;
-import com.personnel_accounting.enums.TaskStatus;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Profile;
+import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.ReportCard;
+import com.personnel_accounting.domain.Task;
+import com.personnel_accounting.domain.User;
 
+import java.sql.Time;
 import java.util.List;
 
 public interface EmployeeService {
     List<Employee> getEmployeesWithProjectByDepartment(Department department);
 
-    ReportCard trackTime(ReportCard reportCard);
-    Task changeTaskStatus(Task task, TaskStatus taskStatus);
+    ReportCard trackTime(Task task, Time time);
+    Task changeTaskStatus(Task task);
     Task addTaskInProject(Project project, Task task);
     Employee addProfileData(Employee employee, Profile profile);
     Profile findProfileByEmployee(Employee employee);
@@ -21,6 +27,8 @@ public interface EmployeeService {
     ReportCard saveReportCard(ReportCard reportCard);
     ReportCard mergeReportCard(ReportCard reportCard);
 
+    Task findTask(Long id);
+    Task saveTask(Task task);
     Task createTask(Task task);
     Task mergeTask(Task task);
 

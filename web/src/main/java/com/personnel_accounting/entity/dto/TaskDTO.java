@@ -12,4 +12,5 @@ public class TaskDTO {
     private EmployeeDTO reporter;
     private EmployeeDTO assignee;
     private TaskStatus status;
+    private String create_date;
 }

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
+
+<body>
+<div class="container-fluid p-4 p-md-5 pt-5" th:fragment="edit-task" id="content-edit-task" style="display: none">
+  <h3 class="mb-4">Редактирование задач</h3>
+  <div class="alert"></div>
+  <div class="row">
+    <div class="col-4" sec:authorize="hasAuthority('ADMIN')">
+      <label for="departmentSelectToEditTask">Выберите отдел:</label>
+      <select class="form-control" id="departmentSelectToEditTask"></select>
+    </div>
+    <div class="col-4" sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER')">
+      <label for="projectSelectToEditTask">Выберите проект:</label>
+      <select class="form-control" id="projectSelectToEditTask"></select>
+    </div>
+  </div>
+  <div class="container-fluid p-4 p-md-5 pt-5" id="edit_tasks_div" style="display: none;">
+    <div class="list-group">
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-secondary" id="open_projects_btn">Открытые</button>
+        <button type="button" class="btn btn-secondary" id="in_progress_projects_btn">В процессе</button>
+        <button type="button" class="btn btn-secondary" id="done_projects_btn">Выполненные</button>
+        <button type="button" class="btn btn-secondary" id="closed_projects_btn">Закрытые</button>
+      </div>
+    </div>
+    <div class="row mt-5" id="edit_tasks_table">
+      <div class="col">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th class="col-sm">#</th>
+            <th class="col-2">Наименование</th>
+            <th class="col-2">Описание</th>
+            <th class="col-1" style="width: 13%">Статус</th>
+            <th class="col-1">Дата</th>
+            <th class="col-2">Проект</th>
+            <th class="col-2">Исполнитель</th>
+            <th class="col-1">Действие</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="task_edit_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Изменение задачи</h5>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="modal_input_name">Наименование задачи</label>
+              <input type="text" class="form-control" id="modal_input_name" placeholder="Исправить авторизацию">
+            </div>
+            <div class="form-group">
+              <label for="modal_input_description">Описание задачи</label>
+              <textarea class="form-control" id="modal_input_description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="modal_input_status">Статус задачи</label><br>
+              <select class="form-control" id="modal_input_status">
+                <option value="Открыта">Открыта</option>
+                <option value="В разработке">Выполняется</option>
+                <option value="Выполнена">Выполнена</option>
+                <option value="Закрыта">Завершена</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-primary" id="modal_task_save" data-dismiss="modal">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

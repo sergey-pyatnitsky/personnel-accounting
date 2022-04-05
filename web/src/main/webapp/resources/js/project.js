@@ -12,15 +12,15 @@ $(document).ready(function () {
     event.preventDefault();
     $("#content-assign-user").show();
     getEmployeeDataForAssign("1");
-    show_assign_user_content("1", employee);
+    //show_assign_user_content("1", employee);
     $("body").on('click', 'input[name="user_radio"]', function () {
       if ($(this).val() == "1") {
         getEmployeeDataForAssign("1");
-        show_assign_user_content("1", employee);
+        //show_assign_user_content("1", employee);
       }
       else {
         getEmployeeDataForAssign("2");
-        show_assign_user_content("2", employee);
+        //show_assign_user_content("2", employee);
       }
     });
     let current_row = null;
@@ -157,13 +157,20 @@ function getEmployeeDataForAssign(value) {
     }
     $("#select_department #departmentSelect").empty();
     $("#select_department #departmentSelect").append(content);
+    set_radio_checked(value, "content-assign-user", "user_radio");
+    $("#assign_users_table tbody").empty();
+    $("#assign_users_table").hide();
     $("#get_employee_btn").click(function (event) {
       event.preventDefault();
+      $("#assign_users_table tbody").empty();
+      $("#assign_users_table").hide();
       let department_id = $("#select_department #departmentSelect option:selected").text().split("-")[0];
       value == "1" ? getEmployeeByDepartment(department_id) : getEmployeeWithProjectByDepartment(department_id);
+      show_assign_user_content(value, employee);
     })
   } else {
     value == "1" ? getEmployeeByDepartment(0) : getEmployeeWithProjectByDepartment(0);
+    show_assign_user_content(value, employee);
   }
 }
 
@@ -636,6 +643,7 @@ function getEmployeeByDepartment(selected_department) {
       Список сотрудников с проектавми пуст!</div>`)
         : $('.alert').append(`<div class="alert alert-danger" role = "alert">
       Ошибка!</div>`);
+      employee = "";
     }
   });
   hide_preloader();
@@ -686,6 +694,7 @@ function getEmployeeWithProjectByDepartment(selected_department) {
       Список сотрудников с проектавми пуст!</div>`)
         : $('.alert').append(`<div class="alert alert-danger" role = "alert">
       Ошибка!</div>`);
+      employee = "";
     }
   });
   hide_preloader();

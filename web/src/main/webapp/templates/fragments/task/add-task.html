@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
+
+<body>
+<div class="container-fluid p-4 p-md-5 pt-5" th:fragment="add-task" id="content-add-task" style="display: none">
+  <h3 class="mb-4">Добавление задачи</h3>
+  <div class="alert"></div>
+  <div class="row" sec:authorize="hasAuthority('ADMIN')">
+    <div class="col-4">
+      <label for="departmentSelectToAddTask">Выберите отдел:</label>
+      <select class="form-control" id="departmentSelectToAddTask"></select>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-4" sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER')">
+      <label for="projectSelectToAddTask">Выберите проект:</label>
+      <select class="form-control" id="projectSelectToAddTask"></select>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-7">
+      <form>
+        <div class="form-group">
+          <label for="taskNameInput">Наименование задачи</label>
+          <input type="email" class="form-control" id="taskNameInput">
+        </div>
+        <div class="form-group">
+          <label for="taskDescriptionInput">Описание задачи</label>
+          <textarea class="form-control" id="taskDescriptionInput" rows="3"></textarea>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-4">
+      <label for="employeeSelectToAddTask">Выберите кому назначить задачу</label><br>
+      <select class="form-control" id="employeeSelectToAddTask"></select>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-7" style="padding-left:40%;">
+      <button class="btn btn-primary btn-block" type="submit" id="add_task_btn">Сохранить</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+

@@ -1,6 +1,12 @@
 package com.personnel_accounting.employee;
 
-import com.personnel_accounting.domain.*;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Profile;
+import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.ReportCard;
+import com.personnel_accounting.domain.Task;
+import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.profile.ProfileDAO;
@@ -10,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,23 +36,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeePositionDAO = employeePositionDAO;
     }
 
-    @Override
-    public ReportCard trackTime(ReportCard reportCard) {
-        return reportCardDAO.save(reportCard);
+    @Override //FIXME test
+    public ReportCard trackTime(Task task, Time time) {
+        return reportCardDAO.save(new ReportCard(new Date(System.currentTimeMillis()), task, task.getAssignee(), time));
     }
 
-    @Override
-    public Task changeTaskStatus(Task task, TaskStatus taskStatus) {
-        if (task.getTaskStatus().equals(taskStatus)) return taskDAO.update(task);
-        else {
-            task.setTaskStatus(taskStatus);
-            return taskDAO.save(task);
-        }
+    @Override //FIXME test
+    public Task changeTaskStatus(Task task) {
+        task.setTaskStatus(TaskStatus.values()[task.getTaskStatus().ordinal() + 1]);
+        task.setModifiedDate(new Date(System.currentTimeMillis()));
+        return taskDAO.save(task);
     }
 
     @Override
     public Task addTaskInProject(Project project, Task task) {
         task.setProject(project);
+        task.setTaskStatus(TaskStatus.OPEN);
+        task.setCreateDate(new Date(System.currentTimeMillis()));
         return taskDAO.save(task);
     }
 
@@ -59,6 +66,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.getProfile().setAddress(profile.getAddress());
         employee.getProfile().setEducation(profile.getEducation());
         return employeeDAO.save(employee);
+    }
+
+    @Override
+    public Task findTask(Long id) {
+        return taskDAO.find(id);
+    }
+
+    @Override
+    public Task saveTask(Task task) {
+        task.setModifiedDate(new Date(System.currentTimeMillis()));
+        return taskDAO.save(task);
     }
 
     @Override

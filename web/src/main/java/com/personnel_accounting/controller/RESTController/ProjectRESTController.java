@@ -1,6 +1,7 @@
 package com.personnel_accounting.controller.RESTController;
 
 import com.personnel_accounting.department.DepartmentService;
+import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.EmployeePosition;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.User;
@@ -15,7 +16,13 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Date;
 import java.util.List;
@@ -77,6 +84,20 @@ public class ProjectRESTController {
                                 conversionService.convert(employeePosition.getProject(), ProjectDTO.class))
                         .collect(Collectors.toList()),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("/api/project/by_department/open/{id}")
+    public ResponseEntity<?> getAllOpenProjectsByDepartment(@PathVariable Long id, Authentication authentication) {
+        Department department;
+        if (id != 0) department = departmentService.find(id);
+        else
+            department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
+        List<ProjectDTO> projects = departmentService.findProjects(department)
+                .stream().filter(Project::isActive).collect(Collectors.toList())
+                .stream().map(project -> conversionService.convert(project, ProjectDTO.class)).collect(Collectors.toList());
+        return projects.size() != 0
+                ? new ResponseEntity<>(projects, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @GetMapping("/api/project/get_all/closed")

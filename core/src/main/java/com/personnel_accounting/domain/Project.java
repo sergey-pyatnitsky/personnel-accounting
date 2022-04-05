@@ -2,6 +2,7 @@ package com.personnel_accounting.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -38,12 +39,15 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
+    @ToString.Exclude
     private Department department;
 
     @OneToMany(mappedBy = "project")
+    @ToString.Exclude
     private List<EmployeePosition> employeePositionList;
 
     @OneToMany(mappedBy = "project")
+    @ToString.Exclude
     private List<Task> taskList;
 
     public Project(String name, Department department, boolean isActive) {

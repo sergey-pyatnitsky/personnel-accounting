@@ -3,6 +3,7 @@ package com.personnel_accounting.domain;
 import com.personnel_accounting.enums.TaskStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -26,14 +27,17 @@ public class Task {
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
+    @ToString.Exclude
     private Project project;
 
     @OneToOne
     @JoinColumn(name = "reporter_id", nullable = false)
+    @ToString.Exclude
     private Employee reporter;
 
     @OneToOne
     @JoinColumn(name = "assignee_id", nullable = false)
+    @ToString.Exclude
     private Employee assignee;
 
     @Enumerated(EnumType.STRING)
@@ -47,6 +51,7 @@ public class Task {
     private Date modifiedDate;
 
     @OneToOne(mappedBy = "task", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private ReportCard reportCard;
 
     public Task(String name, String description,
