@@ -1,4 +1,4 @@
-package com.personnel_accounting.controller.RESTController;
+package com.personnel_accounting.controller.restController;
 
 import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.domain.Department;
@@ -10,6 +10,10 @@ import com.personnel_accounting.entity.dto.DepartmentDTO;
 import com.personnel_accounting.entity.dto.EmployeePositionDTO;
 import com.personnel_accounting.entity.dto.ProjectDTO;
 import com.personnel_accounting.enums.Role;
+import com.personnel_accounting.exeption.ActiveStatusDataException;
+import com.personnel_accounting.exeption.ExistingDataException;
+import com.personnel_accounting.exeption.NoSuchDataException;
+import com.personnel_accounting.exeption.OperationExecutionException;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.springframework.core.convert.ConversionService;
@@ -55,9 +59,7 @@ public class ProjectRESTController {
         employeeService.findByUser(user);
         Project project = conversionService.convert(projectDTO, Project.class);
         project = projectService.addProject(project, projectDTO.getDepartment().getId());
-        return project.getId() == null
-                ? new ResponseEntity<>(HttpStatus.LOCKED)
-                : new ResponseEntity<>(conversionService.convert(project, ProjectDTO.class), HttpStatus.OK);
+        return new ResponseEntity<>(conversionService.convert(project, ProjectDTO.class), HttpStatus.OK);
     }
 
     @GetMapping("/api/project/get_all/open")
@@ -95,9 +97,8 @@ public class ProjectRESTController {
         List<ProjectDTO> projects = departmentService.findProjects(department)
                 .stream().filter(Project::isActive).collect(Collectors.toList())
                 .stream().map(project -> conversionService.convert(project, ProjectDTO.class)).collect(Collectors.toList());
-        return projects.size() != 0
-                ? new ResponseEntity<>(projects, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(projects.size() == 0) throw new NoSuchDataException("В данном отделе отсутствуют открытые проекты");
+        return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 
     @GetMapping("/api/project/get_all/closed")
@@ -115,16 +116,16 @@ public class ProjectRESTController {
 
     @PutMapping("/api/project/activate/{id}")
     public ResponseEntity<?> activateProject(@PathVariable Long id) {
-        return projectService.activate(projectService.find(id))
-                ? new ResponseEntity<>(new Date(System.currentTimeMillis()).toString(), HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(!projectService.activate(projectService.find(id)))
+            throw new OperationExecutionException("Ошибка активации проекта");
+        return new ResponseEntity<>(new Date(System.currentTimeMillis()).toString(), HttpStatus.OK);
     }
 
     @PutMapping("/api/project/inactivate/{id}")
     public ResponseEntity<?> inactivateProject(@PathVariable Long id) {
-        return projectService.inactivate(projectService.find(id))
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(!projectService.inactivate(projectService.find(id)))
+            throw new OperationExecutionException("Ошибка деактивации проекта");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/project/edit/{id}")
@@ -138,7 +139,7 @@ public class ProjectRESTController {
             project = projectService.assignProjectToDepartmentId(project, projectDTO.getDepartment().getId());
             if (!Objects.equals(project.getDepartment().getId(), projectDTO.getDepartment().getId())
                     && projectDTO.getDepartment().getId() != null)
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
+                throw new ExistingDataException("Данный проект невозможно перенести в данный отдел");
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -146,20 +147,20 @@ public class ProjectRESTController {
     @DeleteMapping("/api/project/close/{id}")
     public ResponseEntity<?> closeProject(@PathVariable Long id) {
         Project project = projectService.find(id);
-        if (project.isActive()) return new ResponseEntity<>(HttpStatus.LOCKED);
-        return projectService.closeProject(projectService.find(id))
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if (project.isActive()) throw new ActiveStatusDataException("Данный проект активен и недоступен для закрытия!");
+        if(!projectService.closeProject(projectService.find(id)))
+            throw new ExistingDataException(" В данном проекте существуют незакрытые задачи и недоступен для закрытия!");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/api/project/assign/employee")
     public ResponseEntity<?> assignEmployeeToProject(@RequestBody EmployeePositionDTO employeePositionDTO) {
-        return projectService.assignToProject(
+        if(projectService.assignToProject(
                 employeeService.find(employeePositionDTO.getEmployee().getId()),
                 projectService.find(employeePositionDTO.getProject().getId()),
-                departmentService.findPosition(employeePositionDTO.getPosition().getId())).getId() != null
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+                departmentService.findPosition(employeePositionDTO.getPosition().getId())).getId() == null)
+            throw new OperationExecutionException("Ошибка назначения сотрудника на проект");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/api/project/cancel/employee")
@@ -169,8 +170,8 @@ public class ProjectRESTController {
                 .stream().filter(obj ->
                         obj.getEmployee().getId().equals(employeePositionDTO.getEmployee().getId())
                                 && obj.getProject().getId().equals(employeePositionDTO.getProject().getId())).findFirst().get();
-        return !projectService.changeEmployeeStateInProject(employeePosition, false).isActive()
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(projectService.changeEmployeeStateInProject(employeePosition, false).isActive())
+            throw new OperationExecutionException("Ошибка снятия сотрудника с проекта");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

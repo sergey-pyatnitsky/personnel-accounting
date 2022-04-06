@@ -1,4 +1,4 @@
-package com.personnel_accounting.controller.RESTController;
+package com.personnel_accounting.controller.restController;
 
 import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.employee.EmployeeService;
@@ -7,6 +7,7 @@ import com.personnel_accounting.entity.dto.EmployeeDTO;
 import com.personnel_accounting.entity.dto.ProjectDTO;
 import com.personnel_accounting.entity.dto.TaskDTO;
 import com.personnel_accounting.enums.TaskStatus;
+import com.personnel_accounting.exeption.NoSuchDataException;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.springframework.core.convert.ConversionService;
@@ -57,10 +58,8 @@ public class TaskRESTController {
                     taskDTO.setAssignee(conversionService.convert(obj.getAssignee(), EmployeeDTO.class));
                     return taskDTO;
                 }).collect(Collectors.toList());
-
-        return tasks.size() != 0
-                ? new ResponseEntity<>(tasks, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(tasks.size() == 0) throw new NoSuchDataException("На проекте отсутсвуют задачи с данным статусом");
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     @GetMapping("/api/task/get_all/project/{project_id}/by_status/{status}/employee")
@@ -76,9 +75,8 @@ public class TaskRESTController {
                             conversionService.convert(obj.getProject().getDepartment(), DepartmentDTO.class));
                     return taskDTO;
                 }).collect(Collectors.toList());
-        return tasks.size() != 0
-                ? new ResponseEntity<>(tasks, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(tasks.size() == 0) throw new NoSuchDataException("Задачи с данным статусом отсутствуют");
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     @PutMapping("/api/task/edit/{id}")

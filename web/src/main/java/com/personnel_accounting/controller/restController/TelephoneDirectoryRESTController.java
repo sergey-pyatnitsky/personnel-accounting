@@ -1,4 +1,4 @@
-package com.personnel_accounting.controller.RESTController;
+package com.personnel_accounting.controller.restController;
 
 import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.entity.dto.EmployeeDTO;

@@ -11,6 +11,9 @@ import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
+import com.personnel_accounting.exeption.ActiveStatusDataException;
+import com.personnel_accounting.exeption.ExistingDataException;
+import com.personnel_accounting.exeption.NoSuchDataException;
 import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.task.TaskDAO;
 import org.springframework.stereotype.Service;
@@ -46,10 +49,13 @@ public class ProjectServiceImpl implements ProjectService {
         project.setActive(false);
         List<Project> projects = projectDAO.findByName(project.getName())
                 .stream().filter(obj -> obj.getEndDate() == null).collect(Collectors.toList());
-        return projects.size() == 0 || projects.stream().allMatch(obj ->
-                !obj.getDepartment().getId().equals(departmentId) && obj.getDepartment().isActive())
-                ? assignProjectToDepartmentId(project, departmentId)
-                : project;
+        if(projects.size() != 0){
+            if(!projects.stream().allMatch(obj -> !obj.getDepartment().getId().equals(departmentId)
+                            && obj.getDepartment().isActive()))
+                throw new ActiveStatusDataException("Данный отдел неактивен для добавление проектов!");
+            else throw new ExistingDataException("Данный проект уже существует!");
+        }
+        return assignProjectToDepartmentId(project, departmentId);
     }
 
     @Override //TODO test

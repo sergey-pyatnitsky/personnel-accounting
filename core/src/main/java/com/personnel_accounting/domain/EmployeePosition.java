@@ -33,18 +33,22 @@ public class EmployeePosition {
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
+    @ToString.Exclude
     private Employee employee;
 
     @ManyToOne
     @JoinColumn(name = "position_id")
+    @ToString.Exclude
     private Position position;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
+    @ToString.Exclude
     private Project project;
 
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
+    @ToString.Exclude
     private Department department;
 
     public EmployeePosition(boolean isActive, Employee employee, Position position, Project project, Department department) {

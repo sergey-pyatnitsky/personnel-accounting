@@ -2,6 +2,7 @@ package com.personnel_accounting.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -23,10 +24,12 @@ public class ReportCard {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
+    @ToString.Exclude
     private Task task;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
+    @ToString.Exclude
     private Employee employee;
 
     @Column(name = "working_time", nullable = false)

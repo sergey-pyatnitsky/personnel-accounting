@@ -21,20 +21,9 @@ public class User {
     @Column(name = "enabled")
     private boolean isActive;
 
-    /*@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "username")
-    private List<Authority> authorityList = new ArrayList<>();*/
-
     public User(String username, String password, boolean isActive) {
         this.username = username;
         this.password = password;
         this.isActive = isActive;
     }
-
-    /*public User(String username, String password, boolean isActive, List<Authority> authorityList) {
-        this.username = username;
-        this.password = password;
-        this.isActive = isActive;
-        this.authorityList = authorityList;
-    }*/
 }

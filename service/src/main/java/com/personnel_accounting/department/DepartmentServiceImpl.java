@@ -8,10 +8,14 @@ import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
+import com.personnel_accounting.exeption.IncorrectDataException;
 import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.project.ProjectDAO;
 import com.personnel_accounting.task.TaskDAO;
+import com.personnel_accounting.validation.DepartmentValidator;
+import com.personnel_accounting.validation.PositionValidator;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.DataBinder;
 
 import javax.transaction.Transactional;
 import java.sql.Date;
@@ -26,20 +30,32 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final PositionDAO positionDAO;
     private final TaskDAO taskDAO;
 
+    private final DepartmentValidator departmentValidator;
+    private final PositionValidator positionValidator;
+
     public DepartmentServiceImpl(DepartmentDAO departmentDAO, ProjectDAO projectDAO,
                                  EmployeeDAO employeeDAO, EmployeePositionDAO employeePositionDAO,
-                                 PositionDAO positionDAO, TaskDAO taskDAO) {
+                                 PositionDAO positionDAO, TaskDAO taskDAO, DepartmentValidator departmentValidator,
+                                 PositionValidator positionValidator) {
         this.departmentDAO = departmentDAO;
         this.projectDAO = projectDAO;
         this.employeeDAO = employeeDAO;
         this.employeePositionDAO = employeePositionDAO;
         this.positionDAO = positionDAO;
         this.taskDAO = taskDAO;
+        this.departmentValidator = departmentValidator;
+        this.positionValidator = positionValidator;
     }
 
     @Override //TODO test
     public Department addDepartment(Department department) {
-        return departmentDAO.findByName(department.getName())
+        final DataBinder dataBinder = new DataBinder(department);
+        dataBinder.addValidators(departmentValidator);
+        dataBinder.validate();
+
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+        }else return departmentDAO.findByName(department.getName())
                 .stream().allMatch(obj -> obj.getEndDate() != null)
                 ? departmentDAO.save(department)
                 : department;
@@ -125,12 +141,24 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department save(Department department) {
-        return departmentDAO.save(department);
+        final DataBinder dataBinder = new DataBinder(department);
+        dataBinder.addValidators(departmentValidator);
+        dataBinder.validate();
+
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+        }else return departmentDAO.save(department);
     }
 
     @Override
     public Department update(Department department) {
-        return departmentDAO.update(department);
+        final DataBinder dataBinder = new DataBinder(department);
+        dataBinder.addValidators(departmentValidator);
+        dataBinder.validate();
+
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+        }else return departmentDAO.update(department);
     }
 
     @Override
@@ -165,7 +193,13 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override //TODO test
     public Position addPosition(Position position) {
-        return positionDAO.findAll().stream().filter(obj -> obj.getName().equals(position.getName()))
+        final DataBinder dataBinder = new DataBinder(position);
+        dataBinder.addValidators(positionValidator);
+        dataBinder.validate();
+
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+        }else return positionDAO.findAll().stream().filter(obj -> obj.getName().equals(position.getName()))
                 .findFirst().orElse(null) != null
                 ? position
                 : positionDAO.save(position);

@@ -1,4 +1,4 @@
-package com.personnel_accounting.controller.RESTController;
+package com.personnel_accounting.controller.restController;
 
 import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.domain.Department;
@@ -10,6 +10,9 @@ import com.personnel_accounting.entity.dto.DepartmentDTO;
 import com.personnel_accounting.entity.dto.EmployeeDTO;
 import com.personnel_accounting.entity.dto.UserDTO;
 import com.personnel_accounting.enums.Role;
+import com.personnel_accounting.exeption.ExistingDataException;
+import com.personnel_accounting.exeption.NoSuchDataException;
+import com.personnel_accounting.exeption.OperationExecutionException;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.springframework.core.convert.ConversionService;
@@ -53,10 +56,9 @@ public class EmployeeRESTController {
         employee.setUser(conversionService.convert(employeeDTO.getUser(), User.class));
         employee.getUser().setPassword("{bcrypt}" + (new BCryptPasswordEncoder()).encode(employee.getUser().getPassword()));
         employee.setCreateDate(new Date(System.currentTimeMillis()));
-
-        return userService.registerUser(employee.getUser(), employeeDTO.getName(), Role.EMPLOYEE)
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(!userService.registerUser(employee.getUser(), employeeDTO.getName(), Role.EMPLOYEE))
+            throw new ExistingDataException("Данный пользователь уже существует");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/api/employee/get_all")
@@ -118,9 +120,8 @@ public class EmployeeRESTController {
             employeeDTO.getUser().setRole(userService.findRoleByUsername(employeeDTO.getUser().getUsername()));
             return employeeDTO;
         }).collect(Collectors.toList());
-        return employees.size() != 0
-                ? new ResponseEntity<>(employees, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(employees.size() == 0) throw new NoSuchDataException("В данном отделе отсутствуют сотрудники");
+        return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     @GetMapping("/api/employee/get_all/by_project/{id}")
@@ -129,9 +130,8 @@ public class EmployeeRESTController {
         List<EmployeeDTO> employees = projectService.findByProject(project)
                 .stream().filter(Employee::isActive).collect(Collectors.toList())
                 .stream().map(employee -> conversionService.convert(employee, EmployeeDTO.class)).collect(Collectors.toList());
-        return employees.size() != 0
-                ? new ResponseEntity<>(employees, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(employees.size() == 0) throw new NoSuchDataException("В данном проекте отсутствуют сотрудники");
+        return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     @GetMapping("/api/employee/get_with_project/department/{id}")
@@ -148,9 +148,8 @@ public class EmployeeRESTController {
             employeeDTO.getUser().setRole(userService.findRoleByUsername(employeeDTO.getUser().getUsername()));
             return employeeDTO;
         }).collect(Collectors.toList());
-        return employees.size() != 0
-                ? new ResponseEntity<>(employees, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(employees.size() == 0) throw new NoSuchDataException("Список пользователей пуст");
+        return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     @GetMapping("/api/employee/get_all/assigned")
@@ -174,16 +173,15 @@ public class EmployeeRESTController {
         Department department = departmentService.find(employeeDTO.getDepartment().getId());
         employee.setDepartment(department);
         employee = departmentService.assignToDepartment(employee, department);
-        return employee.getDepartment().getId().equals(employeeDTO.getDepartment().getId())
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(!employee.getDepartment().getId().equals(employeeDTO.getDepartment().getId()))
+            throw new OperationExecutionException("Ошибка назначения сотрудника");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/api/employee/remove/{id}")
     public ResponseEntity<?> removeUser(@PathVariable Long id) {
-        return employeeService.removeById(id)
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(!employeeService.removeById(id)) throw new OperationExecutionException("Ошибка удаления сотрудника");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/employee/edit")
@@ -199,19 +197,17 @@ public class EmployeeRESTController {
     @PutMapping("/api/employee/activate/{username}")
     public ResponseEntity<?> activateUser(@PathVariable String username) {
         Employee employee = employeeService.findByUser(userService.findByUsername(username));
-        if (!userService.activate(employee.getUser())) return new ResponseEntity<>(HttpStatus.CONFLICT);
-        return employeeService.activate(employee)
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if (!userService.activate(employee.getUser()) || !employeeService.activate(employee))
+            throw new OperationExecutionException("Ошибка активации пользователя");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/employee/inactivate/{username}")
     public ResponseEntity<?> inactivateUser(@PathVariable String username) {
         Employee employee = employeeService.findByUser(userService.findByUsername(username));
-        if (!userService.inactivate(employee.getUser())) return new ResponseEntity<>(HttpStatus.CONFLICT);
-        return employeeService.inactivate(employee)
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if (!userService.inactivate(employee.getUser()) || !employeeService.inactivate(employee))
+            throw new OperationExecutionException("Ошибка деактивации пользователя");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/api/employee/get_by_role/{role}")
