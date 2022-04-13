@@ -1,4 +1,4 @@
-html{
+html {
     height: 100%;
 }
 
@@ -11,9 +11,11 @@ body {
     color: black;
     height: 100%;
 }
+
 .my-own-container {
     height: 100%;
 }
+
 .round {
     border-radius: 100px;
     width: 50px;
@@ -21,18 +23,15 @@ body {
     border: 1px solid #000000;
 }
 
-a {
-    width: 250px;
-}
-
 #sidebar a {
+    width: 250px;
     color: #000000;
     padding: 15px 30px;
     display: block;
     text-decoration: none;
 }
 
-#sidebar a:hover {
+nav a:hover {
     color: black;
     background: #e9ecef;
 }

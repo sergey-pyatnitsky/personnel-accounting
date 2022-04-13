@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
         } else {
             if (!Objects.equals(user.getPassword(), password)) {
                 user.setPassword(password);
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
         } else {
             User tempUser = userDAO.find(user.getUsername());
             if (tempUser == null) {
@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
         } else return userDAO.save(user);
     }
 
@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
         } else {
             Authority authority = new Authority(user.getUsername(), role);
             user = userDAO.save(user);

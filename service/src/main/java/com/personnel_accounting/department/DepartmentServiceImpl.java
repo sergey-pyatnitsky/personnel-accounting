@@ -9,6 +9,8 @@ import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.exeption.IncorrectDataException;
+import com.personnel_accounting.pagination.entity.Page;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.project.ProjectDAO;
 import com.personnel_accounting.task.TaskDAO;
@@ -54,7 +56,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
         }else return departmentDAO.findByName(department.getName())
                 .stream().allMatch(obj -> obj.getEndDate() != null)
                 ? departmentDAO.save(department)
@@ -79,8 +81,26 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public Department editDepartmentName(Department department, String name) {
+        department.setName(name);
+        department.setModifiedDate(new Date(System.currentTimeMillis()));
+        final DataBinder dataBinder = new DataBinder(department);
+        dataBinder.addValidators(departmentValidator);
+        dataBinder.validate();
+
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
+        }else return departmentDAO.save(department);
+    }
+
+    @Override
     public List<Project> findProjects(Department department) {
         return projectDAO.findByDepartment(department);
+    }
+
+    @Override
+    public List<Project> findProjectsPaginated(PagingRequest pagingRequest, Department department) {
+        return projectDAO.findByDepartmentPaginated(pagingRequest, department);
     }
 
     @Override
@@ -130,8 +150,13 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Department> findAll() {
-        return departmentDAO.findAll();
+    public List<Department> findAll(PagingRequest pagingRequest) {
+        return departmentDAO.findAll(pagingRequest);
+    }
+
+    @Override
+    public Long getDepartmentCount() {
+        return departmentDAO.getDepartmentCount();
     }
 
     @Override
@@ -146,7 +171,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
         }else return departmentDAO.save(department);
     }
 
@@ -157,7 +182,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
         }else return departmentDAO.update(department);
     }
 
@@ -198,7 +223,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
         }else return positionDAO.findAll().stream().filter(obj -> obj.getName().equals(position.getName()))
                 .findFirst().orElse(null) != null
                 ? position

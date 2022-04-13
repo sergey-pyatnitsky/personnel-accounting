@@ -1,183 +1,230 @@
-current_task_status = Object.keys(task_status).find(item => task_status[item] == "Открыта");
+let edit_table = null, department_edit_table = null, project_edit_table = null;
+let selected_edit_department = null, selected_edit_project = null;
 
 $(document).ready(function () {
+  hide_preloader();
+  hideAllContent();
+
   $("#edit-task").click(function (event) {
     event.preventDefault();
-    show_edit_task();
+    hideAllContent();
+    $("#content-edit-task").show();
+    if ($("#content-edit-task #department_edit_task_table").length != 0) {
+      $("#content-edit-task #div_project_edit_task_table").hide();
+      $("#content-edit-task #div_edit_tasks_table").hide();
+      $("#content-edit-task #div_department_edit_task_table").show();
+      if (department_edit_table != null) department_edit_table.destroy();
+      loadDepartmenteditTable("#content-edit-task #department_edit_task_table", "/api/department/get_all/open");
 
-    $("#content-edit-task #open_projects_btn").click(function (event) {
-      event.stopImmediatePropagation();
-      event.preventDefault();
-      current_task_status = Object.keys(task_status).find(item => task_status[item] == "Открыта");
-      show_tasks("2", "#content-edit-task", "#projectSelectToEditTask", "#edit_tasks_table");
+      $("body").on("click", "#content-edit-task #select_department_edit", function (e) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        selected_edit_department = $(this).val();
+        showProjectSelectEditTable($(this).val());
+      });
+    } else showProjectSelectEditTable();
+
+    $("body").on("click", "#content-edit-task #departmentBtnToEditTask", function () {
+      $("#content-edit-task #div_edit_tasks_table").hide();
+      $("#content-edit-task #div_project_edit_task_table").hide();
+      $("#content-edit-task #div_department_edit_task_table").show();
+      if (department_edit_table != null) department_edit_table.destroy();
+      loadDepartmenteditTable("#content-edit-task #department_edit_task_table", "/api/department/get_all/open");
+
+      $("body").on("click", "#content-edit-task #select_department_edit", function () {
+        selected_edit_department = $(this).val();
+        showProjectSelectEditTable($(this).val());
+      });
     });
 
-    $("#content-edit-task #in_progress_projects_btn").click(function (event) {
-      event.stopImmediatePropagation();
-      event.preventDefault();
-      current_task_status = Object.keys(task_status).find(item => task_status[item] == "Выполняется");
-      show_tasks("2", "#content-edit-task", "#projectSelectToEditTask", "#edit_tasks_table");
+    $("body").on("click", "#content-edit-task #projectBtnToEditTask", function () {
+      $("#content-edit-task #div_edit_tasks_table").hide();
+      $("#content-edit-task #div_project_edit_task_table").show();
+      $("#content-edit-task #div_department_edit_task_table").hide();
+      showProjectSelectEditTable(selected_edit_department);
     });
 
-    $("#content-edit-task #done_projects_btn").click(function (event) {
-      event.stopImmediatePropagation();
-      event.preventDefault();
-      current_task_status = Object.keys(task_status).find(item => task_status[item] == "Выполнена");
-      show_tasks("2", "#content-edit-task", "#projectSelectToEditTask", "#edit_tasks_table");
+    $("body").on("click", "#content-edit-task #open_tasks_btn", function () {
+      if (edit_table != null) edit_table.destroy();
+      loadeditTable("#content-edit-task #edit_tasks_table",
+        "/api/task/get_all/project/" + selected_edit_project + "/by_status/OPEN");
     });
 
-    $("#content-edit-task #closed_projects_btn").click(function (event) {
-      event.stopImmediatePropagation();
-      event.preventDefault();
-      current_task_status = Object.keys(task_status).find(item => task_status[item] == "Завершена");
-      show_tasks("2", "#content-edit-task", "#projectSelectToEditTask", "#edit_tasks_table");
+    $("body").on("click", "#content-edit-task #in_progress_tasks_btn", function () {
+      if (edit_table != null) edit_table.destroy();
+      loadeditTable("#content-edit-task #edit_tasks_table",
+        "/api/task/get_all/project/" + selected_edit_project + "/by_status/IN_PROGRESS");
+    });
+
+    $("body").on("click", "#content-edit-task #done_tasks_btn", function () {
+      if (edit_table != null) edit_table.destroy();
+      loadeditTable("#content-edit-task #edit_tasks_table",
+        "/api/task/get_all/project/" + selected_edit_project + "/by_status/DONE");
+    });
+
+    $("body").on("click", "#content-edit-task #closed_tasks_btn", function () {
+      if (edit_table != null) edit_table.destroy();
+      loadeditTable("#content-edit-task #edit_tasks_table",
+        "/api/task/get_all/project/" + selected_edit_project + "/by_status/CLOSED");
     });
 
     let current_row = null;
-    $("body").on('show.bs.modal', function (event) {
+    $("body").on('show.bs.modal', "#task_edit_modal", function (event) {
       current_row = $(event.relatedTarget).closest('tr');
       let modal = $(this);
 
-      modal.find('#modal_input_name').val(current_row.find('#name').text());
-      modal.find('#modal_input_description').val(current_row.find('#description').text());
-      modal.find('#modal_input_status').val(current_row.find('#status').text());
+      let task_id = current_row.find('.task_id').text();
+      modal.find('#modal_input_name').val(current_row.find('.task_name').text());
+      modal.find('#modal_input_description').val(current_row.find('.task_description').text());
+      modal.find('#modal_input_status').val(current_row.find('.task_status').text());
 
       $("#modal_task_save").click(function () {
-        current_row.find('#name').text($("#modal_input_name").val());
-        current_row.find('#description').text($("#modal_input_description").val());
-        current_row.find('#status').text($("#modal_input_status option:selected").text());
-        edit_task(current_row);
+        edit_task(task_id, $("#modal_input_name").val(), $("#modal_input_description").val(),
+          $("#modal_input_status option:selected").text());
       })
     });
   });
-
 });
 
-function show_edit_task() {
-  hideAllContent();
-  $("#content-edit-task").show();
-  $("#edit_tasks_div").hide();
-  if ($("#content-edit-task #departmentSelectToEditTask").length) {
-    get_departments();
-    if (show_department_alert(departments) == true) {
-      let content = ``;
-      for (let pair of departments.entries()) {
-        let department = pair[1];
-        content += `<option value="` + (pair[0] + 1) + `">` + department.id + `-` + department.name + `</option>`;
-      }
-      $("#content-edit-task #departmentSelectToEditTask").empty();
-      $("#content-edit-task #departmentSelectToEditTask").append(content);
-      get_projects($("#content-edit-task #departmentSelectToEditTask option:selected").text().split("-")[0]);
-    }
-  }
-  else {
-    $(".alert").replaceWith(`<div class="alert"></div>`);
-    get_projects(0);
-  }
-  show_project_select("#content-edit-task #projectSelectToEditTask");
+function showProjectSelectEditTable(department_id) {
+  $("#content-edit-task #div_department_edit_task_table").hide();
+  $("#content-edit-task #div_project_edit_task_table").show();
+  if (department_id == null) department_id = 0;
+  if (project_edit_table != null) project_edit_table.destroy();
+  loadProjecteditTable("#content-edit-task #project_edit_task_table",
+    "/api/project/by_department/open/" + department_id);
 
-  if (projects != "") {
-    let project_id = $("#content-edit-task #projectSelectToEditTask option:selected").text().split("-")[0];
-    get_tasks(project_id, current_task_status);
-    if (show_task_alert(tasks) == true) {
-      $("#edit_tasks_div").show();
-      $("#content-edit-task #edit_tasks_table").show();
-      let content = ``;
-      for (let pair of tasks.entries()) {
-        let task = pair[1];
-        content += `<tr><th scope="row" id="task_id">` + task.id + `</th>`;
-        content += `<td id="name">` + task.name + `</td>`;
-        content += `<td id="description">` + task.description + `</td>`;
-        content += `<td id="status">` + task_status[task.status] + `</td>`;
-        content += `<td>` + task.create_date + `</td>`;
-        content += `<td>` + task.project.id + `-` + task.project.name + `</td>`;
-        content += `<td>` + task.assignee.id + `-` + task.assignee.name + `</td>`;
-        content +=
-          `<td>
-          <button type="button" class="btn btn-danger btn-rounded btn-sm my-0"
-            data-toggle="modal" data-target="#task_edit_modal">
-            Изменить
-          </button>
-        </td></tr>`;
-      }
-      $("#content-edit-task #edit_tasks_table tbody").empty();
-      $("#content-edit-task #edit_tasks_table tbody").append(content);
-    }
-  } else $("#edit_tasks_div").hide();
-
-  $('#content-edit-task #departmentSelectToEditTask').on('change', function (e) {
-    $('.alert').empty();
-    get_projects($("option:selected", this).text().split("-")[0]);
-    if (projects != "") {
-      show_project_select("#content-edit-task #projectSelectToEditTask");
-      let project_id = $("#content-edit-task #projectSelectToEditTask option:selected").text().split("-")[0];
-      get_tasks(project_id, current_task_status);
-      if (show_task_alert(tasks) == true) {
-        $("#content-edit-task #edit_tasks_table").show();
-        $("#edit_tasks_div").show();
-        let content = ``;
-        for (let pair of tasks.entries()) {
-          let task = pair[1];
-          content += `<tr><th scope="row" id="task_id">` + task.id + `</th>`;
-          content += `<td id="name">` + task.name + `</td>`;
-          content += `<td id="description">` + task.description + `</td>`;
-          content += `<td id="status">` + task_status[task.status] + `</td>`;
-          content += `<td>` + task.create_date + `</td>`;
-          content += `<td>` + task.project.id + `-` + task.project.name + `</td>`;
-          content += `<td>` + task.assignee.id + `-` + task.assignee.name + `</td>`;
-          content +=
-            `<td>
-          <button type="button" class="btn btn-danger btn-rounded btn-sm my-0"
-            data-toggle="modal" data-target="#task_edit_modal">
-            Изменить
-          </button>
-        </td></tr>`;
-        }
-        $("#content-edit-task #edit_tasks_table tbody").empty();
-        $("#content-edit-task #edit_tasks_table tbody").append(content);
-      }
-    } else $("#edit_tasks_div").hide();
-  });
-
-  $('#content-edit-task #projectSelectToEditTask').on('change', function (e) {
-    let project_id = $("#content-edit-task #projectSelectToEditTask option:selected").text().split("-")[0];
-    get_tasks(project_id, current_task_status);
-    if (show_task_alert(tasks) == true) {
-      $("#content-edit-task #edit_tasks_table").show();
-      $("#edit_tasks_table").show();
-      let content = ``;
-      for (let pair of tasks.entries()) {
-        let task = pair[1];
-        content += `<tr><th scope="row" id="task_id">` + task.id + `</th>`;
-        content += `<td id="name">` + task.name + `</td>`;
-        content += `<td id="description">` + task.description + `</td>`;
-        content += `<td id="status">` + task_status[task.status] + `</td>`;
-        content += `<td>` + task.create_date + `</td>`;
-        content += `<td>` + task.project.id + `-` + task.project.name + `</td>`;
-        content += `<td>` + task.assignee.id + `-` + task.assignee.name + `</td>`;
-        content += `<td>` + task.assignee.id + `-` + task.assignee.name + `</td>`;
-        content +=
-          `<td>
-          <button type="button" class="btn btn-danger btn-rounded btn-sm my-0"
-            data-toggle="modal" data-target="#task_edit_modal">
-            Изменить
-          </button>
-        </td></tr>`;
-      }
-      $("#content-edit-task #edit_tasks_table tbody").empty();
-      $("#content-edit-task #edit_tasks_table tbody").append(content);
-    }
-    else $("#edit_tasks_div").hide();
+  $("body").on("click", "#content-edit-task #select_project_edit", function () {
+    selected_edit_project = $(this).val();
+    show_edit_task($(this).val(), "OPEN");
   });
 }
 
-function edit_task(current_row) {
+function show_edit_task(project_id, status) {
+  $("#content-edit-task #div_project_edit_task_table").hide();
+  $("#content-edit-task #div_edit_tasks_table").show();
+  if (edit_table != null) edit_table.destroy();
+  loadeditTable("#content-edit-task #edit_tasks_table", "/api/task/get_all/project/" + project_id + "/by_status/" + status);
+}
+
+function loadProjecteditTable(table_id, req_url) {
+  project_edit_table = $(table_id).DataTable({
+    "processing": true,
+    "serverSide": true,
+    "pagingType": "full_numbers",
+    "ajax": {
+      "url": req_url,
+      "type": "POST",
+      "dataType": "json",
+      "contentType": "application/json",
+      "data": function (d) {
+        return JSON.stringify(d);
+      }
+    },
+    "columns": [
+      { "data": "id" },
+      { "data": "name" },
+      {
+        "mData": null,
+        "bSortable": false,
+        "mRender": function (data) {
+          return '<button type="button" class="btn btn-primary" id="select_project_edit"' +
+            'value="' + data.id + '">Выбрать</button>'
+        }
+      }
+    ],
+    language: {
+      url: language_url
+    },
+  });
+  $(table_id).removeClass("no-footer");
+}
+
+function loadDepartmenteditTable(table_id, req_url) {
+  department_edit_table = $(table_id).DataTable({
+    "processing": true,
+    "serverSide": true,
+    "pagingType": "full_numbers",
+    "ajax": {
+      "url": req_url,
+      "type": "POST",
+      "dataType": "json",
+      "contentType": "application/json",
+      "data": function (d) {
+        return JSON.stringify(d);
+      }
+    },
+    "columns": [
+      { "data": "id" },
+      { "data": "name" },
+      {
+        "mData": null,
+        "bSortable": false,
+        "mRender": function (data) {
+          return '<button type="button" class="btn btn-primary" id="select_department_edit"' +
+            'value="' + data.id + '">Выбрать</button>'
+        }
+      }
+    ],
+    language: {
+      url: language_url
+    },
+  });
+  $(table_id).removeClass("no-footer");
+}
+
+function loadeditTable(table_id, req_url) {
+  edit_table = $(table_id).DataTable({
+    "processing": true,
+    "serverSide": true,
+    "pagingType": "full_numbers",
+    "ajax": {
+      "url": req_url,
+      "type": "POST",
+      "dataType": "json",
+      "contentType": "application/json",
+      "data": function (d) {
+        return JSON.stringify(d);
+      }
+    },
+    "columns": [
+      { "data": "id", "sClass": "task_id" },
+      { "data": "name", "sClass": "task_name" },
+      { "data": "description", "sClass": "task_description" },
+      { "data": "status", "sClass": "task_status" },
+      { "data": "create_date" },
+      {
+        "data": "project", render: function (data) {
+          return data.id + "-" + data.name;
+        }
+      },
+      {
+        "data": "assignee", render: function (data) {
+          return data.id + "-" + data.name;
+        }
+      },
+      {
+        "mData": null,
+        "bSortable": false,
+        "mRender": function (data) {
+          return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0"' +
+            'data-toggle="modal" data-target="#task_edit_modal">Изменить</button>'
+        }
+      }
+    ],
+    language: {
+      url: language_url
+    },
+  });
+  $(table_id).removeClass("no-footer");
+}
+
+function edit_task(task_id, task_name, task_description, task_status) {
   let task = {};
-  task.id = current_row.find("#task_id").text();
-  task.name = current_row.find("#name").text();
-  task.description = current_row.find("#description").text();
-  task.status = Object.keys(task_status)
-    .find(item => task_status[item] == current_row.find("#status").text());
+  task.id = task_id
+  task.name = task_name;
+  task.description = task_description;
+  task.status = task_status;
   $.ajax({
     type: "PUT",
     contentType: "application/json",
@@ -185,16 +232,20 @@ function edit_task(current_row) {
     data: JSON.stringify(task),
     cache: false,
     timeout: 600000,
-    success: function () {
+    success: function (data) {
       $('.alert').empty();
-      $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
+      if (data == "") {
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
         Задача с ID ` + task.id + ` изменена</div>`);
+        edit_table.destroy();
+        loadeditTable("#content-edit-task #edit_tasks_table",
+          "/api/task/get_all/project/" + selected_edit_project + "/by_status/DONE");
+      } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
     },
     error: function (error) {
       console.log(error);
       $('.alert').empty();
-      $('.alert').replaceWith(`<div class="alert alert-danger"role="alert">
-        Ошибка!</div>`);
+      $('.alert').replaceWith(`<div class="alert alert-danger" role = "alert">500 Error</div>`);
     }
   });
 }

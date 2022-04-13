@@ -1,15 +1,10 @@
 package com.personnel_accounting.employee;
 
-import com.personnel_accounting.domain.Department;
-import com.personnel_accounting.domain.Employee;
-import com.personnel_accounting.domain.Profile;
-import com.personnel_accounting.domain.Project;
-import com.personnel_accounting.domain.ReportCard;
-import com.personnel_accounting.domain.Task;
-import com.personnel_accounting.domain.User;
+import com.personnel_accounting.domain.*;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.exeption.IncorrectDataException;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.profile.ProfileDAO;
 import com.personnel_accounting.report_card.ReportCardDAO;
 import com.personnel_accounting.task.TaskDAO;
@@ -73,8 +68,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
-        }else return taskDAO.save(task);
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
+        } else return taskDAO.save(task);
     }
 
     @Override
@@ -91,8 +86,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
-        }else return employeeDAO.save(employee);
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
+        } else return employeeDAO.save(employee);
+    }
+
+    @Override
+    public Employee editEmployeeName(Employee employee, String name) {
+        employee.setName(name);
+        employee.setModifiedDate(new Date(System.currentTimeMillis()));
+
+        final DataBinder dataBinder = new DataBinder(employee);
+        dataBinder.addValidators(employeeValidator);
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
+        } else return employeeDAO.save(employee);
     }
 
     @Override
@@ -107,8 +115,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
-        }else {
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
+        } else {
             task.setModifiedDate(new Date(System.currentTimeMillis()));
             return taskDAO.save(task);
         }
@@ -139,8 +147,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public List<Employee> getEmployeesWithProjectByDepartment(Department department) { //TODO test
-        return employeeDAO.findByDepartment(department)
+    public List<Employee> getEmployeesWithProjectByDepartment(Department department, PagingRequest pagingRequest) { //TODO test
+        return employeeDAO.findByDepartmentPaginated(department, pagingRequest)
                 .stream().filter(employee ->
                         employeePositionDAO.findByEmployee(employee)
                                 .stream().filter(employeePosition -> employeePosition.getProject() != null)
@@ -154,8 +162,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> findAll() {
-        return employeeDAO.findAll();
+    public List<Employee> findAll(PagingRequest pagingRequest) {
+        return employeeDAO.findAll(pagingRequest);
+    }
+
+    @Override
+    public Long getEmployeeCount() {
+        return employeeDAO.getEmployeeCount();
     }
 
     @Override
@@ -174,6 +187,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<Employee> findByDepartmentPaginated(Department department, PagingRequest pagingRequest) {
+        return employeeDAO.findByDepartmentPaginated(department, pagingRequest);
+    }
+
+    @Override
     public List<Employee> findByDepartment(Department department) {
         return employeeDAO.findByDepartment(department);
     }
@@ -185,8 +203,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
-        }else return employeeDAO.save(employee);
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
+        } else return employeeDAO.save(employee);
     }
 
     @Override
@@ -196,8 +214,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
-        }else return employeeDAO.update(employee);
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
+        } else return employeeDAO.update(employee);
     }
 
     @Override
@@ -280,8 +298,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         dataBinder.validate();
 
         if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getAllErrors().toString());
-        }else return taskDAO.save(task);
+            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
+        } else return taskDAO.save(task);
     }
 
     @Override

@@ -62,7 +62,7 @@ public class EmployeeProfileRESTController {
     public ResponseEntity<?> editProfileData(@RequestBody EmployeeDTO employeeDTO, Authentication authentication) {
         Employee employee = employeeService.findByUser(userService.findByUsername(authentication.getName()));
         employee.setName(employeeDTO.getName());
-        employee.setProfile(conversionService.convert(employeeDTO.getProfile(), Profile.class));
+        employeeService.addProfileData(employee, conversionService.convert(employeeDTO.getProfile(), Profile.class));
         employeeService.save(employee);
         return new ResponseEntity<>(HttpStatus.OK);
     }

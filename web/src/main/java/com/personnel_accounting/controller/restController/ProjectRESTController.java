@@ -12,8 +12,9 @@ import com.personnel_accounting.entity.dto.ProjectDTO;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.exeption.ActiveStatusDataException;
 import com.personnel_accounting.exeption.ExistingDataException;
-import com.personnel_accounting.exeption.NoSuchDataException;
 import com.personnel_accounting.exeption.OperationExecutionException;
+import com.personnel_accounting.pagination.entity.Page;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.springframework.core.convert.ConversionService;
@@ -62,16 +63,15 @@ public class ProjectRESTController {
         return new ResponseEntity<>(conversionService.convert(project, ProjectDTO.class), HttpStatus.OK);
     }
 
-    @GetMapping("/api/project/get_all/open")
-    public ResponseEntity<?> getAllOpenProjects() {
-        return new ResponseEntity<>(
-                projectService.findAll()
-                        .stream().filter(project -> project.getEndDate() == null).collect(Collectors.toList())
-                        .stream().map(project -> {
-                            ProjectDTO projectDTO = conversionService.convert(project, ProjectDTO.class);
-                            projectDTO.setDepartment(conversionService.convert(project.getDepartment(), DepartmentDTO.class));
-                            return projectDTO;
-                        }).collect(Collectors.toList()),
+    @PostMapping("/api/project/get_all/open")
+    public ResponseEntity<?> getAllOpenProjects(@RequestBody PagingRequest pagingRequest) {
+        return new ResponseEntity<>(getPage(projectService.findAll(pagingRequest)
+                .stream().filter(project -> project.getEndDate() == null).collect(Collectors.toList())
+                .stream().map(project -> {
+                    ProjectDTO projectDTO = conversionService.convert(project, ProjectDTO.class);
+                    projectDTO.setDepartment(conversionService.convert(project.getDepartment(), DepartmentDTO.class));
+                    return projectDTO;
+                }).collect(Collectors.toList()), pagingRequest.getDraw()),
                 HttpStatus.OK);
     }
 
@@ -88,42 +88,40 @@ public class ProjectRESTController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/api/project/by_department/open/{id}")
-    public ResponseEntity<?> getAllOpenProjectsByDepartment(@PathVariable Long id, Authentication authentication) {
+    @PostMapping("/api/project/by_department/open/{id}")
+    public ResponseEntity<?> getAllOpenProjectsByDepartment(@RequestBody PagingRequest pagingRequest,
+                                                            @PathVariable Long id, Authentication authentication) {
         Department department;
         if (id != 0) department = departmentService.find(id);
         else
             department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
-        List<ProjectDTO> projects = departmentService.findProjects(department)
+        return new ResponseEntity<>(getPage(departmentService.findProjectsPaginated(pagingRequest, department)
                 .stream().filter(Project::isActive).collect(Collectors.toList())
-                .stream().map(project -> conversionService.convert(project, ProjectDTO.class)).collect(Collectors.toList());
-        if(projects.size() == 0) throw new NoSuchDataException("В данном отделе отсутствуют открытые проекты");
-        return new ResponseEntity<>(projects, HttpStatus.OK);
+                .stream().map(project -> conversionService.convert(project, ProjectDTO.class)).collect(Collectors.toList()), pagingRequest.getDraw()), HttpStatus.OK);
     }
 
-    @GetMapping("/api/project/get_all/closed")
-    public ResponseEntity<?> getAllClosedProjects() {
-        return new ResponseEntity<>(
-                projectService.findAll()
-                        .stream().filter(project -> project.getEndDate() != null).collect(Collectors.toList())
-                        .stream().map(project -> {
-                            ProjectDTO projectDTO = conversionService.convert(project, ProjectDTO.class);
-                            projectDTO.setDepartment(conversionService.convert(project.getDepartment(), DepartmentDTO.class));
-                            return projectDTO;
-                        }).collect(Collectors.toList()),
+    @PostMapping("/api/project/get_all/closed")
+    public ResponseEntity<?> getAllClosedProjects(@RequestBody PagingRequest pagingRequest) {
+        return new ResponseEntity<>(getPage(projectService.findAll(pagingRequest)
+                .stream().filter(project -> project.getEndDate() != null).collect(Collectors.toList())
+                .stream().map(project -> {
+                    ProjectDTO projectDTO = conversionService.convert(project, ProjectDTO.class);
+                    projectDTO.setDepartment(conversionService.convert(project.getDepartment(), DepartmentDTO.class));
+                    return projectDTO;
+                }).collect(Collectors.toList()), pagingRequest.getDraw()),
                 HttpStatus.OK);
     }
 
     @PutMapping("/api/project/activate/{id}")
     public ResponseEntity<?> activateProject(@PathVariable Long id) {
-        if(!projectService.activate(projectService.find(id)))
+        if (!projectService.activate(projectService.find(id)))
             throw new OperationExecutionException("Ошибка активации проекта");
-        return new ResponseEntity<>(new Date(System.currentTimeMillis()).toString(), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/project/inactivate/{id}")
     public ResponseEntity<?> inactivateProject(@PathVariable Long id) {
-        if(!projectService.inactivate(projectService.find(id)))
+        if (!projectService.inactivate(projectService.find(id)))
             throw new OperationExecutionException("Ошибка деактивации проекта");
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -148,14 +146,14 @@ public class ProjectRESTController {
     public ResponseEntity<?> closeProject(@PathVariable Long id) {
         Project project = projectService.find(id);
         if (project.isActive()) throw new ActiveStatusDataException("Данный проект активен и недоступен для закрытия!");
-        if(!projectService.closeProject(projectService.find(id)))
+        if (!projectService.closeProject(projectService.find(id)))
             throw new ExistingDataException(" В данном проекте существуют незакрытые задачи и недоступен для закрытия!");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/api/project/assign/employee")
     public ResponseEntity<?> assignEmployeeToProject(@RequestBody EmployeePositionDTO employeePositionDTO) {
-        if(projectService.assignToProject(
+        if (projectService.assignToProject(
                 employeeService.find(employeePositionDTO.getEmployee().getId()),
                 projectService.find(employeePositionDTO.getProject().getId()),
                 departmentService.findPosition(employeePositionDTO.getPosition().getId())).getId() == null)
@@ -170,8 +168,17 @@ public class ProjectRESTController {
                 .stream().filter(obj ->
                         obj.getEmployee().getId().equals(employeePositionDTO.getEmployee().getId())
                                 && obj.getProject().getId().equals(employeePositionDTO.getProject().getId())).findFirst().get();
-        if(projectService.changeEmployeeStateInProject(employeePosition, false).isActive())
+        if (projectService.changeEmployeeStateInProject(employeePosition, false).isActive())
             throw new OperationExecutionException("Ошибка снятия сотрудника с проекта");
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private Page<ProjectDTO> getPage(List<ProjectDTO> list, int draw) {
+        int count = projectService.getEmployeeCount().intValue();
+        Page<ProjectDTO> page = new Page<>(list);
+        page.setRecordsTotal(count);
+        page.setRecordsFiltered(count);
+        page.setDraw(draw);
+        return page;
     }
 }

@@ -1,3 +1,6 @@
+let language_url = "http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Russian.json";
+//"http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json"
+
 const role_enum = Object.freeze({
     ADMIN: 'Администратор',
     DEPARTMENT_HEAD: 'Глава отдела',

@@ -2,24 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ru">
 
 <body>
-<div class="container-fluid p-4 p-md-5 pt-5" th:fragment="view-project" id="content-view-project">
+<div class="container-fluid md-5 pt-5" th:fragment="view-project" id="content-view-project">
   <h3 class="mb-4">Просмотр проектов</h3>
-  <div class="alert"></div>
-  <div class="row">
-    <div class="col">
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="project_radio" id="getOpenProjectsRadio" value="1">
-        <label class="form-check-label" for="getOpenProjectsRadio">Открытые проекты</label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="project_radio" id="getClosedProjectsRadio" value="2">
-        <label class="form-check-label" for="getClosedProjectsRadio">Закрытые проекты</label>
-      </div>
+  <div class="row mb-5">
+    <div class="col-12">
+      <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link" id="getOpenProjectsBtn">Открытые проекты</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="getClosedProjectsBtn">Закрытые проекты</a>
+        </li>
+      </ul>
     </div>
   </div>
-  <div class="row" id="view_projects_table" style="display: none;">
+  <div class="row">
     <div class="col">
-      <table class="table table-hover">
+      <table class="table table-hover" id="view_projects_table">
         <thead>
         <tr>
           <th class="col-1">#</th>
@@ -27,7 +26,7 @@
           <th class="col-2">Отдел</th>
           <th class="col-1">Активация</th>
           <th class="col-2">Дата открытия</th>
-          <th class="col-2">Дата закрытия</th>
+          <th class="col-2" id="end_date_column">Дата закрытия</th>
         </tr>
         </thead>
         <tbody></tbody>

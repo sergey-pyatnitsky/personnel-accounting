@@ -14,7 +14,6 @@ public class Authority {
 
     @Id
     @Column(name = "username", nullable = false)
-
     private String username;
 
     @Column(name = "authority", nullable = false)

@@ -2,35 +2,41 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
 
 <body>
-<div class="container-fluid p-4 p-md-5 pt-5" th:fragment="assign-user" id="content-assign-user">
+<div class="container-fluid md-5 pt-5" th:fragment="assign-user" id="content-assign-user">
   <h3 class="mb-4">Назначение пользователя на проект</h3>
   <div class="alert"></div>
-  <div class="row">
-    <div class="col">
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="user_radio" id="assignEmployeeRadio" value="1">
-        <label class="form-check-label" for="assignEmployeeRadio">Назначить сотрудники на проект</label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="user_radio" id="removeEmployeeRadio" value="2">
-        <label class="form-check-label" for="removeEmployeeRadio">Снять сотрудника с проекта</label>
-      </div>
+  <div class="row mb-5" id="tabs_to_assign_user">
+    <div class="col-12">
+      <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link" id="assignEmployeeBtn">Назначить сотрудники на проект</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="removeEmployeeBtn">Снять сотрудника с проекта</a>
+        </li>
+        <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+          <a class="nav-link" id="selectDepartmentBtn">Выбрать отдел</a>
+        </li>
+      </ul>
     </div>
   </div>
-  <div class="row" id="select_department" sec:authorize="hasAuthority('ADMIN')" >
-    <form>
-      <div class="form-group" th:onload="get_departments()">
-        <label for="departmentSelect">Отдел</label>
-        <select class="form-control" id="departmentSelect"></select>
-      </div>
-      <div class="form-group" style="padding-top:5%;">
-        <button class="btn btn-primary btn-block" type="submit" id="get_employee_btn">Загрузить</button>
-      </div>
-    </form>
-  </div>
-  <div class="row" id="assign_users_table" style="display: none;">
+  <div class="row" id="div_department_assign_users_table">
     <div class="col">
-      <table class="table table-hover">
+      <table class="table table-hover" id="department_assign_users_table">
+        <thead>
+        <tr>
+          <th class="col-1">#</th>
+          <th class="col-4">Наименование</th>
+          <th class="col-4">Выбор</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row" id="div_assign_users_table">
+    <div class="col">
+      <table class="table table-hover" id="assign_users_table">
         <thead>
         <tr>
           <th class="col-1">#</th>

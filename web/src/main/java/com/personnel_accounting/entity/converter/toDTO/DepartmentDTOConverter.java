@@ -13,9 +13,9 @@ public class DepartmentDTOConverter implements Converter<Department, DepartmentD
         departmentDTO.setName(source.getName());
         departmentDTO.setActive(source.isActive());
         if(source.getStartDate() != null)
-            departmentDTO.setStart_date(source.getStartDate().toString());
+            departmentDTO.setStartDate(source.getStartDate().toString());
         if(source.getEndDate() != null)
-            departmentDTO.setEnd_date(source.getEndDate().toString());
+            departmentDTO.setEndDate(source.getEndDate().toString());
         return departmentDTO;
     }
 }

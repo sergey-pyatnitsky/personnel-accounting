@@ -4,6 +4,9 @@ import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.enums.TaskStatus;
+import com.personnel_accounting.pagination.entity.Column;
+import com.personnel_accounting.pagination.entity.Order;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -48,6 +51,23 @@ public class TaskDAOImpl implements TaskDAO {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("from Task where project = :project");
         query.setParameter("project", project);
+        return query.list();
+    }
+
+    @Override
+    public List<Task> findByProjectPaginated(PagingRequest pagingRequest, Project project) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Task where project = :project";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and where concat(id, name, description, taskStatus) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("project", project);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
         return query.list();
     }
 

@@ -7,6 +7,6 @@ public class DepartmentDTO {
     private Long id;
     private String name;
     private boolean isActive;
-    private String start_date;
-    private String end_date;
+    private String startDate;
+    private String endDate;
 }

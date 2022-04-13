@@ -2,6 +2,9 @@ package com.personnel_accounting.project;
 
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.pagination.entity.Column;
+import com.personnel_accounting.pagination.entity.Order;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -37,9 +40,36 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public List<Project> findAll() {
+    public List<Project> findAll(PagingRequest pagingRequest) {
         Session session = sessionFactory.getCurrentSession();
-        return (List<Project>) session.createQuery("from Project").list();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Project";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " where concat(id, name, department.id, department.name, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Project> findByDepartmentPaginated(PagingRequest pagingRequest, Department department) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Project where department = :department";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " where concat(id, name, department.id, department.name, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("department", department);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
     }
 
     @Override
@@ -56,6 +86,13 @@ public class ProjectDAOImpl implements ProjectDAO {
         Query query = session.createQuery("from Project where department = :department");
         query.setParameter("department", department);
         return (List<Project>) query.list();
+    }
+
+    @Override
+    public Long getProjectCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Project");
+        return (Long) query.getSingleResult();
     }
 
     @Override

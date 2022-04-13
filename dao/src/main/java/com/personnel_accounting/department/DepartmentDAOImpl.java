@@ -1,6 +1,9 @@
 package com.personnel_accounting.department;
 
 import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.pagination.entity.Column;
+import com.personnel_accounting.pagination.entity.Order;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -36,9 +39,26 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     }
 
     @Override
-    public List<Department> findAll() {
+    public List<Department> findAll(PagingRequest pagingRequest) {
         Session session = sessionFactory.getCurrentSession();
-        return (List<Department>) session.createQuery("from Department").list();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+
+        String hql = "from Department";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " where concat(id, name, isActive) like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength() + 1);
+        return query.list();
+    }
+
+    @Override
+    public Long getDepartmentCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Department");
+        return (Long) query.getSingleResult();
     }
 
     @Override

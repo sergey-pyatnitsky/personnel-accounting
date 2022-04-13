@@ -112,7 +112,7 @@ public class DepartmentDAOTest {
         Assert.assertTrue(departmentDAO.find(department.getId()).isActive());
     }
 
-    @Test
+    /*@Test
     public void findAll() {
         logger.info("START findAll");
         List<Department> departmentListFromDB = departmentDAO.findAll();
@@ -124,7 +124,7 @@ public class DepartmentDAOTest {
         Assert.assertEquals(departmentListFromDB.get(departmentListFromDB.size() - 1).getName(),
                 "Отдел Python разработки");
         Assert.assertTrue(departmentListFromDB.get(departmentListFromDB.size() - 1).isActive());
-    }
+    }*/
 
     @Test
     public void update() {

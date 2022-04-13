@@ -1,6 +1,7 @@
 package com.personnel_accounting.department;
 
 import com.personnel_accounting.domain.*;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 
 import java.util.List;
 
@@ -9,9 +10,13 @@ public interface DepartmentService {
     boolean closeDepartment(Department department);
 
     List<Project> findProjects(Department department);
+    List<Project> findProjectsPaginated(PagingRequest pagingRequest, Department department);
     List<Employee> findEmployees(Department department);
     Employee assignToDepartment(Employee employee, Department department);
     Department changeDepartmentState(Department department, boolean isActive);
+    Department editDepartmentName(Department department, String name);
+
+    Long getDepartmentCount();
 
     Position addPosition(Position position);
     Position mergePosition(Position position);
@@ -24,7 +29,7 @@ public interface DepartmentService {
 
     Department find(Long id);
     List<Department> findByActive(boolean isActive);
-    List<Department> findAll();
+    List<Department> findAll(PagingRequest pagingRequest);
     List<Department> findByName(String name);
 
     Department save(Department department);

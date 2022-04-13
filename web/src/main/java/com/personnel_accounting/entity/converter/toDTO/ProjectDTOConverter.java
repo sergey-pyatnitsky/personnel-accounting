@@ -13,9 +13,9 @@ public class ProjectDTOConverter implements Converter<Project, ProjectDTO> {
         projectDTO.setName(source.getName());
         projectDTO.setActive(source.isActive());
         if(source.getStartDate() != null)
-            projectDTO.setStart_date(source.getStartDate().toString());
+            projectDTO.setStartDate(source.getStartDate().toString());
         if(source.getEndDate() != null)
-            projectDTO.setEnd_date(source.getEndDate().toString());
+            projectDTO.setEndDate(source.getEndDate().toString());
         return projectDTO;
     }
 }

@@ -14,10 +14,10 @@ public class DepartmentConverter implements Converter<DepartmentDTO, Department>
         department.setId(source.getId());
         department.setName(source.getName());
         department.setActive(source.isActive());
-        if (source.getStart_date() != null)
-            department.setStartDate(Date.valueOf(source.getStart_date()));
-        if (source.getEnd_date() != null)
-            department.setEndDate(Date.valueOf(source.getEnd_date()));
+        if (source.getStartDate() != null)
+            department.setStartDate(Date.valueOf(source.getStartDate()));
+        if (source.getStartDate() != null)
+            department.setEndDate(Date.valueOf(source.getStartDate()));
         return department;
     }
 }

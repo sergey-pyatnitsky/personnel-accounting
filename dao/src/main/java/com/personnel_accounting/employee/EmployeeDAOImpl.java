@@ -1,9 +1,14 @@
 package com.personnel_accounting.employee;
 
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.User;
+import com.personnel_accounting.pagination.entity.Column;
+import com.personnel_accounting.pagination.entity.Direction;
+import com.personnel_accounting.pagination.entity.Order;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -30,9 +35,26 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
-    public List<Employee> findAll() {
+    public List<Employee> findAll(PagingRequest pagingRequest) {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from Employee ").list();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Employee";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " where concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public Long getEmployeeCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Employee");
+        return (Long) query.getSingleResult();
     }
 
     @Override
@@ -77,6 +99,23 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         Query query = session.createQuery(
                 "from Employee where department = :department");
         query.setParameter("department", department);
+        return query.list();
+    }
+
+    @Override
+    public List<Employee> findByDepartmentPaginated(Department department, PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Employee where department = :department";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and where concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("department", department);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
         return query.list();
     }
 

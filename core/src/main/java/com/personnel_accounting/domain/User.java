@@ -2,8 +2,10 @@ package com.personnel_accounting.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +22,11 @@ public class User {
 
     @Column(name = "enabled")
     private boolean isActive;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "username", nullable = false)
+    @ToString.Exclude
+    private Authority authority;
 
     public User(String username, String password, boolean isActive) {
         this.username = username;

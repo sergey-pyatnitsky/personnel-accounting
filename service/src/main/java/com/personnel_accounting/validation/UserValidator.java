@@ -25,11 +25,11 @@ public class UserValidator implements Validator {
     public void validate(Object target, Errors errors) {
         User user = (User) target;
         if (checkForRegexp(user.getUsername(), env.getProperty("username.regexp"))) {
-            errors.rejectValue("username", "username.not_matches");
+            errors.rejectValue("username", "username.not_matches", "Неверный формат логина");
         }
 
         if (checkForRegexp(user.getPassword(), env.getProperty("password.regexp"))) {
-            errors.rejectValue("password", "password.not_matches");
+            errors.rejectValue("password", "password.not_matches", "Неверный формат пароля");
         }
     }
 

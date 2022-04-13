@@ -18,9 +18,11 @@ public class EmployeeValidator implements Validator {
     public void validate(Object target, Errors errors) {
         Employee employee = (Employee) target;
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "name.required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "name.required",
+                "Поле \"ФИО\" пустое или имеет лишние пробелы");
         if (!checkSize(employee.getName()))
-            errors.rejectValue("name", "name.size");
+            errors.rejectValue("name", "name.size",
+                    "Поле \"ФИО\" превышает максимальный допустимый размер");
     }
 
     private boolean checkSize(String input) {

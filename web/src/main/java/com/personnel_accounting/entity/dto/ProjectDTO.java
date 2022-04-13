@@ -8,6 +8,6 @@ public class ProjectDTO {
     private String name;
     private DepartmentDTO department;
     private boolean isActive;
-    private String start_date;
-    private String end_date;
+    private String startDate;
+    private String endDate;
 }

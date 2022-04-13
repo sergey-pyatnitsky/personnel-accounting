@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
+
+<body>
+  <div class="row mb-5" sec:authorize="hasAuthority('SUPER_ADMIN')" th:fragment="tab-user">
+    <div class="col-12">
+      <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link" id="employee_btn">Сотрудники</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="admin_btn">Администраторы</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

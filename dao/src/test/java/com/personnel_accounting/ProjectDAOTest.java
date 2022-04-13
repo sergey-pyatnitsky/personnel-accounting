@@ -135,7 +135,7 @@ public class ProjectDAOTest {
         Assert.assertTrue(tempProject.isActive());
     }
 
-    @Test
+    /*@Test
     public void findAll() {
         logger.info("START findAll");
         List<Project> projectListFromDB = projectDAO.findAll();
@@ -147,7 +147,7 @@ public class ProjectDAOTest {
         tempProject = projectListFromDB.get(projectListFromDB.size() - 2);
         Assert.assertEquals(tempProject.getName(), "Банковская система");
         Assert.assertTrue(tempProject.isActive());
-    }
+    }*/
 
     @Test
     public void update() {

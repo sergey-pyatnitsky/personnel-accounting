@@ -14,10 +14,10 @@ public class ProjectConverter implements Converter<ProjectDTO, Project> {
         project.setId(source.getId());
         project.setName(source.getName());
         project.setActive(source.isActive());
-        if (source.getStart_date() != null)
-            project.setStartDate(Date.valueOf(source.getStart_date()));
-        if (source.getEnd_date() != null)
-            project.setEndDate(Date.valueOf(source.getEnd_date()));
+        if (source.getStartDate() != null)
+            project.setStartDate(Date.valueOf(source.getStartDate()));
+        if (source.getEndDate() != null)
+            project.setEndDate(Date.valueOf(source.getEndDate()));
         return project;
     }
 }

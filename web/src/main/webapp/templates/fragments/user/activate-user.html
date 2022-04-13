@@ -2,27 +2,29 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ru">
 
 <body>
-<div class="container-fluid p-4 p-md-5 pt-5" th:fragment="activate-user" id="content-activate-user">
-  <h3 class="mb-4">Активирование пользователей</h3>
-  <div class="alert"></div>
-  <div th:replace="~{fragments/user/radio-user :: radio-user}"></div>
-  <div class="row" id="activate_users_table" style="display: none;">
-    <div class="col">
-      <table class="table table-hover">
-        <thead>
-        <tr>
-          <th class="col-1">#</th>
-          <th class="col-2">Логин</th>
-          <th class="col-4">ФИО</th>
-          <th class="col-2">Роль</th>
-          <th class="col-2">Активация</th>
-          <th class="col-1">Действие</th>
-        </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+  <div class="container-fluid md-5 pt-5" th:fragment="activate-user" id="content-activate-user"
+    style="display: none">
+    <h3 class="mb-4">Активирование пользователей</h3>
+    <div class="alert"></div>
+    <div th:replace="~{fragments/user/tab-user :: tab-user}"></div>
+    <div class="row">
+      <div class="col">
+        <table class="table table-hover" id="activate_users_table">
+          <thead>
+            <tr>
+              <th class="col-1">#</th>
+              <th class="col-2">Логин</th>
+              <th class="col-4">ФИО</th>
+              <th class="col-2">Роль</th>
+              <th class="col-2">Активация</th>
+              <th class="col-1">Действие</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
 </body>
+
 </html>

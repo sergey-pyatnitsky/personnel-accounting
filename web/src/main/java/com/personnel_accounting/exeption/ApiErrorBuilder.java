@@ -1,9 +1,9 @@
 package com.personnel_accounting.exeption;
 
-import java.time.LocalDateTime;
+import java.sql.Date;
 
 public class ApiErrorBuilder {
-    private LocalDateTime timestamp;
+    private Date timestamp;
     private int status;
     private String error;
 
@@ -14,7 +14,7 @@ public class ApiErrorBuilder {
         return new ApiErrorBuilder();
     }
 
-    public ApiErrorBuilder withTimestamp(LocalDateTime timestamp) {
+    public ApiErrorBuilder withTimestamp(Date timestamp) {
         this.timestamp = timestamp;
         return this;
     }

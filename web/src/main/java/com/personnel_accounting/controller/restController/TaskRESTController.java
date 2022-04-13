@@ -8,6 +8,8 @@ import com.personnel_accounting.entity.dto.ProjectDTO;
 import com.personnel_accounting.entity.dto.TaskDTO;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.exeption.NoSuchDataException;
+import com.personnel_accounting.pagination.entity.Page;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.springframework.core.convert.ConversionService;
@@ -49,17 +51,16 @@ public class TaskRESTController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/api/task/get_all/project/{id}/by_status/{status}")
-    public ResponseEntity<?> getAllTasksByStatus(@PathVariable TaskStatus status, @PathVariable Long id) {
-        List<TaskDTO> tasks = projectService.findTaskInProjectByStatus(projectService.find(id), status)
+    @PostMapping("/api/task/get_all/project/{id}/by_status/{status}")
+    public ResponseEntity<?> getAllTasksByStatus(@RequestBody PagingRequest pagingRequest,
+                                                 @PathVariable TaskStatus status, @PathVariable Long id) {
+        return new ResponseEntity<>(getPage(projectService.findTaskInProjectByStatus(pagingRequest, projectService.find(id), status)
                 .stream().map(obj -> {
                     TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
                     taskDTO.setProject(conversionService.convert(obj.getProject(), ProjectDTO.class));
                     taskDTO.setAssignee(conversionService.convert(obj.getAssignee(), EmployeeDTO.class));
                     return taskDTO;
-                }).collect(Collectors.toList());
-        if(tasks.size() == 0) throw new NoSuchDataException("На проекте отсутсвуют задачи с данным статусом");
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
+                }).collect(Collectors.toList()), pagingRequest.getDraw()), HttpStatus.OK);
     }
 
     @GetMapping("/api/task/get_all/project/{project_id}/by_status/{status}/employee")
@@ -75,7 +76,7 @@ public class TaskRESTController {
                             conversionService.convert(obj.getProject().getDepartment(), DepartmentDTO.class));
                     return taskDTO;
                 }).collect(Collectors.toList());
-        if(tasks.size() == 0) throw new NoSuchDataException("Задачи с данным статусом отсутствуют");
+        if (tasks.size() == 0) throw new NoSuchDataException("Задачи с данным статусом отсутствуют");
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
@@ -96,5 +97,14 @@ public class TaskRESTController {
         if (time != null)
             employeeService.trackTime(task, Time.valueOf(time.replaceAll("\"", "") + ":00"));
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private Page<TaskDTO> getPage(List<TaskDTO> list, int draw) {
+        int count = employeeService.getEmployeeCount().intValue();
+        Page<TaskDTO> page = new Page<>(list);
+        page.setRecordsTotal(count);
+        page.setRecordsFiltered(count);
+        page.setDraw(draw);
+        return page;
     }
 }

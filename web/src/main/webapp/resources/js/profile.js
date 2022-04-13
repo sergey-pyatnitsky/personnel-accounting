@@ -36,18 +36,18 @@ function edit_profile_data() {
     contentType: "application/json",
     url: "/api/employee/profile/edit",
     data: JSON.stringify(employee),
-    dataType: 'json',
     cache: false,
     timeout: 600000,
-    success: function () {
+    success: function (data) {
       $('.alert').empty();
-      $('.alert').append(`<div class="alert alert-success"role="alert">
-        Сохранено!</div>`);
+      data != ""
+        ? $('.alert').append(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`)
+        : $('.alert').append(`<div class="alert alert-success" role="alert">Сохранено!</div>`);
     },
-    error: function () {
+    error: function (error) {
+      console.log(error);
       $('.alert').empty();
-      $('.alert').append(`<div class="alert alert-danger"role="alert">
-        Ошибка изменения данных!</div>`);
+      $('.alert').append(`<div class="alert alert-danger"role="alert">Ошибка!</div>`);
     }
   });
 }
@@ -57,7 +57,6 @@ function get_profile_data() {
     type: "GET",
     contentType: "application/json",
     url: "/api/employee/profile/get_profile_data",
-    dataType: 'json',
     cache: false,
     timeout: 600000,
     success: function (data) {
@@ -71,8 +70,7 @@ function get_profile_data() {
     },
     error: function () {
       $('.alert').empty();
-      $('.alert').append(`<div class="alert alert-danger"role="alert">
-        Ошибка!</div>`);
+      $('.alert').append(`<div class="alert alert-danger"role="alert">Ошибка!</div>`);
     }
   });
 }
@@ -86,16 +84,18 @@ function check_old_password() {
     contentType: "application/json",
     url: "/api/employee/profile/check_old_password",
     data: JSON.stringify(entity),
-    dataType: 'json',
     cache: false,
     timeout: 600000,
-    success: function () {
-      save_password();
-    },
-    error: function () {
+    success: function (data) {
       $('.alert_pass').empty();
-      $('.alert_pass').append(`<div class="alert alert-danger"role="alert">
-      Неправильный пароль!</div>`);
+      data != ""
+        ? $('.alert_pass').append(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`)
+        : save_password();
+    },
+    error: function (error) {
+      console.log(error);
+      $('.alert_pass').empty();
+      $('.alert_pass').append(`<div class="alert alert-danger"role="alert">Ошибка</div>`);
     }
   });
 }
@@ -109,21 +109,23 @@ function save_password() {
     contentType: "application/json",
     url: "/api/employee/profile/edit_password",
     data: JSON.stringify(entity),
-    dataType: 'json',
     cache: false,
     timeout: 600000,
-    success: function () {
-      $('#modal_input_old_pass').val('');
-      $('#modal_input_new_pass').val('');
-      $('#modal_input_repeat').val('');
+    success: function (data) {
       $('.alert_pass').empty();
-      $('.alert_pass').append(`<div class="alert alert-success"role="alert">
-        Пароль изменён</div>`);
+      if (data != "") $('.alert_pass').append(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`)
+      else {
+        $('#modal_input_old_pass').val('');
+        $('#modal_input_new_pass').val('');
+        $('#modal_input_repeat').val('');
+        $('.alert_pass').empty();
+        $('.alert_pass').append(`<div class="alert alert-success"role="alert">Пароль изменён</div>`);
+      }
     },
-    error: function () {
+    error: function (error) {
+      console.log(error);
       $('.alert_pass').empty();
-      $('.alert_pass').append(`<div class="alert alert-danger"role="alert">
-        Ошибка изменения пароля!</div>`);
+      $('.alert_pass').append(`<div class="alert alert-danger"role="alert">Ошибка</div>`);
     }
   });
 }

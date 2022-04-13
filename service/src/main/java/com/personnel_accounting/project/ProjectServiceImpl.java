@@ -14,6 +14,7 @@ import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.exeption.ActiveStatusDataException;
 import com.personnel_accounting.exeption.ExistingDataException;
 import com.personnel_accounting.exeption.NoSuchDataException;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.task.TaskDAO;
 import org.springframework.stereotype.Service;
@@ -93,8 +94,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Task> findTaskInProjectByStatus(Project project, TaskStatus taskStatus) {
-        return taskDAO.findByProject(project)
+    public List<Task> findTaskInProjectByStatus(PagingRequest pagingRequest, Project project, TaskStatus taskStatus) {
+        return taskDAO.findByProjectPaginated(pagingRequest, project)
                 .stream().filter(task -> task.getTaskStatus().equals(taskStatus))
                 .collect(Collectors.toList());
     }
@@ -168,6 +169,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public Long getEmployeeCount() {
+        return projectDAO.getProjectCount();
+    }
+
+    @Override
     public List<Employee> findByProject(Project project) {
         return employeePositionDAO.findByProject(project).stream()
                 .map(EmployeePosition::getEmployee)
@@ -197,8 +203,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Project> findAll() {
-        return projectDAO.findAll();
+    public List<Project> findAll(PagingRequest pagingRequest) {
+        return projectDAO.findAll(pagingRequest);
     }
 
     @Override

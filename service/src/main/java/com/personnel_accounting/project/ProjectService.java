@@ -8,6 +8,7 @@ import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.enums.TaskStatus;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 
 import java.util.List;
 
@@ -26,13 +27,15 @@ public interface ProjectService {
     List<EmployeePosition> findProjectEmployeePositions(Employee employee, Project project);
     List<EmployeePosition> findEmployeePositions(Employee employee);
 
+    Long getEmployeeCount();
+
     Project find(Long id);
     List<Project> findByActive(boolean isActive);
-    List<Project> findAll();
+    List<Project> findAll(PagingRequest pagingRequest);
     List<Project> findByName(String name);
     List<Project> findByDepartment(Department department);
 
-    List<Task> findTaskInProjectByStatus(Project project, TaskStatus taskStatus);
+    List<Task> findTaskInProjectByStatus(PagingRequest pagingRequest, Project project, TaskStatus taskStatus);
     List<Task> findTasksByEmployeeInProjectWithStatus(Employee employee, Project project, TaskStatus taskStatus);
 
     Project save(Project project);

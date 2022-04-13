@@ -2,31 +2,31 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ru">
 
 <body>
-<div class="container-fluid p-4 p-md-5 pt-5" th:fragment="assign-user" id="content-assign-user">
+<div class="container-fluid md-5 pt-5" th:fragment="assign-user" id="content-assign-user">
   <h3 class="mb-4">Назначение пользователя в отдел</h3>
   <div class="alert"></div>
-  <div class="row">
-    <div class="col">
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="user_radio" id="assignEmployeeRadio" value="1">
-        <label class="form-check-label" for="assignEmployeeRadio">Свободные сотрудники</label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="user_radio" id="transferEmployeeRadio" value="2">
-        <label class="form-check-label" for="transferEmployeeRadio">Перевод сотрудника</label>
-      </div>
+  <div class="row mb-5">
+    <div class="col-12">
+      <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link" id="assignEmployeeBtn">Свободные сотрудники</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="transferEmployeeBtn">Перевод сотрудника</a>
+        </li>
+      </ul>
     </div>
   </div>
-  <div class="row" id="assign_users_table" style="display: none;">
+  <div class="row">
     <div class="col">
-      <table class="table table-hover">
+      <table class="table table-hover" id="assign_users_table">
         <thead>
         <tr>
           <th class="col-1">#</th>
           <th class="col-2">Логин</th>
           <th class="col-3">ФИО</th>
           <th class="col-2">Роль</th>
-          <th class="col-3" style="display: none;" id="department_column">Отдел</th>
+          <th class="col-3">Отдел</th>
           <th class="col-1">Действие</th>
         </tr>
         </thead>

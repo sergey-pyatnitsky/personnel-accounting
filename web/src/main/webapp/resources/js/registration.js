@@ -16,26 +16,21 @@ function reg_user() {
   employee.name = $('#name').val();
   Object.assign(employee, { user: { username: $('#username').val(), password: $("#password").val() } });
 
-  var token = $("meta[name='_csrf']").attr("content");
-  var header = $("meta[name='_csrf_header']").attr("content");
-  $(document).ajaxSend(function (e, xhr, options) {
-    xhr.setRequestHeader(header, token);
-  });
-
   $.ajax({
     type: "POST",
     contentType: "application/json",
     url: "/registration",
     data: JSON.stringify(employee),
-    dataType: 'json',
     cache: false,
     timeout: 600000,
-    success: function () {
+    success: function (data) {
       $('.alert_reg').empty();
-      $('.alert_reg').append(`<div class="alert alert-success" role="alert">
-          Зарегестрировано!</div>`);
+      data != ""
+        ? $('.alert_reg').append(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`)
+        : $('.alert_reg').append(`<div class="alert alert-success" role="alert">Зарегестрировано!</div>`);
     },
-    error: function () {
+    error: function (error) {
+      console.log(error);
       $('.alert_reg').empty();
       $('.alert_reg').append(`<div class="alert alert-danger" role="alert">
           Данный пользователь уже существует!</div>`);
