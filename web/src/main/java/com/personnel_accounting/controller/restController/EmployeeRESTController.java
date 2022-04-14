@@ -126,14 +126,17 @@ public class EmployeeRESTController {
         }).collect(Collectors.toList()), pagingRequest.getDraw()), HttpStatus.OK);
     }
 
-    @GetMapping("/api/employee/get_all/by_project/{id}")
-    public ResponseEntity<?> getAllEmployeeByProject(@PathVariable Long id) {
+    @PostMapping("/api/employee/get_all/by_project/{id}")
+    public ResponseEntity<?> getAllEmployeeByProject(@RequestBody PagingRequest pagingRequest, @PathVariable Long id) {
         Project project = projectService.find(id);
-        List<EmployeeDTO> employees = projectService.findByProject(project)
+        return new ResponseEntity<>(getPage(projectService.findByProject(project)
                 .stream().filter(Employee::isActive).collect(Collectors.toList())
-                .stream().map(employee -> conversionService.convert(employee, EmployeeDTO.class)).collect(Collectors.toList());
-        if (employees.size() == 0) throw new NoSuchDataException("В данном проекте отсутствуют сотрудники");
-        return new ResponseEntity<>(employees, HttpStatus.OK);
+                .stream().map(employee -> {
+                    EmployeeDTO employeeDTO = conversionService.convert(employee, EmployeeDTO.class);
+                    employeeDTO.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                    return employeeDTO;
+                }).collect(Collectors.toList()), pagingRequest.getDraw()),
+                HttpStatus.OK);
     }
 
     @PostMapping("/api/employee/get_with_project/department/{id}")
@@ -143,7 +146,7 @@ public class EmployeeRESTController {
         if (id != 0) department = departmentService.find(id);
         else
             department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
-        return new ResponseEntity<>(getPage(employeeService.getEmployeesWithProjectByDepartment(department, pagingRequest)
+        return new ResponseEntity<>(getPage(employeeService.getEmployeesWithOpenProjectByDepartment(department, pagingRequest)
                 .stream().map(obj -> {
                     EmployeeDTO employeeDTO = conversionService.convert(obj, EmployeeDTO.class);
                     employeeDTO.setDepartment(conversionService.convert(obj.getDepartment(), DepartmentDTO.class));

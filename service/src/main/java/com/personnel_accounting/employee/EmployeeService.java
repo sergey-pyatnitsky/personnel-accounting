@@ -37,6 +37,7 @@ public interface EmployeeService {
     List<Employee> findByActive(boolean isActive);
     Employee findByUser(User user);
     List<Employee> findByDepartment(Department department);
+    List<Employee> getEmployeesWithOpenProjectByDepartment(Department department, PagingRequest pagingRequest);
     List<Employee> findByDepartmentPaginated(Department department, PagingRequest pagingRequest);
 
     Employee save(Employee employee);

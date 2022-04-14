@@ -1,4 +1,4 @@
-let assign_table = null, open_departments = null;
+let assign_table = null, open_departments = null, department_assign_table = null;
 let current_url_for_assign_table = "/api/employee/get_all/free";
 
 $(document).ready(function () {
@@ -26,25 +26,50 @@ $(document).ready(function () {
     let current_row = null;
     $("body").on('show.bs.modal', "#content-assign-user #assignUserModal", function (event) {
       current_row = $(event.relatedTarget).closest('tr');
-      let modal = $(this);
-      get_open_department();
-      let content = ``;
-      for (let pair of open_departments.entries()) {
-        let department = pair[1];
-        content += `<option option value = "` + (pair[0] + 1) + `" > ` + department.id + ` - ` + department.name + `</option > `;
-      }
-      $("#departmentSelect").empty();
-      $("#departmentSelect").append(content);
+      if (department_assign_table != null) department_assign_table.destroy();
+      loadDeartmentsAssignTable("#departmentSelectModalTable", "/api/department/get_all/open");
 
-      if (current_row.find('.department_column').text() != "-")
-        modal.find('#departmentSelect select').val(current_row.find('.department_column').text());
+      let employee = current_row.find(".employee_id").text();
 
-      $("#assign_modal_save_btn").click(function () {
-        assign_user($(this).val(), $("#departmentSelect option:selected").text().split("-")[0]);
-      })
+      $("body").on("click", "#content-assign-user #save_assign_department_modal_btn", function () {
+        assign_user(employee, $(this).val());
+      });
     });
   });
 });
+
+function loadDeartmentsAssignTable(table_id, req_url) {
+  department_assign_table = $(table_id).DataTable({
+    "processing": true,
+    "serverSide": true,
+    "pagingType": "full_numbers",
+    "ajax": {
+      "url": req_url,
+      "type": "POST",
+      "dataType": "json",
+      "contentType": "application/json",
+      "data": function (d) {
+        return JSON.stringify(d);
+      }
+    },
+    "columns": [
+      { "data": "id" },
+      { "data": "name" },
+      {
+        "mData": null,
+        "bSortable": false,
+        "mRender": function (data) {
+          return '<button type="button" class="btn btn-primary" id="save_assign_department_modal_btn"' +
+            'data-dismiss="modal" value="' + data.id + '">Выбрать</button>'
+        }
+      }
+    ],
+    language: {
+      url: language_url
+    },
+  });
+  $(table_id).removeClass("no-footer");
+}
 
 function loadAssignTable(table_id, req_url) {
   assign_table = $(table_id).DataTable({
@@ -62,7 +87,7 @@ function loadAssignTable(table_id, req_url) {
       }
     },
     "columns": [
-      { "data": "id" },
+      { "data": "id", "sClass": "employee_id" },
       { "data": "user.username" },
       { "data": "name" },
       { "data": "user.authority.role" },
@@ -79,9 +104,9 @@ function loadAssignTable(table_id, req_url) {
         "mRender": function (data) {
           return data.department != null
             ? '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
-            'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.department.id + '">Перевод</button>'
+            'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">Перевод</button>'
             : '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
-            'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.department.id + '">Назначить</button>';
+            'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">Назначить</button>';
         }
       }
     ],
@@ -129,7 +154,7 @@ function assign_user(employee_id, department_id) {
         $('.alert').replaceWith(`<div div class="alert alert-success" role = "alert" >
             Пользователь с ID `+ employee.id + ` назначен на отдел с ID ` + employee.department.id + `</div > `);
         assign_table.destroy();
-        loadAssignTable("#content-assign-user #edit_departments_table", current_url_for_assign_table);
+        loadAssignTable("#content-assign-user #assign_users_table", current_url_for_assign_table);
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
     },
     error: function (error) {

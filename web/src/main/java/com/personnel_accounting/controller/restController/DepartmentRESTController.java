@@ -67,7 +67,7 @@ public class DepartmentRESTController {
         return new ResponseEntity<>(getPage(departmentService.findAll(pagingRequest)
                 .stream().filter(department -> department.getEndDate() == null).collect(Collectors.toList())
                 .stream().map(department -> conversionService.convert(department, DepartmentDTO.class))
-                .collect(Collectors.toList()), pagingRequest.getDraw()),
+                .collect(Collectors.toList()), pagingRequest.getDraw(), departmentService.getDepartmentCount().intValue()),
                 HttpStatus.OK);
     }
 
@@ -76,17 +76,18 @@ public class DepartmentRESTController {
         return new ResponseEntity<>(getPage(departmentService.findAll(pagingRequest)
                 .stream().filter(department -> department.getEndDate() != null).collect(Collectors.toList())
                 .stream().map(department -> conversionService.convert(department, DepartmentDTO.class))
-                .collect(Collectors.toList()), pagingRequest.getDraw()),
+                .collect(Collectors.toList()), pagingRequest.getDraw(), departmentService.getDepartmentCount().intValue()),
                 HttpStatus.OK);
     }
 
-    @GetMapping("/api/department/projects/open/{id}")
-    public ResponseEntity<?> getAllOpenProjectsByDepartment(@PathVariable Long id) {
-        List<ProjectDTO> projectList = departmentService.findProjects(departmentService.find(id))
+    @PostMapping("/api/department/projects/open/{id}")
+    public ResponseEntity<?> getAllOpenProjectsByDepartment(@RequestBody PagingRequest pagingRequest,
+                                                            @PathVariable Long id) {
+        return new ResponseEntity<>(getPage(departmentService.findProjectsPaginated(pagingRequest, departmentService.find(id))
                 .stream().filter(obj -> obj.getEndDate() == null).collect(Collectors.toList())
-                .stream().map(project -> conversionService.convert(project, ProjectDTO.class)).collect(Collectors.toList());
-        if (projectList.size() == 0) throw new NoSuchDataException("В данном отделе отсутствуют открытые проекты");
-        return new ResponseEntity<>(projectList, HttpStatus.OK);
+                .stream().map(project -> conversionService.convert(project, ProjectDTO.class))
+                .collect(Collectors.toList()), pagingRequest.getDraw(), 1),
+                HttpStatus.OK);
     }
 
     @PutMapping("/api/department/activate/{id}")
@@ -120,9 +121,9 @@ public class DepartmentRESTController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private Page<DepartmentDTO> getPage(List<DepartmentDTO> list, int draw) {
-        int count = departmentService.getDepartmentCount().intValue();
-        Page<DepartmentDTO> page = new Page<>(list);
+    private Page<?> getPage(List<?> list, int draw, int count) {
+        //int count = departmentService.getDepartmentCount().intValue();
+        Page<?> page = new Page<>(list);
         page.setRecordsFiltered(count);
         page.setDraw(draw);
         page.setRecordsTotal(count);

@@ -181,6 +181,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public List<Employee> findByProjectPaginated(PagingRequest pagingRequest, Project project) {
+        return employeePositionDAO.findByProjectPaginated(pagingRequest, project).stream()
+                .map(EmployeePosition::getEmployee)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public List<EmployeePosition> findProjectEmployeePositions(Employee employee, Project project) {
         return employeePositionDAO.findByProject(project).stream().filter(
@@ -190,6 +197,11 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<EmployeePosition> findEmployeePositions(Employee employee) {
         return employeePositionDAO.findByEmployee(employee);
+    }
+
+    @Override
+    public List<EmployeePosition> findByEmployeePaginated(PagingRequest pagingRequest, Employee employee) {
+        return employeePositionDAO.findByEmployeePaginated(pagingRequest, employee);
     }
 
     @Override

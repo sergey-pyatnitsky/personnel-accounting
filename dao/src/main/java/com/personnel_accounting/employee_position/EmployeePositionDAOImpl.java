@@ -1,6 +1,9 @@
 package com.personnel_accounting.employee_position;
 
 import com.personnel_accounting.domain.*;
+import com.personnel_accounting.pagination.entity.Column;
+import com.personnel_accounting.pagination.entity.Order;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -56,6 +59,40 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
         Query query = session.createQuery(
                 "from EmployeePosition where project = :project");
         query.setParameter("project", project);
+        return query.list();
+    }
+
+    @Override
+    public List<EmployeePosition> findByProjectPaginated(PagingRequest pagingRequest, Project project) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from EmployeePosition where project = :project";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and where concat(employee.id, employee.name, employee.user.username, employee.user.authority.role, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("project", project);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<EmployeePosition> findByEmployeePaginated(PagingRequest pagingRequest, Employee employee) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from EmployeePosition where employee = :employee";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and where concat(employee.id, employee.name, employee.user.username, employee.user.authority.role, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("employee", employee);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
         return query.list();
     }
 

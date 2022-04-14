@@ -157,6 +157,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
+    public List<Employee> getEmployeesWithOpenProjectByDepartment(Department department, PagingRequest pagingRequest) { //TODO test
+        List<Employee> employees = employeeDAO.findByDepartmentPaginated(department, pagingRequest)
+                .stream().filter(employee ->
+                        employeePositionDAO.findByEmployee(employee)
+                                .stream().filter(employeePosition -> employeePosition.getProject() != null
+                                        && employeePosition.getProject().getEndDate() == null)
+                                .findFirst().orElse(null) != null
+                ).collect(Collectors.toList());
+        return employeeDAO.findByDepartmentPaginated(department, pagingRequest)
+                .stream().filter(employee ->
+                        employeePositionDAO.findByEmployee(employee)
+                                .stream().filter(employeePosition -> employeePosition.getProject() != null
+                                        && employeePosition.getProject().getEndDate() == null)
+                                .findFirst().orElse(null) != null
+                ).collect(Collectors.toList());
+    }
+
+    @Override
     public Employee find(Long id) {
         return employeeDAO.find(id);
     }

@@ -18,7 +18,8 @@ public class TaskValidator implements Validator {
     public void validate(Object target, Errors errors) {
         Task task = (Task) target;
         if (!checkSize(task.getName())) {
-            errors.rejectValue("task", "task.size");
+            errors.rejectValue("name", "task.size",
+                    "Поле \"Наименование\" превышает максимальный допустимый размер");
         }
 
         ValidationUtils.rejectIfEmpty(errors, "description", "description.required");
@@ -27,6 +28,6 @@ public class TaskValidator implements Validator {
     }
 
     private boolean checkSize(String input) {
-        return input.length() > 100;
+        return input.length() <= 100;
     }
 }

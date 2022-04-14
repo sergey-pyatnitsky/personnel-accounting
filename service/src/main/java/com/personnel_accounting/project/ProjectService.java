@@ -24,8 +24,10 @@ public interface ProjectService {
     Project assignProjectToDepartmentId(Project project, Long departmentId);
     EmployeePosition changeEmployeeStateInProject(EmployeePosition employeePosition, boolean isActive);
     List<Employee> findByProject(Project project);
+    List<Employee> findByProjectPaginated(PagingRequest pagingRequest, Project project);
     List<EmployeePosition> findProjectEmployeePositions(Employee employee, Project project);
     List<EmployeePosition> findEmployeePositions(Employee employee);
+    List<EmployeePosition> findByEmployeePaginated(PagingRequest pagingRequest, Employee employee);
 
     Long getEmployeeCount();
 

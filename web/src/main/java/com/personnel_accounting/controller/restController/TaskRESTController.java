@@ -47,8 +47,9 @@ public class TaskRESTController {
         Task task = conversionService.convert(taskDTO, Task.class);
         task.setAssignee(employeeService.find(taskDTO.getAssignee().getId()));
         task.setReporter(employeeService.findByUser(userService.findByUsername(authentication.getName())));
-        employeeService.addTaskInProject(projectService.find(taskDTO.getProject().getId()), task);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(conversionService.convert(employeeService.addTaskInProject(
+                projectService.find(taskDTO.getProject().getId()), task), TaskDTO.class),
+                HttpStatus.OK);
     }
 
     @PostMapping("/api/task/get_all/project/{id}/by_status/{status}")
@@ -94,7 +95,7 @@ public class TaskRESTController {
     public ResponseEntity<?> editTaskStatus(@PathVariable Long id, @RequestBody String time) {
         Task task = employeeService.findTask(id);
         employeeService.changeTaskStatus(task);
-        if (time != null)
+        if (!time.equals("null"))
             employeeService.trackTime(task, Time.valueOf(time.replaceAll("\"", "") + ":00"));
         return new ResponseEntity<>(HttpStatus.OK);
     }

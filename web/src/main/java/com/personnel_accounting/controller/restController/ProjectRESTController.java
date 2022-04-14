@@ -75,16 +75,16 @@ public class ProjectRESTController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/api/project/by_employee/open/{id}")
-    public ResponseEntity<?> getAllOpenProjectsByEmployee(@PathVariable Long id) {
+    @PostMapping("/api/project/by_employee/open/{id}")
+    public ResponseEntity<?> getAllOpenProjectsByEmployee(@RequestBody PagingRequest pagingRequest, @PathVariable Long id) {
         return new ResponseEntity<>(
-                projectService.findEmployeePositions(employeeService.find(id))
+                getPage(projectService.findByEmployeePaginated(pagingRequest, employeeService.find(id))
                         .stream().filter(employeePosition ->
                                 employeePosition.isActive() && employeePosition.getEndDate() == null)
                         .collect(Collectors.toList())
                         .stream().map(employeePosition ->
                                 conversionService.convert(employeePosition.getProject(), ProjectDTO.class))
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.toList()), pagingRequest.getDraw()),
                 HttpStatus.OK);
     }
 

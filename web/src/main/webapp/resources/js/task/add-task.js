@@ -1,134 +1,207 @@
+let add_table = null, department_add_table = null,
+  employee_add_table = null, project_add_table = null;
+let selected_add_department = null, selected_add_project = null, selected_employee = null;
+
 $(document).ready(function () {
+  hide_preloader();
+  hideAllContent();
+
   $("#add-task").click(function (event) {
     event.preventDefault();
-    show_add_task_content();
-  });
+    hideAllContent();
+    $("#content-add-task").show();
+    if ($("#content-add-task #department_add_task_table").length != 0) {
+      $("#content-add-task #div_project_add_task_table").hide();
+      $("#content-add-task #div_employee_add_task_table").hide();
+      $("#content-add-task #div_add_tasks").hide();
+      $("#content-add-task #div_department_add_task_table").show();
+      if (department_add_table != null) department_add_table.destroy();
+      loadDepartmentaddTable("#content-add-task #department_add_task_table", "/api/department/get_all/open");
 
-  $("body").on("click", "#add_task_btn", function (event) {
-    event.stopImmediatePropagation();
-    event.preventDefault();
-    add_task();
+      $("body").on("click", "#content-add-task #select_department_add", function () {
+        selected_add_department = $(this).val();
+        showProjectSelectAddTable($(this).val());
+      });
+    } else showProjectSelectAddTable();
+
+    $("body").on("click", "#content-add-task #departmentBtnTask", function () {
+      $("#content-add-task #div_add_tasks").hide();
+      $("#content-add-task #div_project_add_task_table").hide();
+      $("#content-add-task #div_employee_add_task_table").hide();
+      $("#content-add-task #div_department_add_task_table").show();
+      if (department_add_table != null) department_add_table.destroy();
+      loadDepartmentaddTable("#content-add-task #department_add_task_table", "/api/department/get_all/open");
+
+      $("body").on("click", "#content-add-task #select_department_add", function () {
+        selected_add_department = $(this).val();
+        showProjectSelectAddTable($(this).val());
+      });
+    });
+
+    $("body").on("click", "#content-add-task #projectBtnTask", function () {
+      $("#content-add-task #div_add_tasks").hide();
+      $("#content-add-task #div_employee_add_task_table").hide();
+      $("#content-add-task #div_project_add_task_table").show();
+      $("#content-add-task #div_department_add_task_table").hide();
+      showProjectSelectAddTable(selected_add_department);
+    });
+
+    $("body").on("click", "#content-add-task #employeeBtnTask", function () {
+      if (selected_add_project != null) {
+        $("#content-add-task #div_add_tasks").hide();
+        $("#content-add-task #div_employee_add_task_table").show();
+        $("#content-add-task #div_project_add_task_table").hide();
+        $("#content-add-task #div_department_add_task_table").hide();
+        showEmployeeSelectTable(selected_add_project);
+      }
+    });
+
+    $("body").on("click", "#add_task_btn", function (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      add_task();
+    });
   });
 });
 
-function show_add_task_content() {
-  hideAllContent();
-  $("#content-add-task").show();
-  $("#content-add-task #projectSelectToAddTask").empty();
-  $("#content-add-task #employeeSelectToAddTask").empty();
-  clear_input();
-  if ($("#content-add-task #departmentSelectToAddTask").length) {
-    get_departments();
-    if (show_department_alert(departments) == true) {
-      let content = ``;
-      for (let pair of departments.entries()) {
-        let department = pair[1];
-        content += `<option value="` + (pair[0] + 1) + `">` + department.id + `-` + department.name + `</option>`;
-      }
-      $("#content-add-task #departmentSelectToAddTask").empty();
-      $("#content-add-task #departmentSelectToAddTask").append(content);
-      //get_projects($("#content-add-task #departmentSelectToAddTask option:selected").text().split("-")[0]);
-      show_project_part($("#content-add-task #departmentSelectToAddTask option:selected").text().split("-")[0]);
-    }
-  }
-  else {
-    $(".alert").replaceWith(`<div class="alert"></div>`);
-    show_project_part(0);
-  }
+function showProjectSelectAddTable(department_id) {
+  $("#content-add-task #div_department_add_task_table").hide();
+  $("#content-add-task #div_employee_add_task_table").hide();
+  $("#content-add-task #div_project_add_task_table").show();
+  if (department_id == null) department_id = 0;
+  if (project_add_table != null) project_add_table.destroy();
+  loadProjectaddTable("#content-add-task #project_add_task_table",
+    "/api/project/by_department/open/" + department_id);
 
-  /*if ($("#content-add-task #projectSelectToAddTask").length) {
-    get_projects(0);
-    show_project_select();
-    if (projects != "") show_employee_select();
-  }
-  else $(".alert").replaceWith(`<div class="alert"></div>`);*/
-
-  $('#content-add-task #departmentSelectToAddTask').on('change', function (e) {
-    $(".alert").replaceWith(`<div class="alert"></div>`);
-    //get_projects($("option:selected", this).text().split("-")[0]);
-    show_project_part($("option:selected", this).text().split("-")[0]);
+  $("body").on("click", "#content-add-task #select_project_add", function () {
+    selected_add_project = $(this).val();
+    showEmployeeSelectTable($(this).val());
   });
 }
 
-function show_project_part(project_id) {
-  if ($("#content-add-task #projectSelectToAddTask").length) {
-    get_projects(project_id);
-    //show_project_select();
-    let content = ``;
-    if (show_project_alert(projects) == true) {
-      for (let pair of projects.entries()) {
-        let project = pair[1];
-        content += `<option value="` + (pair[0] + 1) + `">` + project.id + `-` + project.name + `</option>`;
+function showEmployeeSelectTable(project_id) {
+  $("#content-add-task #div_project_add_task_table").hide();
+  $("#content-add-task #div_employee_add_task_table").show();
+  if (employee_add_table != null) employee_add_table.destroy();
+  loadEmployeeaddTable("#content-add-task #employee_add_task_table", "/api/employee/get_all/by_project/" + project_id);
+
+  $("body").on("click", "#content-add-task #select_employee_add", function () {
+    selected_employee = $(this).val();
+    showAddTask();
+  });
+}
+
+function showAddTask() {
+  $("#content-add-task #div_employee_add_task_table").hide();
+  $("#content-add-task #div_add_tasks").show();
+}
+
+function loadProjectaddTable(table_id, req_url) {
+  project_add_table = $(table_id).DataTable({
+    "processing": true,
+    "serverSide": true,
+    "pagingType": "full_numbers",
+    "ajax": {
+      "url": req_url,
+      "type": "POST",
+      "dataType": "json",
+      "contentType": "application/json",
+      "data": function (d) {
+        return JSON.stringify(d);
       }
-    }
-    $("#content-add-task #projectSelectToAddTask").empty();
-    $("#content-add-task #projectSelectToAddTask").append(content);
-    if (projects != "") show_employee_select();
-    //if (projects != "") show_employee_select();
-  }
-  else $(".alert").replaceWith(`<div class="alert"></div>`);
+    },
+    "columns": [
+      { "data": "id" },
+      { "data": "name" },
+      {
+        "mData": null,
+        "bSortable": false,
+        "mRender": function (data) {
+          return '<button type="button" class="btn btn-primary" id="select_project_add"' +
+            'value="' + data.id + '">Выбрать</button>'
+        }
+      }
+    ],
+    language: {
+      url: language_url
+    },
+  });
+  $(table_id).removeClass("no-footer");
 }
 
-/*function show_project_select() {
-  let content = ``;
-  if (show_project_alert(projects) == true) {
-    for (let pair of projects.entries()) {
-      let project = pair[1];
-      content += `<option value="` + (pair[0] + 1) + `">` + project.id + `-` + project.name + `</option>`;
-    }
-  }
-  $("#content-add-task #projectSelectToAddTask").empty();
-  $("#content-add-task #projectSelectToAddTask").append(content);
-  if (projects != "") show_employee_select();
-}*/
-
-function show_employee_select() {
-  get_employees_by_project($("#content-add-task #projectSelectToAddTask option:selected").text().split("-")[0]);
-  let content = ``;
-  if (show_employee_alert(projects) == true) {
-    for (let pair of employees.entries()) {
-      let employee = pair[1];
-      content += `<option value="` + (pair[0] + 1) + `">` + employee.id + `-` + employee.name + `</option>`;
-    }
-  }
-  $("#content-add-task #employeeSelectToAddTask").empty();
-  $("#content-add-task #employeeSelectToAddTask").append(content);
+function loadEmployeeaddTable(table_id, req_url) {
+  employee_add_table = $(table_id).DataTable({
+    "processing": true,
+    "serverSide": true,
+    "pagingType": "full_numbers",
+    "ajax": {
+      "url": req_url,
+      "type": "POST",
+      "dataType": "json",
+      "contentType": "application/json",
+      "data": function (d) {
+        return JSON.stringify(d);
+      }
+    },
+    "columns": [
+      { "data": "id" },
+      { "data": "user.username" },
+      { "data": "name" },
+      { "data": "user.authority.role" },
+      {
+        "data": "active", render: function (data) {
+          return data
+            ? '<p class="text-success">+</p>'
+            : '<p class="text-danger">-</p>';
+        }
+      },
+      {
+        "mData": null,
+        "bSortable": false,
+        "mRender": function (data) {
+          return '<button type="button" class="btn btn-primary" id="select_employee_add"' +
+            'value="' + data.id + '">Выбрать</button>'
+        }
+      }
+    ],
+    language: {
+      url: language_url
+    },
+  });
+  $(table_id).removeClass("no-footer");
 }
 
-function clear_input() {
-  $('#taskNameInput').val('');
-  $('#taskDescriptionInput').val('');
-}
-
-function show_project_alert(array) {
-  $(".alert").replaceWith(`<div class="alert"></div>`);
-  if (array == "") {
-    $(".alert").replaceWith(`
-        <div class="alert alert-warning" role="alert">Список проектов пуст!</div>`);
-    return false;
-  }
-  else if (array == null) {
-    $(".alert").replaceWith(`
-        <div class="alert alert-danger"role="alert">Ошибка!</div>`);
-    return false;
-  }
-  else return true;
-}
-
-function show_employee_alert(array) {
-  $(".alert").replaceWith(`<div class="alert"></div>`);
-  if (array == "") {
-    $(".alert").text() != "" ? $(".alert").text($(".alert").text() + " Список сотрудников пуст!")
-      : $(".alert").replaceWith(`
-        <div class="alert alert-warning" role="alert">Список сотрудников пуст!</div>`);
-    return false;
-  }
-  else if (array == null) {
-    $(".alert").replaceWith(`
-        <div class="alert alert-danger"role="alert">Ошибка!</div>`);
-    return false;
-  }
-  else return true;
+function loadDepartmentaddTable(table_id, req_url) {
+  department_add_table = $(table_id).DataTable({
+    "processing": true,
+    "serverSide": true,
+    "pagingType": "full_numbers",
+    "ajax": {
+      "url": req_url,
+      "type": "POST",
+      "dataType": "json",
+      "contentType": "application/json",
+      "data": function (d) {
+        return JSON.stringify(d);
+      }
+    },
+    "columns": [
+      { "data": "id" },
+      { "data": "name" },
+      {
+        "mData": null,
+        "bSortable": false,
+        "mRender": function (data) {
+          return '<button type="button" class="btn btn-primary" id="select_department_add"' +
+            'value="' + data.id + '">Выбрать</button>'
+        }
+      }
+    ],
+    language: {
+      url: language_url
+    },
+  });
+  $(table_id).removeClass("no-footer");
 }
 
 function add_task() {
@@ -137,8 +210,8 @@ function add_task() {
   Object.assign(task, { assignee });
   task.name = $('#content-add-task #taskNameInput').val();
   task.description = $('#content-add-task #taskDescriptionInput').val();
-  task.project.id = $("#content-add-task #projectSelectToAddTask option:selected").text().split('-')[0];
-  task.assignee.id = $("#content-add-task #employeeSelectToAddTask option:selected").text().split('-')[0];
+  task.project.id = selected_add_project;
+  task.assignee.id = selected_employee;
 
   $.ajax({
     type: "POST",
@@ -147,14 +220,21 @@ function add_task() {
     data: JSON.stringify(task),
     cache: false,
     timeout: 600000,
-    success: function () {
+    success: function (data) {
       $('.alert').empty();
-      $('.alert').replaceWith(`<div class="alert alert-success" role = "alert">Сохранено!</div>`);
-      clear_input();
+      if (data.status != undefined)
+        $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
+      else {
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
+        Задача с ID ` + task.id + ` создана</div>`);
+        $('#taskNameInput').val('');
+        $('#taskDescriptionInput').val('');
+      }
     },
-    error: function () {
+    error: function (error) {
+      console.log(error);
       $('.alert').empty();
-      $('.alert').replaceWith(`<div class="alert alert-danger" role = "alert">Ошибка!</div>`);
+      $('.alert').replaceWith(`<div class="alert alert-danger" role = "alert">500 Error</div>`);
     }
   });
 }

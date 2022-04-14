@@ -53,7 +53,7 @@
   </div>
   <div class="modal fade" id="assignUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
        aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header" id="assign_user_to_project">
           <h5 class="modal-title" id="modal_header_title"></h5>
@@ -61,20 +61,32 @@
         <div class="modal-body">
           <div id="modal_alert"></div>
           <form>
-            <div class="form-group">
-              <label for="projectSelect">Выберите проект</label>
-              <select class="form-control" id="projectSelect"></select>
-            </div>
             <div class="form-group" id="positionSelectDiv">
               <label for="positionSelect">Выберите должность</label>
               <select class="form-control" id="positionSelect"></select>
+            </div>
+            <div class="form-group">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-12">
+                    <table class="table table-hover" id="projectAssignModelTable" style="width:100%">
+                      <thead>
+                      <tr>
+                        <th class="col-1">#</th>
+                        <th class="col-4">Наименование</th>
+                        <th class="col-4">Выбор</th>
+                      </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-          <button type="button" class="btn btn-primary" id="assign_modal_save_btn"
-                  data-dismiss="modal">Сохранить</button>
         </div>
       </div>
     </div>

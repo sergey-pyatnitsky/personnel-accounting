@@ -16,43 +16,43 @@ public class MainExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleNoSuchDataException(Exception e, WebRequest request){
         ApiError apiError = ApiErrorBuilder.anApiError()
                 .withTimestamp(new Date(System.currentTimeMillis()))
-                .withStatus(HttpStatus.BAD_REQUEST.value())
+                .withStatus(HttpStatus.OK.value())
                 .withError(e.getMessage()).build();
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, HttpStatus.OK);
     }
 
     @ExceptionHandler(ExistingDataException.class)
     public ResponseEntity<ApiError> handleExistingDataException(Exception e, WebRequest request){
         ApiError apiError = ApiErrorBuilder.anApiError()
                 .withTimestamp(new Date(System.currentTimeMillis()))
-                .withStatus(HttpStatus.BAD_REQUEST.value())
+                .withStatus(HttpStatus.OK.value())
                 .withError(e.getMessage()).build();
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, HttpStatus.OK);
     }
 
     @ExceptionHandler(ActiveStatusDataException.class)
     public ResponseEntity<ApiError> handleActiveStatusDataException(Exception e, WebRequest request){
         ApiError apiError = ApiErrorBuilder.anApiError()
                 .withTimestamp(new Date(System.currentTimeMillis()))
-                .withStatus(HttpStatus.BAD_REQUEST.value())
+                .withStatus(HttpStatus.OK.value())
                 .withError(e.getMessage()).build();
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, HttpStatus.OK);
     }
 
     @ExceptionHandler(OperationExecutionException.class)
     public ResponseEntity<ApiError> handleOperationExecutionException(Exception e, WebRequest request){
         ApiError apiError = ApiErrorBuilder.anApiError()
                 .withTimestamp(new Date(System.currentTimeMillis()))
-                .withStatus(HttpStatus.BAD_REQUEST.value())
+                .withStatus(HttpStatus.OK.value())
                 .withError(e.getMessage()).build();
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, HttpStatus.OK);
     }
 
     @ExceptionHandler(IncorrectDataException.class)
     public ResponseEntity<ApiError> handleIncorrectDataException(Exception e){
         ApiError apiError = ApiErrorBuilder.anApiError()
                 .withTimestamp(new Date(System.currentTimeMillis()))
-                .withStatus(HttpStatus.BAD_REQUEST.value())
+                .withStatus(HttpStatus.OK.value())
                 .withError(e.getMessage()).build();
         return new ResponseEntity<>(apiError, HttpStatus.OK);
     }
