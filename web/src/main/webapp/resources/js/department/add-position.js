@@ -36,8 +36,9 @@ function add_position() {
       if (data != "")
         $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
       else {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-         Должность "` + data.name + `" с ID ` + data.id + ` создана</div>`);
+        let message = get_message(localStorage.getItem("lang"), "department.alert.add.position").replace("0", data.name);
+        message = message.replace("1", data.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         $('#positionNameInput').val('');
       }
     },

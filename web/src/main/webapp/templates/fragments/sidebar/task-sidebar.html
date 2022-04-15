@@ -4,9 +4,9 @@
 <body>
 <nav th:fragment="task-sidebar" id="sidebar" class="navbar navbar-expand-xll navbar-light bg-light sidebar">
   <ul class="list-unstyled components mb-5" id="menu-list">
-    <a role="button" id="add-task">Создание</a>
-    <a role="button" id="edit-task">Редактирование</a>
-    <a role="button" id="view-task">Просмотр</a>
+    <a role="button" id="add-task" th:text="#{task.sidebar.add}"></a>
+    <a role="button" id="edit-task" th:text="#{task.sidebar.edit}"></a>
+    <a role="button" id="view-task" th:text="#{task.sidebar.view}"></a>
   </ul>
 </nav>
 </body>

@@ -3,14 +3,14 @@
 
 <body>
 <div class="container-fluid p-4 p-md-5 pt-5" th:fragment="add-project" id="content-add-project">
-  <h3 class="mb-4">Добавление проекта</h3>
+  <h3 class="mb-4" th:text="#{project.add.title}"></h3>
   <div class="alert"></div>
   <div class="row mb-5">
     <div class="col-7">
       <form>
         <div class="form-group">
-          <label for="projectNameInput">Наименование</label>
-          <input type="text" class="form-control" id="projectNameInput" placeholder="Отдел Java разработки">
+          <label for="projectNameInput" th:text="#{project.add.label}"></label>
+          <input type="text" class="form-control" id="projectNameInput"  th:placeholder="#{project.add.placeholder}">
         </div>
       </form>
     </div>
@@ -21,10 +21,10 @@
         <thead>
         <tr>
           <th class="col-1">#</th>
-          <th class="col-4">Наименование</th>
-          <th class="col-2">Активация</th>
-          <th class="col-2">Дата открытия</th>
-          <th class="col-2">Действие</th>
+          <th class="col-4" th:text="#{project.add.table.name}"></th>
+          <th class="col-2" th:text="#{project.add.table.active}"></th>
+          <th class="col-2" th:text="#{project.add.table.start_date}"></th>
+          <th class="col-2" th:text="#{project.add.table.action}"></th>
         </tr>
         </thead>
         <tbody></tbody>

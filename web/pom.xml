@@ -20,6 +20,8 @@
         <spring-security-config.version>5.6.2</spring-security-config.version>
         <spring-security-taglibs.version>5.6.2</spring-security-taglibs.version>
         <thymeleaf-extras-springsecurity5.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity5.version>
+        <validation-api.version>2.0.1.Final</validation-api.version>
+        <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -65,6 +67,16 @@
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity5</artifactId>
             <version>${thymeleaf-extras-springsecurity5.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${validation-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
         </dependency>
     </dependencies>
 </project>

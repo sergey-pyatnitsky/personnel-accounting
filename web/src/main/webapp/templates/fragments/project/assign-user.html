@@ -3,19 +3,19 @@
 
 <body>
 <div class="container-fluid md-5 pt-5" th:fragment="assign-user" id="content-assign-user">
-  <h3 class="mb-4">Назначение пользователя на проект</h3>
+  <h3 class="mb-4" th:text="#{project.assign.title}"></h3>
   <div class="alert"></div>
   <div class="row mb-5" id="tabs_to_assign_user">
     <div class="col-12">
       <ul class="nav nav-tabs justify-content-center">
         <li class="nav-item">
-          <a class="nav-link" id="assignEmployeeBtn">Назначить сотрудники на проект</a>
+          <a class="nav-link" id="assignEmployeeBtn" th:text="#{project.assign.tab.assign}"></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="removeEmployeeBtn">Снять сотрудника с проекта</a>
+          <a class="nav-link" id="removeEmployeeBtn" th:text="#{project.assign.tab.remove}"></a>
         </li>
         <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
-          <a class="nav-link" id="selectDepartmentBtn">Выбрать отдел</a>
+          <a class="nav-link" id="selectDepartmentBtn" th:text="#{project.assign.tab.select}"></a>
         </li>
       </ul>
     </div>
@@ -26,8 +26,8 @@
         <thead>
         <tr>
           <th class="col-1">#</th>
-          <th class="col-4">Наименование</th>
-          <th class="col-4">Выбор</th>
+          <th class="col-4" th:text="#{project.assign.department.table.name}"></th>
+          <th class="col-4" th:text="#{project.assign.department.table.choice}"></th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -40,11 +40,11 @@
         <thead>
         <tr>
           <th class="col-1">#</th>
-          <th class="col-2">Логин</th>
-          <th class="col-3">ФИО</th>
-          <th class="col-2">Роль</th>
-          <th class="col-3">Отдел</th>
-          <th class="col-1">Действие</th>
+          <th class="col-2" th:text="#{project.assign.user.table.login}"></th>
+          <th class="col-3" th:text="#{project.assign.user.table.name}"></th>
+          <th class="col-2" th:text="#{project.assign.user.table.role}"></th>
+          <th class="col-3" th:text="#{project.assign.user.table.department}"></th>
+          <th class="col-1" th:text="#{project.assign.user.table.action}"></th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -62,7 +62,7 @@
           <div id="modal_alert"></div>
           <form>
             <div class="form-group" id="positionSelectDiv">
-              <label for="positionSelect">Выберите должность</label>
+              <label for="positionSelect" th:text="#{project.assign.modal.label}"></label>
               <select class="form-control" id="positionSelect"></select>
             </div>
             <div class="form-group">
@@ -73,8 +73,8 @@
                       <thead>
                       <tr>
                         <th class="col-1">#</th>
-                        <th class="col-4">Наименование</th>
-                        <th class="col-4">Выбор</th>
+                        <th class="col-4" th:text="#{project.assign.modal.table.name}"></th>
+                        <th class="col-4" th:text="#{project.assign.modal.table.choice}"></th>
                       </tr>
                       </thead>
                       <tbody></tbody>
@@ -86,7 +86,8 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                  th:text="#{project.assign.modal.button}"></button>
         </div>
       </div>
     </div>

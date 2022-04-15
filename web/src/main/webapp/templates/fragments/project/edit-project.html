@@ -3,7 +3,7 @@
 
 <body>
 <div class="container-fluid md-5 pt-5" th:fragment="edit-project" id="content-edit-project">
-  <h3 class="mb-4">Редактирование проектов</h3>
+  <h3 class="mb-4" th:text="#{project.edit.title}"></h3>
   <div class="alert"></div>
   <div class="row">
     <div class="col">
@@ -11,11 +11,11 @@
         <thead>
         <tr>
           <th class="col-1">#</th>
-          <th class="col-4">Наименование</th>
-          <th class="col-4">Отдел</th>
-          <th class="col-1">Дата создания</th>
-          <th class="col-1">Активация</th>
-          <th class="col-1">Действие</th>
+          <th class="col-4" th:text="#{project.edit.table.name}"></th>
+          <th class="col-4" th:text="#{project.edit.table.department}"></th>
+          <th class="col-1" th:text="#{project.edit.table.create_date}"></th>
+          <th class="col-1" th:text="#{project.edit.table.active}"></th>
+          <th class="col-1" th:text="#{project.edit.table.action}"></th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -27,17 +27,14 @@
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Изменение отдела</h5>
+          <h5 class="modal-title" th:text="#{project.edit.modal.title}"></h5>
         </div>
         <div class="modal-body">
           <form>
             <div class="form-group">
-              <label for="project_modal_name">Наименование проекта</label>
-              <input type="text" class="form-control" id="project_modal_name" placeholder="Отдел Java разработки">
-            </div>
-            <div class="form-group">
-              <label>Отдел</label>
-              <label id="modal_department">Отдел</label>
+              <label for="project_modal_name" th:text="#{project.edit.modal.label}"></label>
+              <input type="text" class="form-control" id="project_modal_name"
+                     th:placeholder="#{project.edit.modal.placeholder}">
             </div>
             <div class="form-group" sec:authorize="hasAuthority('ADMIN')">
               <div class="container-fluid">
@@ -48,8 +45,8 @@
                     <thead>
                     <tr>
                       <th class="col-1">#</th>
-                      <th class="col-4">Наименование</th>
-                      <th class="col-4">Выбор</th>
+                      <th class="col-4" th:text="#{project.edit.modal.table.name}">Наименование</th>
+                      <th class="col-4" th:text="#{project.edit.modal.table.choice}">Выбор</th>
                     </tr>
                     </thead>
                     <tbody></tbody>
@@ -60,10 +57,10 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                  th:text="#{project.edit.modal.button.close}"></button>
           <button type="button" class="btn btn-primary" id="save_project_modal_btn"
-                  data-dismiss="modal">Сохранить
-          </button>
+                  data-dismiss="modal" th:text="#{project.edit.modal.button.save}"></button>
         </div>
       </div>
     </div>

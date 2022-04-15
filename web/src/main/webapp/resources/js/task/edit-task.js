@@ -128,8 +128,10 @@ function loadProjecteditTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_project_edit"' +
-            'value="' + data.id + '">Выбрать</button>'
+            'value="' + data.id + '">' + message +'</button>'
         }
       }
     ],
@@ -161,8 +163,10 @@ function loadDepartmenteditTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_department_edit"' +
-            'value="' + data.id + '">Выбрать</button>'
+            'value="' + data.id + '">' + message +'</button>'
         }
       }
     ],
@@ -207,8 +211,10 @@ function loadeditTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.edit");
           return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0"' +
-            'data-toggle="modal" data-target="#task_edit_modal">Изменить</button>'
+            'data-toggle="modal" data-target="#task_edit_modal">' + message +'</button>'
         }
       }
     ],

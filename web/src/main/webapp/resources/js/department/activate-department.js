@@ -66,9 +66,16 @@ function loadActivateTable(table_id, req_url) {
         "mRender": function (data) {
           let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0"'
             + 'id="activate_department_btn" value="' + data.id + '">';
-          if (data.active != false)
-            content += 'Активировать</button>';
-          else content += 'Деактивировать</button>';
+          if (!data.active) {
+            let message = get_message(localStorage.getItem("lang"),
+              "department.button.text.activate");
+            content += message + '</button>';
+          }
+          else {
+            let message = get_message(localStorage.getItem("lang"),
+              "department.button.text.deactivate");
+            content += message + '</button>';
+          }
           return content;
         }
       }
@@ -82,20 +89,18 @@ function loadActivateTable(table_id, req_url) {
 
 function activate_department(department_id, action) {
   show_preloader();
-  let department = {};
-  department.id = department_id;
-  if (action === "Активировать") {
+  if (action === "Активировать" || action === "Activate") {
     $.ajax({
       type: "PUT",
       contentType: "application/json",
-      url: "/api/department/activate/" + department.id,
+      url: "/api/department/activate/" + department_id,
       async: false,
       cache: false,
       timeout: 600000,
       success: function () {
         $('.alert').empty();
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-          Отдел с ID ` + department.id + ` активирован</div>`);
+        let message = get_message(localStorage.getItem("lang"), "department.alert.activate").replace("0", department_id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         activate_table.destroy();
         loadActivateTable("#content-activate-department #activate_departments_table", current_url_for_activate_table);
       },
@@ -106,18 +111,18 @@ function activate_department(department_id, action) {
       }
     });
   }
-  else if (action === "Деактивировать") {
+  else if (action === "Деактивировать" || action === "Deactivate") {
     $.ajax({
       type: "PUT",
       contentType: "application/json",
-      url: "/api/department/inactivate/" + department.id,
+      url: "/api/department/inactivate/" + department_id,
       async: false,
       cache: false,
       timeout: 600000,
       success: function () {
         $('.alert').empty();
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Отдел с ID ` + department.id + ` деактивирован</div>`);
+        let message = get_message(localStorage.getItem("lang"), "department.alert.deactivate").replace("0", department_id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         activate_table.destroy();
         loadActivateTable("#content-activate-department #activate_departments_table", current_url_for_activate_table);
       },

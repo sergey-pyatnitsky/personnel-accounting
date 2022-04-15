@@ -4,11 +4,11 @@
 <body>
 <nav th:fragment="project-sidebar" id="sidebar" class="navbar navbar-expand-xll navbar-light bg-light sidebar">
   <ul class="list-unstyled components mb-5" id="menu-list">
-    <a role="button" id="add-project">Создание</a>
-    <a role="button" id="edit-project">Редактирование</a>
-    <a role="button" id="activate-project">Акцивация</a>
-    <a role="button" id="view-project">Просмотр</a>
-    <a role="button" id="assign-user">Назначение сотрудников</a>
+    <a role="button" id="add-project" th:text="#{project.sidebar.add}"></a>
+    <a role="button" id="edit-project" th:text="#{project.sidebar.edit}"></a>
+    <a role="button" id="activate-project" th:text="#{project.sidebar.activate}"></a>
+    <a role="button" id="view-project" th:text="#{project.sidebar.view}"></a>
+    <a role="button" id="assign-user" th:text="#{project.sidebar.assign}"></a>
   </ul>
 </nav>
 </body>

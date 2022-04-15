@@ -73,10 +73,14 @@ function loadEditTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message1 = get_message(localStorage.getItem("lang"),
+            "user.alert.button.edit");
+          let message2 = get_message(localStorage.getItem("lang"),
+            "task.alert.button.remove");
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
-            + ' data-target="#editUserModal" value="' + data.user.username + '">Изменить</button>'
+            + ' data-target="#editUserModal" value="' + data.user.username + '">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="removeUserBtn"'
-            + ' value="' + data.id + '">Удалить</button>';
+            + ' value="' + data.id + '">' + message2 + '</button>';
         }
       }
     ],
@@ -106,8 +110,9 @@ function edit_user(id, name, emp_role) {
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Пользователь с ID ` + employee.id + ` изменён</div>`);
+        let message = get_message(localStorage.getItem("lang"),
+          "user.alert.activate").replace("0", employee.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-user #edit_users_table", current_url_for_edit_table);
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
@@ -135,11 +140,13 @@ function delete_employee(employeeId) {
     cache: false,
     timeout: 600000,
     success: function () {
+      $('.alert').empty();
+      let message = get_message(localStorage.getItem("lang"),
+        "user.alert.done");
+      $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
+
       edit_table.destroy();
       loadActivateTable("#content-activate-user #edit_users_table", current_url_for_edit_table);
-      $('.alert').empty();
-      $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Выполнено</div>`);
     },
     error: function (error) {
       console.log(error);

@@ -18,13 +18,15 @@ function hideAllContent() {
 function show_department_alert(array) {
   $(".alert").replaceWith(`<div class="alert"></div>`);
   if (array == "") {
-    $(".alert").replaceWith(`
-      <div class="alert alert-warning" role="alert">Список отделов пуст!</div>`);
+    let message = get_message(localStorage.getItem("lang"),
+      "department.alert.empty_list");
+    $('.alert').replaceWith(`<div class="alert alert-warning" role="alert">` + message + `</div>`);
     return false;
   }
   else if (array == null) {
-    $(".alert").replaceWith(`
-      <div class="alert alert-danger"role="alert">Ошибка!</div>`);
+    let message = get_message(localStorage.getItem("lang"),
+      "department.alert.error");
+    $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + message + `</div>`);
     return false;
   }
   else return true;

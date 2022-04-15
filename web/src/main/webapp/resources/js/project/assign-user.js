@@ -30,7 +30,8 @@ $(document).ready(function () {
     $("body").on('show.bs.modal', "#assignUserModal", function (event) {
       current_row = $(event.relatedTarget).closest('tr');
       let modal = $(this);
-      if (current_row.find("#assign_user_btn").text() == "Назначить") {
+      if (current_row.find("#assign_user_btn").text() == "Назначить" ||
+        current_row.find("#assign_user_btn").text() == "Assign") {
         get_positions();
         content = ``;
         for (let pair of positions.entries()) {
@@ -43,18 +44,23 @@ $(document).ready(function () {
         if (project_modal_table != null) project_modal_table.destroy();
         loadProjectModalTable("#projectAssignModelTable", "/api/department/projects/open/" +
           current_row.find(".department_cell").text().split("-")[0]);
-        modal.find("#modal_header_title").text("Назначение пользователя на проект");
+        let message = get_message(localStorage.getItem("lang"),
+          "project.modal.title.assign");
+        modal.find("#modal_header_title").text(message);
       } else {
         if (project_modal_table != null) project_modal_table.destroy();
         loadProjectModalTable("#projectAssignModelTable", "/api/project/by_employee/open/" +
           current_row.find(".employee_id").text());
-        modal.find("#modal_header_title").text("Снять пользователя с проекта");
+        let message = get_message(localStorage.getItem("lang"),
+          "project.modal.title.remove");
+        modal.find("#modal_header_title").text(message);
         $("#positionSelectDiv").hide();
         $("#assign_modal_save_btn").hide();
       }
 
       $("body").on("click", "#content-assign-user #save_assign_project_modal_btn", function () {
-        if (current_row.find("#assign_user_btn").text() == "Назначить")
+        if (current_row.find("#assign_user_btn").text() == "Назначить" ||
+          current_row.find("#assign_user_btn").text() == "Assign")
           assign_user(current_row.find(".employee_id").text(), $(this).val(),
             $("#positionSelect option:selected").text().split("-")[0]);
         else
@@ -107,8 +113,10 @@ function loadProjectModalTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "project.button.text.select");
           return '<button type="button" class="btn btn-primary" id="save_assign_project_modal_btn"' +
-            'data-dismiss="modal" value="' + data.id + '">Выбрать</button>'
+            'data-dismiss="modal" value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -140,8 +148,10 @@ function loadDepartmentAssignTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "project.button.text.select");
           return '<button type="button" class="btn btn-primary" id="select_department_to_assign"' +
-            'data-dismiss="modal" value="' + data.id + '">Выбрать</button>'
+            'data-dismiss="modal" value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -184,11 +194,17 @@ function loadAssignUserTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
-          return mode == "1"
-            ? '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
-            'data-target="#assignUserModal" id="assign_user_btn" value="' + data.id + '">Назначить</button>'
-            : '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
-            'data-target="#assignUserModal" id="assign_user_btn" value="' + data.id + '">Снять</button>';
+          if (mode == "1") {
+            let message = get_message(localStorage.getItem("lang"),
+              "project.button.text.assign");
+            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
+              'data-target="#assignUserModal" id="assign_user_btn" value="' + data.id + '">' + message + '</button>'
+          } else {
+            let message = get_message(localStorage.getItem("lang"),
+              "project.button.text.remove");
+            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
+              'data-target="#assignUserModal" id="assign_user_btn" value="' + data.id + '">' + message + '</button>';
+          }
         }
       }
     ],
@@ -236,9 +252,10 @@ function assign_user(employee_id, project_id, position_id) {
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Пользователь с ID `+ employee_position.employee.id +
-          ` назначен на проект с ID ` + employee_position.project.id + `</div>`);
+        let message = get_message(localStorage.getItem("lang"),
+          "project.alert.assign_user").replace("0", data.name);
+        message = message.replace("1", data.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         assign_user_table.destroy();
         loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
@@ -267,9 +284,10 @@ function cancel_user(employee_id, project_id) {
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Пользователь с ID `+ employee_position.employee.id +
-          ` снят с проекта с ID ` + employee_position.project.id + `</div>`);
+        let message = get_message(localStorage.getItem("lang"),
+          "project.alert.cancel").replace("0", employee_position.employee.id);
+        message = message.replace("1", employee_position.project.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         assign_user_table.destroy();
         loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);

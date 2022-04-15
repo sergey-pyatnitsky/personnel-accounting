@@ -117,8 +117,10 @@ function loadProjectaddTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_project_add"' +
-            'value="' + data.id + '">Выбрать</button>'
+            'value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -159,8 +161,10 @@ function loadEmployeeaddTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_employee_add"' +
-            'value="' + data.id + '">Выбрать</button>'
+            'value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -192,8 +196,10 @@ function loadDepartmentaddTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_department_add"' +
-            'value="' + data.id + '">Выбрать</button>'
+            'value="' + data.id + '">' + message +'</button>'
         }
       }
     ],

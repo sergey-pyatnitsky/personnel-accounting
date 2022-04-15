@@ -3,17 +3,17 @@
 
 <body>
 <div class="container-fluid p-4 p-md-5 pt-5" th:fragment="edit-task" id="content-edit-task">
-  <h3 class="mb-4">Редактирование задач</h3>
+  <h3 class="mb-4" th:text="#{task.edit.title}"></h3>
   <div class="alert"></div>
   <div class="row mb-5" id="tab_edit_task"
        sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER')">
     <div class="col-12">
       <ul class="nav nav-tabs justify-content-center">
         <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
-          <a class="nav-link" id="departmentBtnToEditTask">Выбрать отдел</a>
+          <a class="nav-link" id="departmentBtnToEditTask" th:text="#{task.edit.tab.department}"></a>
         </li>
         <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER')">
-          <a class="nav-link" id="projectBtnToEditTask">Выбрать проект</a>
+          <a class="nav-link" id="projectBtnToEditTask" th:text="#{task.edit.tab.project}"></a>
         </li>
       </ul>
     </div>
@@ -25,8 +25,8 @@
           <thead>
           <tr>
             <th class="col-1">#</th>
-            <th class="col-4">Наименование</th>
-            <th class="col-4">Выбор</th>
+            <th class="col-4" th:text="#{task.edit.department.table.name}"></th>
+            <th class="col-4" th:text="#{task.edit.department.table.choice}"></th>
           </tr>
           </thead>
           <tbody></tbody>
@@ -40,8 +40,8 @@
           <thead>
           <tr>
             <th class="col-1">#</th>
-            <th class="col-4">Наименование</th>
-            <th class="col-4">Выбор</th>
+            <th class="col-4" th:text="#{task.edit.project.table.name}"></th>
+            <th class="col-4" th:text="#{task.edit.project.table.choice}"></th>
           </tr>
           </thead>
           <tbody></tbody>
@@ -51,10 +51,14 @@
     <div id="div_edit_tasks_table">
       <div class="list-group">
         <div class="btn-group" role="group" aria-label="Basic example">
-          <button type="button" class="btn btn-secondary" id="open_tasks_btn">Открытые</button>
-          <button type="button" class="btn btn-secondary" id="in_progress_tasks_btn">В процессе</button>
-          <button type="button" class="btn btn-secondary" id="done_tasks_btn">Выполненные</button>
-          <button type="button" class="btn btn-secondary" id="closed_tasks_btn">Закрытые</button>
+          <button type="button" class="btn btn-secondary" id="open_tasks_btn"
+                  th:text="#{task.edit.list.button.open}"></button>
+          <button type="button" class="btn btn-secondary" id="in_progress_tasks_btn"
+                  th:text="#{task.edit.list.button.in_progress}"></button>
+          <button type="button" class="btn btn-secondary" id="done_tasks_btn"
+                  th:text="#{task.edit.list.button.done}"></button>
+          <button type="button" class="btn btn-secondary" id="closed_tasks_btn"
+                  th:text="#{task.edit.list.button.closed}"></button>
         </div>
       </div>
       <div class="row mt-5">
@@ -63,13 +67,13 @@
             <thead>
             <tr>
               <th class="col-sm">#</th>
-              <th class="col-2">Наименование</th>
-              <th class="col-2">Описание</th>
-              <th class="col-1">Статус</th>
-              <th class="col-1">Дата</th>
-              <th class="col-2">Проект</th>
-              <th class="col-2">Исполнитель</th>
-              <th class="col-1">Действие</th>
+              <th class="col-2" th:text="#{task.edit.table.name}"></th>
+              <th class="col-2" th:text="#{task.edit.table.description}"></th>
+              <th class="col-1" th:text="#{task.edit.table.status}"></th>
+              <th class="col-1" th:text="#{task.edit.table.date}"></th>
+              <th class="col-2" th:text="#{task.edit.table.project}"></th>
+              <th class="col-2" th:text="#{task.edit.table.assignee}"></th>
+              <th class="col-1" th:text="#{task.edit.table.action}"></th>
             </tr>
             </thead>
             <tbody></tbody>
@@ -82,16 +86,16 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Изменение задачи</h5>
+            <h5 class="modal-title" id="exampleModalLongTitle" th:text="#{task.edit.modal.title}"></h5>
           </div>
           <div class="modal-body">
             <form>
               <div class="form-group">
-                <label for="modal_input_name">Наименование задачи</label>
-                <input type="text" class="form-control" id="modal_input_name" placeholder="Исправить авторизацию">
+                <label for="modal_input_name" th:text="#{task.edit.modal.label.name}"></label>
+                <input type="text" class="form-control" id="modal_input_name">
               </div>
               <div class="form-group">
-                <label for="modal_input_description">Описание задачи</label>
+                <label for="modal_input_description" th:text="#{task.edit.modal.label.description}"></label>
                 <textarea class="form-control" id="modal_input_description" rows="3"></textarea>
               </div>
               <div class="form-group">
@@ -106,8 +110,10 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-            <button type="button" class="btn btn-primary" id="modal_task_save" data-dismiss="modal">Сохранить</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    th:text="#{task.edit.modal.button.close}"></button>
+            <button type="button" class="btn btn-primary" id="modal_task_save" data-dismiss="modal"
+                    th:text="#{task.edit.modal.button.save}"></button>
           </div>
         </div>
       </div>

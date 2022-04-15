@@ -3,16 +3,16 @@
 
 <body>
 <div class="container-fluid md-5 pt-5" th:fragment="view-department" id="content-view-department">
-  <h3 class="mb-4">Просмотр отделов</h3>
+  <h3 class="mb-4" th:text="#{department.view.title}"></h3>
   <div class="alert"></div>
   <div class="row mb-5">
     <div class="col-12">
       <ul class="nav nav-tabs justify-content-center">
         <li class="nav-item">
-          <a class="nav-link" id="getOpenDepartmentsBtn">Открытые отделы</a>
+          <a class="nav-link" id="getOpenDepartmentsBtn" th:text="#{department.view.tab.open}"></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="getClosedDepartmentsBtn">Закрытые отделы</a>
+          <a class="nav-link" id="getClosedDepartmentsBtn" th:text="#{department.view.tab.close}"></a>
         </li>
       </ul>
     </div>
@@ -23,10 +23,10 @@
         <thead>
         <tr>
           <th class="col-1">#</th>
-          <th class="col-4">Наименование</th>
-          <th class="col-2">Активация</th>
-          <th class="col-2">Дата открытия</th>
-          <th class="col-2" id="end_date_column">Дата закрытия</th>
+          <th class="col-4" th:text="#{department.view.table.name}"></th>
+          <th class="col-2" th:text="#{department.view.table.active}"></th>
+          <th class="col-2" th:text="#{department.view.table.start_date}"></th>
+          <th class="col-2" id="end_date_column" th:text="#{department.view.table.end_date}"></th>
         </tr>
         </thead>
         <tbody></tbody>

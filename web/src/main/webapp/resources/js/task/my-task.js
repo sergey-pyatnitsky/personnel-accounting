@@ -103,8 +103,10 @@ function loadProjectmy_taskTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_project_my_task"' +
-            'value="' + data.id + '">Выбрать</button>'
+            'value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -136,8 +138,10 @@ function loadDepartmentmy_taskTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_department_my_task"' +
-            'value="' + data.id + '">Выбрать</button>'
+            'value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -220,10 +224,13 @@ function show_task_div(project_id, task_status) {
         + task.project.department.name + ` - ` + task.project.name + `</small></div>`;
       if (task.status == "DONE")
         content += `<div class="col-2"><input type="time" id="time_input" class="form-control"/></div>`;
-      if (task.status != "CLOSED")
+      if (task.status != "CLOSED") {
+        let message = get_message(localStorage.getItem("lang"),
+          "task.alert.button.edit.status");
         content += `<div class="col-2">
         <button type="button" class="btn btn-secondary" id="edit_task_status_btn" 
-        style="float: right" value="` + task.id + `">Изменить статус</button></div>`;
+        style="float: right" value="` + task.id + `">` + message + `</button></div>`;
+      }
       content += `</div></a>`;
     }
     $("#content-my-task #div_my_task_tasks_table #task_blocks_div").empty();

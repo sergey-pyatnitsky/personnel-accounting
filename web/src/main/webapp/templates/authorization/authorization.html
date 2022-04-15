@@ -1,49 +1,43 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" xmlns="http://www.w3.org/1999/html">
 <head>
-    <meta charset="UTF-8">
-    <title>Авторизация</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link th:href="@{/resources/css/auth-reg-style.css}" rel="stylesheet" type="text/css">
+  <meta charset="UTF-8">
+  <title th:text="#{login.title}"></title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link th:href="@{/resources/css/auth-reg-style.css}" rel="stylesheet" type="text/css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script type="text/javascript" th:src="@{/resources/js/main.js}"></script>
 </head>
 <body class="login-page">
 <main>
-    <div class="login-block">
-        <img th:src="@{/resources/images/auth-reg.png}">
-        <h1>Введите свои данные</h1>
-        <div th:if="${param.error}" class="alert alert-danger" role="alert">
-            Неверные имя пользователя или пароль.
+  <div class="login-block">
+    <img th:src="@{/resources/images/auth-reg.png}">
+    <h1 th:text="#{login.input_data}"></h1>
+    <div th:if="${param.error}" class="alert alert-danger" role="alert" th:text="#{login.error.login_password}"></div>
+    <div th:if="${param.logout}" class="alert alert-danger" role="alert" th:text="#{login.logout}"></div>
+    <form th:action="@{/login}" method="post">
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="fa fa-user ti-user"></i></span>
+          <input type="text" class="form-control" id="username" name="username" th:placeholder="#{login.input.username}">
         </div>
-        <div th:if="${param.logout}" class="alert alert-danger" role="alert">
-            Вы вышли из системы.
+      </div>
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="fa fa-lock ti-unlock"></i></span>
+          <input type="password" class="form-control" id="password" name="password" th:placeholder="#{login.input.password}">
         </div>
-        <form th:action="@{/login}" method="post">
-            <div class="form-group">
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-user ti-user"></i></span>
-                    <label>
-                        <input type="text" class="form-control" id="username" name="username" placeholder="Логин">
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-lock ti-unlock"></i></span>
-                    <label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Пароль">
-                    </label>
-                </div>
-            </div>
-            <button class="btn btn-primary btn-block" type="submit">Войти</button>
-        </form>
-    </div>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" th:text="#{login.sign_in}"></button>
+    </form>
+  </div>
 
-    <div class="login-links">
-        <p class="text-center">Еще нету аккаунта? <a class="txt-brand" href="/registration">
-            <span style="color: #29aafe; ">Регистрируйся</span></a>
-        </p>
-    </div>
+  <div class="login-links">
+    <p class="text-center" th:text="#{login.no_account}"></p>
+    <a class="txt-brand" href="/registration" th:text="#{login.sign_up}"
+       style="color: #29aafe;display: block;  text-align:center"></a>
+  </div>
 </main>
 </body>
 </html>

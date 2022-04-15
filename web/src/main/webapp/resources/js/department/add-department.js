@@ -38,8 +38,8 @@ function add_department() {
       if (data.id == null)
         $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
       else {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Отдел "` + data.name + `" с ID ` + data.id + ` создан</div>`);
+        let message = get_message(localStorage.getItem("lang"), "department.alert.add").replace("0", department_id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         $('#departmentNameInput').val('');
       }
     },

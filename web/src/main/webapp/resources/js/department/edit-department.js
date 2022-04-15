@@ -77,10 +77,14 @@ function loadEditTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message1 = get_message(localStorage.getItem("lang"),
+            "department.button.text.edit");
+          let message2 = get_message(localStorage.getItem("lang"),
+            "department.button.text.remove");
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
-            + ' data-target="#departmentEditModal">Изменить</button>'
+            + ' data-target="#departmentEditModal">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="close_department_btn"'
-            + ' value="' + data.id + '">Удалить</button>';
+            + ' value="' + data.id + '">' + message2 + '</button>';
         }
       }
     ],
@@ -102,11 +106,12 @@ function edit_department(department_id, department_name) {
     async: false,
     cache: false,
     timeout: 600000,
-    success: function () {
+    success: function (data) {
       $('.alert').empty();
       if (data == "") {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Отдел с ID ` + department.id + ` изменён</div>`);
+        let message = get_message(localStorage.getItem("lang"),
+          "department.alert.edit").replace("0", department.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-department #edit_departments_table", current_url_for_edit_table);
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
@@ -132,8 +137,9 @@ function close_department(departmentId) {
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Отдел с ID ` + department.id + ` удалён</div>`);
+        let message = get_message(localStorage.getItem("lang"),
+          "department.alert.close").replace("0", department.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-department #edit_departments_table", current_url_for_edit_table);
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);

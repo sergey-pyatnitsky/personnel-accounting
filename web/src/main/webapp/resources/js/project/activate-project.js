@@ -51,9 +51,16 @@ function loadActivateTable(table_id, req_url) {
         "mRender": function (data) {
           let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0"'
             + 'id="activate_project_btn" value="' + data.id + '">';
-          if (data.active != false)
-            content += 'Активировать</button>';
-          else content += 'Деактивировать</button>';
+          if (!data.active) {
+            let message = get_message(localStorage.getItem("lang"),
+              "project.button.text.activate");
+            content += message + '</button>';
+          }
+          else {
+            let message = get_message(localStorage.getItem("lang"),
+              "project.button.text.deactivate");
+            content += message + '</button>';
+          }
           return content;
         }
       }
@@ -69,7 +76,7 @@ function activate_project(project_id, action) {
   show_preloader();
   let project = {};
   project.id = project_id;
-  if (action === "Активировать") {
+  if (action === "Активировать" || action === "Activate") {
     $.ajax({
       type: "PUT",
       contentType: "application/json",
@@ -80,8 +87,9 @@ function activate_project(project_id, action) {
       success: function (data) {
         $('.alert').empty();
         if (data == "") {
-          $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-          Проект с ID ` + project.id + ` активирован</div>`);
+          let message = get_message(localStorage.getItem("lang"),
+            "project.alert.activate").replace("0", project.id);
+          $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
           activate_table.destroy();
           loadActivateTable("#content-activate-project #activate_project_table", "/api/project/get_all/open");
         } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
@@ -93,7 +101,7 @@ function activate_project(project_id, action) {
       }
     });
   }
-  else if (action === "Деактивировать") {
+  else if (action === "Деактивировать" || action === "Deactivate") {
     $.ajax({
       type: "PUT",
       contentType: "application/json",
@@ -105,8 +113,9 @@ function activate_project(project_id, action) {
       success: function (data) {
         $('.alert').empty();
         if (data == "") {
-          $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-          Проект с ID ` + project.id + ` деактивирован</div>`);
+          let message = get_message(localStorage.getItem("lang"),
+            "project.alert.deactivate").replace("0", project.id);
+          $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
           activate_table.destroy();
           loadActivateTable("#content-activate-project #activate_project_table", "/api/project/get_all/open");
         } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);

@@ -70,10 +70,14 @@ function loadEditTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message1 = get_message(localStorage.getItem("lang"),
+            "project.button.text.edit");
+          let message2 = get_message(localStorage.getItem("lang"),
+            "project.button.text.remove");
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
-            + ' data-target="#projectEditModal">Изменить</button>'
+            + ' data-target="#projectEditModal">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="remove_project_btn"'
-            + ' value="' + data.id + '">Удалить</button>';
+            + ' value="' + data.id + '">' + message2 + '</button>';
         }
       }
     ],
@@ -105,8 +109,10 @@ function loadDeartmentsTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "project.button.text.select");
           return '<button type="button" class="btn btn-primary" id="save_project_department_modal_btn"' +
-            'data-dismiss="modal" value="' + data.id + '">Выбрать</button>'
+            'data-dismiss="modal" value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -134,8 +140,9 @@ function edit_project(project_id, project_name, department_id) {
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Проект с ID ` + project.id + ` изменён</div>`);
+        let message = get_message(localStorage.getItem("lang"),
+          "project.alert.edit").replace("0", project.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-project #edit_project_table", "/api/project/get_all/open");
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
@@ -160,8 +167,9 @@ function close_project(project_id) {
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Проект с ID ` + project.id + ` закрыт</div>`);
+        let message = get_message(localStorage.getItem("lang"),
+          "project.alert.close").replace("0", project.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-project #edit_project_table", "/api/project/get_all/open");
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);

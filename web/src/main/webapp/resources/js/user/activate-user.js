@@ -62,10 +62,15 @@ function loadActivateTable(table_id, req_url) {
           let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"'
             + 'data-target="#activateUserModal" id="activate_user_btn" value="'
             + data.user.username + '">';
-          if (data.user.active == false)
-            content += 'Активировать</button>';
-          else
-            content += 'Деактивировать</button>';
+          if (data.user.active == false) {
+            let message = get_message(localStorage.getItem("lang"),
+              "user.alert.button.activate");
+            content += message + '</button>';
+          } else {
+            let message = get_message(localStorage.getItem("lang"),
+              "user.alert.button.deactivate");
+            content += message + '</button>';
+          }
           return content;
         }
       }
@@ -79,7 +84,7 @@ function loadActivateTable(table_id, req_url) {
 
 function activate_user(username, action) {
   show_preloader();
-  if (action === "Активировать") {
+  if (action === "Активировать" || action === "Activate") {
     $.ajax({
       type: "PUT",
       contentType: "application/json",
@@ -88,10 +93,11 @@ function activate_user(username, action) {
       cache: false,
       timeout: 600000,
       success: function () {
+        let message = get_message(localStorage.getItem("lang"),
+          "user.alert.activate").replace("0", username);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         activate_table.destroy();
         loadActivateTable("#content-activate-user #activate_users_table", current_url_for_activate_table);
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-          Пользователь с username ` + username + ` активирован</div>`);
       },
       error: function (error) {
         console.log(error);
@@ -100,7 +106,7 @@ function activate_user(username, action) {
       }
     });
   }
-  else if (action === "Деактивировать") {
+  else if (action === "Деактивировать" || action === "Deactivate") {
     $.ajax({
       type: "PUT",
       contentType: "application/json",
@@ -108,10 +114,11 @@ function activate_user(username, action) {
       cache: false,
       timeout: 600000,
       success: function () {
+        let message = get_message(localStorage.getItem("lang"),
+          "user.alert.deactivate").replace("0", username);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         activate_table.destroy();
         loadActivateTable("#content-activate-user #activate_users_table", current_url_for_activate_table);
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-          Пользователь с username ` + username + ` деактивирован</div>`);
       },
       error: function (error) {
         console.log(error);

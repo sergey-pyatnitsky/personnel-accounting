@@ -59,8 +59,10 @@ function loadDeartmentsAssignTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "department.button.text.select");
           return '<button type="button" class="btn btn-primary" id="save_assign_department_modal_btn"' +
-            'data-dismiss="modal" value="' + data.id + '">Выбрать</button>'
+            'data-dismiss="modal" value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -102,11 +104,17 @@ function loadAssignTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
-          return data.department != null
-            ? '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
-            'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">Перевод</button>'
-            : '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
-            'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">Назначить</button>';
+          if (data.department != null) {
+            let message = get_message(localStorage.getItem("lang"),
+              "department.button.text.transfer");
+            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
+              'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">' + message + '</button>'
+          } else {
+            let message = get_message(localStorage.getItem("lang"),
+              "department.button.text.assign=");
+            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
+              'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">' + message + '</button>';
+          }
         }
       }
     ],
@@ -151,8 +159,10 @@ function assign_user(employee_id, department_id) {
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
-        $('.alert').replaceWith(`<div div class="alert alert-success" role = "alert" >
-            Пользователь с ID `+ employee.id + ` назначен на отдел с ID ` + employee.department.id + `</div > `);
+        let message = get_message(localStorage.getItem("lang"),
+          "department.alert.assign_user").replace("0", employee.id);
+        message = message.replace("1", employee.department.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         assign_table.destroy();
         loadAssignTable("#content-assign-user #assign_users_table", current_url_for_assign_table);
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);

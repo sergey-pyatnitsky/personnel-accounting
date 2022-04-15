@@ -46,8 +46,10 @@ function loadAddTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "project.button.text.select_department");
           return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="project_add_btn"'
-            + ' value="' + data.id + "-" + data.name + '">Добавить</button>';
+            + ' value="' + data.id + "-" + data.name + '">' + message + '</button>';
         }
       }
     ],
@@ -91,8 +93,10 @@ function add_project(project_name, department_id, department_name) {
       if (data.id == null)
         $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
       else {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-         Проект "` + data.name + `" с ID ` + data.id + ` создан</div>`);
+        let message = get_message(localStorage.getItem("lang"),
+          "project.alert.add").replace("0", data.name);
+        message = message.replace("1", data.id);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         $('#projectNameInput').val('');
       }
     },

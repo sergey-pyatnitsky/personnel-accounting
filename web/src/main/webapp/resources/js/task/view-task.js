@@ -110,8 +110,10 @@ function loadProjectViewTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_project_view"' +
-            'value="' + data.id + '">Выбрать</button>'
+            'value="' + data.id + '">' + message +'</button>'
         }
       }
     ],
@@ -143,8 +145,10 @@ function loadDepartmentViewTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
+          let message = get_message(localStorage.getItem("lang"),
+            "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_department_view"' +
-            'value="' + data.id + '">Выбрать</button>'
+            'value="' + data.id + '">' + message + '</button>'
         }
       }
     ],

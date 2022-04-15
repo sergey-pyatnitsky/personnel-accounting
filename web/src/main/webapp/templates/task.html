@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8"/>
-  <title>Задачи</title>
+  <title th:text="#{task.title}"></title>
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -21,7 +21,7 @@
   <div th:replace="~{fragments/task/edit-task :: edit-task}"></div>
 </div>
 <div id="preloader_malc" style="display: none">
-  <div>Подождите, идет загрузка сайта ...</div>
+  <div th:text="#{preloader.message}"></div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
