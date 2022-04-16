@@ -15,6 +15,7 @@ import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
@@ -48,8 +50,11 @@ public class ProjectRESTController {
     @Autowired
     private ConversionService conversionService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @PostMapping("/api/project/add")
-    public ResponseEntity<?> addProject(@RequestBody ProjectDTO projectDTO, Authentication authentication) {
+    public ResponseEntity<?> addProject(@Valid @RequestBody ProjectDTO projectDTO, Authentication authentication) {
         User user = userService.find(authentication.getName());
         if (userService.getAuthorityByUsername(user.getUsername()).getRole() == Role.DEPARTMENT_HEAD)
             projectDTO.getDepartment().setId(projectService.findDepartmentByUser(user).getId());
@@ -113,19 +118,21 @@ public class ProjectRESTController {
     @PutMapping("/api/project/activate/{id}")
     public ResponseEntity<?> activateProject(@PathVariable Long id) {
         if (!projectService.activate(projectService.find(id)))
-            throw new OperationExecutionException("Ошибка активации проекта");
+            throw new OperationExecutionException(
+                    messageSource.getMessage("project.error.activate", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/project/inactivate/{id}")
     public ResponseEntity<?> inactivateProject(@PathVariable Long id) {
         if (!projectService.inactivate(projectService.find(id)))
-            throw new OperationExecutionException("Ошибка деактивации проекта");
+            throw new OperationExecutionException(
+                    messageSource.getMessage("project.error.deactivate", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/project/edit/{id}")
-    public ResponseEntity<?> editProject(@PathVariable Long id, @RequestBody ProjectDTO projectDTO) {
+    public ResponseEntity<?> editProject(@PathVariable Long id, @Valid @RequestBody ProjectDTO projectDTO) {
         Project project = projectService.find(id);
         project.setName(projectDTO.getName());
         project.setModifiedDate(new Date(System.currentTimeMillis()));
@@ -135,7 +142,8 @@ public class ProjectRESTController {
             project = projectService.assignProjectToDepartmentId(project, projectDTO.getDepartment().getId());
             if (!Objects.equals(project.getDepartment().getId(), projectDTO.getDepartment().getId())
                     && projectDTO.getDepartment().getId() != null)
-                throw new ExistingDataException("Данный проект невозможно перенести в данный отдел");
+                throw new ExistingDataException(
+                        messageSource.getMessage("project.error.transfer", null, null));
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -143,31 +151,32 @@ public class ProjectRESTController {
     @DeleteMapping("/api/project/close/{id}")
     public ResponseEntity<?> closeProject(@PathVariable Long id) {
         Project project = projectService.find(id);
-        if (project.isActive()) throw new ActiveStatusDataException("Данный проект активен и недоступен для закрытия!");
+        if (project.isActive()) throw new ActiveStatusDataException(
+                messageSource.getMessage("project.error.close.active", null, null));
         if (!projectService.closeProject(projectService.find(id)))
-            throw new ExistingDataException(" В данном проекте существуют незакрытые задачи и недоступен для закрытия!");
+            throw new ExistingDataException(messageSource.getMessage("project.error.close.task", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/api/project/assign/employee")
-    public ResponseEntity<?> assignEmployeeToProject(@RequestBody EmployeePositionDTO employeePositionDTO) {
+    public ResponseEntity<?> assignEmployeeToProject(@Valid @RequestBody EmployeePositionDTO employeePositionDTO) {
         if (projectService.assignToProject(
                 employeeService.find(employeePositionDTO.getEmployee().getId()),
                 projectService.find(employeePositionDTO.getProject().getId()),
                 departmentService.findPosition(employeePositionDTO.getPosition().getId())).getId() == null)
-            throw new OperationExecutionException("Ошибка назначения сотрудника на проект");
+            throw new OperationExecutionException(messageSource.getMessage("project.error.assign.user", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/api/project/cancel/employee")
-    public ResponseEntity<?> cancelEmployeeFromProject(@RequestBody EmployeePositionDTO employeePositionDTO) {
+    public ResponseEntity<?> cancelEmployeeFromProject(@Valid @RequestBody EmployeePositionDTO employeePositionDTO) {
         EmployeePosition employeePosition = projectService.findEmployeePositions(
                         employeeService.find(employeePositionDTO.getEmployee().getId()))
                 .stream().filter(obj ->
                         obj.getEmployee().getId().equals(employeePositionDTO.getEmployee().getId())
                                 && obj.getProject().getId().equals(employeePositionDTO.getProject().getId())).findFirst().get();
         if (projectService.changeEmployeeStateInProject(employeePosition, false).isActive())
-            throw new OperationExecutionException("Ошибка снятия сотрудника с проекта");
+            throw new OperationExecutionException(messageSource.getMessage("project.error.remove.user", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

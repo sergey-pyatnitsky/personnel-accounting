@@ -17,6 +17,7 @@ import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,14 +53,17 @@ public class EmployeeRESTController {
     @Autowired
     private ConversionService conversionService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @PostMapping("/registration")
-    public ResponseEntity<?> registerEmployee(@RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity<?> registerEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
         Employee employee = conversionService.convert(employeeDTO, Employee.class);
         employee.setUser(conversionService.convert(employeeDTO.getUser(), User.class));
         employee.getUser().setPassword("{bcrypt}" + (new BCryptPasswordEncoder()).encode(employee.getUser().getPassword()));
         employee.setCreateDate(new Date(System.currentTimeMillis()));
         if (!userService.registerUser(employee.getUser(), employeeDTO.getName(), Role.EMPLOYEE))
-            throw new ExistingDataException("Данный пользователь уже существует");
+            throw new ExistingDataException(messageSource.getMessage("user.error.existing", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -79,7 +84,7 @@ public class EmployeeRESTController {
     }
 
     @PostMapping("/api/employee/get_all/admins")
-    public ResponseEntity<?> getAllAdmins(@RequestBody PagingRequest pagingRequest) {
+    public ResponseEntity<?> getAllAdmins(@Valid @RequestBody PagingRequest pagingRequest) {
         return new ResponseEntity<>(getPage(employeeService.findAll(pagingRequest)
                 .stream().map(employee -> {
                     EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
@@ -175,24 +180,25 @@ public class EmployeeRESTController {
     }
 
     @PostMapping("/api/employee/assign/department")
-    public ResponseEntity<?> assignEmployeeToDepartment(@RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity<?> assignEmployeeToDepartment(@Valid @RequestBody EmployeeDTO employeeDTO) {
         Employee employee = conversionService.convert(employeeService.find(employeeDTO.getId()), Employee.class);
         Department department = departmentService.find(employeeDTO.getDepartment().getId());
         employee.setDepartment(department);
         employee = departmentService.assignToDepartment(employee, department);
         if (!employee.getDepartment().getId().equals(employeeDTO.getDepartment().getId()))
-            throw new OperationExecutionException("Ошибка назначения сотрудника");
+            throw new OperationExecutionException(messageSource.getMessage("user.error.assign", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/api/employee/remove/{id}")
     public ResponseEntity<?> removeUser(@PathVariable Long id) {
-        if (!employeeService.removeById(id)) throw new OperationExecutionException("Ошибка удаления сотрудника");
+        if (!employeeService.removeById(id))
+            throw new OperationExecutionException(messageSource.getMessage("user.error.remove", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/employee/edit")
-    public ResponseEntity<?> editEmployee(@RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity<?> editEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
         Employee employee = employeeService.find(employeeDTO.getId());
         employee = employeeService.editEmployeeName(employee, employeeDTO.getName());
         userService.changeUserRole(employee.getUser(), employeeDTO.getUser().getAuthority().getRole());
@@ -203,7 +209,7 @@ public class EmployeeRESTController {
     public ResponseEntity<?> activateUser(@PathVariable String username) {
         Employee employee = employeeService.findByUser(userService.findByUsername(username));
         if (!userService.activate(employee.getUser()) || !employeeService.activate(employee))
-            throw new OperationExecutionException("Ошибка активации пользователя");
+            throw new OperationExecutionException(messageSource.getMessage("user.error.activate", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -211,7 +217,7 @@ public class EmployeeRESTController {
     public ResponseEntity<?> inactivateUser(@PathVariable String username) {
         Employee employee = employeeService.findByUser(userService.findByUsername(username));
         if (!userService.inactivate(employee.getUser()) || !employeeService.inactivate(employee))
-            throw new OperationExecutionException("Ошибка деактивации пользователя");
+            throw new OperationExecutionException(messageSource.getMessage("user.error.deactivate", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

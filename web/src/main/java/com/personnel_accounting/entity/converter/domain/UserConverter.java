@@ -14,10 +14,12 @@ public class UserConverter implements Converter<UserDTO, User> {
         user.setPassword(source.getPassword());
         user.setActive(source.isActive());
 
-        Authority authority = new Authority();
-        authority.setUsername(source.getUsername());
-        authority.setRole(source.getAuthority().getRole());
-        user.setAuthority(authority);
+        if(source.getAuthority() != null) {
+            Authority authority = new Authority();
+            authority.setUsername(source.getUsername());
+            authority.setRole(source.getAuthority().getRole());
+            user.setAuthority(authority);
+        }
         return user;
     }
 }

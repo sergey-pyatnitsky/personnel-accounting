@@ -74,11 +74,11 @@
           <form>
             <div class="form-group">
               <label for="taskNameInput" th:text="#{task.add.label.name}"></label>
-              <input type="email" class="form-control" id="taskNameInput">
+              <input type="email" class="form-control" id="taskNameInput" required>
             </div>
             <div class="form-group">
               <label for="taskDescriptionInput" th:text="#{task.add.label.description}"></label>
-              <textarea class="form-control" id="taskDescriptionInput" rows="3"></textarea>
+              <textarea class="form-control" id="taskDescriptionInput" rows="3" required></textarea>
             </div>
           </form>
         </div>

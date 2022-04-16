@@ -13,6 +13,7 @@ import com.personnel_accounting.exception.OperationExecutionException;
 import com.personnel_accounting.pagination.entity.Page;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,28 +38,34 @@ public class DepartmentRESTController {
     @Autowired
     private ConversionService conversionService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @PostMapping("/api/department/add")
-    public ResponseEntity<?> addDepartment(@RequestBody DepartmentDTO departmentDTO) {
+    public ResponseEntity<?> addDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) {
         Department department = conversionService.convert(departmentDTO, Department.class);
         department.setActive(false);
         department.setCreateDate(new Date(System.currentTimeMillis()));
 
         department = departmentService.addDepartment(department);
-        if (department.getId() == null) throw new ExistingDataException("Данный отдел уже существует!");
+        if (department.getId() == null)
+            throw new ExistingDataException(messageSource.getMessage("department.error.add", null, null));
         return new ResponseEntity<>(conversionService.convert(department, DepartmentDTO.class), HttpStatus.OK);
     }
 
     @PostMapping("/api/position/add")
-    public ResponseEntity<?> addPosition(@RequestBody PositionDTO positionDTO) {
+    public ResponseEntity<?> addPosition(@Valid @RequestBody PositionDTO positionDTO) {
         Position position = departmentService.addPosition(conversionService.convert(positionDTO, Position.class));
-        if (position.getId() == null) throw new ExistingDataException("Данная должность уже существует");
+        if (position.getId() == null)
+            throw new ExistingDataException(messageSource.getMessage("position.error.add", null, null));
         return new ResponseEntity<>(position, HttpStatus.OK);
     }
 
     @GetMapping("/api/position/get_all")
     public ResponseEntity<?> getPositions() {
         List<Position> position = departmentService.findAllPositions();
-        if (position.size() == 0) throw new NoSuchDataException("Данная должность уже существует");
+        if (position.size() == 0)
+            throw new NoSuchDataException(messageSource.getMessage("position.error.list.empty", null, null));
         return new ResponseEntity<>(position, HttpStatus.OK);
     }
 
@@ -94,14 +102,16 @@ public class DepartmentRESTController {
     @PutMapping("/api/department/activate/{id}")
     public ResponseEntity<?> activateDepartment(@PathVariable Long id) {
         if (!departmentService.activate(departmentService.find(id)))
-            throw new OperationExecutionException("Ошибка активации отдела с ID " + id);
+            throw new OperationExecutionException(
+                    messageSource.getMessage("department.error.activation", null, null) + " " + id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/department/inactivate/{id}")
     public ResponseEntity<?> inactivateDepartment(@PathVariable Long id) {
         if (!departmentService.inactivate(departmentService.find(id)))
-            throw new OperationExecutionException("Ошибка деактивации отдела с ID " + id);
+            throw new OperationExecutionException(
+                    messageSource.getMessage("department.error.deactivation", null, null) + " " + id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -116,9 +126,11 @@ public class DepartmentRESTController {
     public ResponseEntity<?> closeDepartment(@PathVariable Long id) {
         Department department = departmentService.find(id);
         if (department.isActive())
-            throw new ActiveStatusDataException("Данный отдел активен и недоступен  для закрытия");
+            throw new ActiveStatusDataException(
+                    messageSource.getMessage("department.error.active.status", null, null));
         if (!departmentService.closeDepartment(departmentService.find(id)))
-            throw new ActiveStatusDataException("В данном отделе существуют незакрытые проекты и недоступен  для закрытия!");
+            throw new ActiveStatusDataException(
+                    messageSource.getMessage("department.error.close", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

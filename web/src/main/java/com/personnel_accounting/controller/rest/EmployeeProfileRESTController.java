@@ -10,6 +10,7 @@ import com.personnel_accounting.entity.dto.UserDTO;
 import com.personnel_accounting.exception.IncorrectDataException;
 import com.personnel_accounting.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 public class EmployeeProfileRESTController {
@@ -32,17 +35,20 @@ public class EmployeeProfileRESTController {
     @Autowired
     private ConversionService conversionService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @PostMapping("/api/employee/profile/check_old_password")
-    public ResponseEntity<?> checkOldUserPass(@RequestBody UserDTO userDTO, Authentication authentication) {
+    public ResponseEntity<?> checkOldUserPass(@Valid @RequestBody UserDTO userDTO, Authentication authentication) {
         User user = userService.findByUsername(authentication.getName());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if(!passwordEncoder.matches(userDTO.getPassword(), user.getPassword().replace("{bcrypt}", "")))
-            throw new IncorrectDataException("Неправильный пароль");
+            throw new IncorrectDataException(messageSource.getMessage("user.error.password", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/api/employee/profile/edit_password")
-    public ResponseEntity<?> editUserPass(@RequestBody UserDTO userDTO, Authentication authentication) {
+    public ResponseEntity<?> editUserPass(@Valid @RequestBody UserDTO userDTO, Authentication authentication) {
         User user = userService.findByUsername(authentication.getName());
         userService.changeAuthData(user, "{bcrypt}" + (new BCryptPasswordEncoder()).encode(userDTO.getPassword()));
         return new ResponseEntity<>(HttpStatus.OK);
@@ -58,7 +64,7 @@ public class EmployeeProfileRESTController {
     }
 
     @PostMapping("/api/employee/profile/edit")
-    public ResponseEntity<?> editProfileData(@RequestBody EmployeeDTO employeeDTO, Authentication authentication) {
+    public ResponseEntity<?> editProfileData(@Valid @RequestBody EmployeeDTO employeeDTO, Authentication authentication) {
         Employee employee = employeeService.findByUser(userService.findByUsername(authentication.getName()));
         employee.setName(employeeDTO.getName());
         employeeService.addProfileData(employee, conversionService.convert(employeeDTO.getProfile(), Profile.class));

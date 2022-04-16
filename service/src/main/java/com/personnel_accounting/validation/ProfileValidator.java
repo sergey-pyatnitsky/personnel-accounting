@@ -1,6 +1,8 @@
 package com.personnel_accounting.validation;
 
 import com.personnel_accounting.domain.Profile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,9 @@ import org.springframework.validation.Validator;
 @Component
 public class ProfileValidator implements Validator {
     private final Environment env;
+
+    @Autowired
+    private MessageSource messageSource;
 
     public ProfileValidator(Environment env) {
         this.env = env;
@@ -26,22 +31,22 @@ public class ProfileValidator implements Validator {
         Profile profile = (Profile) target;
         if (!checkForRegexp(profile.getEmail(), env.getProperty("email.regexp")))
             errors.rejectValue("email", "email.not_matches",
-                    "Неверный формат адреса почты");
+                    messageSource.getMessage("profile.validator.email.regexp", null, null));
         if (!checkForRegexp(profile.getPhone(), env.getProperty("phone.regexp")))
             errors.rejectValue("phone", "phone.not_matches",
-                    "Неверный формат номера телефона");
+                    messageSource.getMessage("profile.validator.phone.regexp", null, null));
         if (checkSize(profile.getEducation(), 2048))
             errors.rejectValue("education", "education.size",
-                    "Поле \"Образование\" превышает максимальный допустимый размер");
+                    messageSource.getMessage("profile.validator.education.size", null, null));
         if (checkSize(profile.getAddress(), 256))
             errors.rejectValue("address", "address.size",
-                    "Поле \"Адрес\" превышает максимальный допустимый размер");
+                    messageSource.getMessage("profile.validator.address.size", null, null));
         if (checkSize(profile.getPhone(), 60))
             errors.rejectValue("phone", "phone.size",
-                    "Поле \"Мобильный телефон\" превышает максимальный допустимый размер");
+                    messageSource.getMessage("profile.validator.phone.size", null, null));
         if (checkSize(profile.getEmail(), 256))
             errors.rejectValue("email", "email.size",
-                    "Поле \"Адрес электронной почты\" превышает максимальный допустимый размер");
+                    messageSource.getMessage("profile.validator.email.size", null, null));
     }
 
     private boolean checkForRegexp(String input, String regexp) {

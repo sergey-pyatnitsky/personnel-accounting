@@ -10,7 +10,7 @@
       <form>
         <div class="form-group">
           <label for="departmentNameInput" th:text="#{department.add.label}"></label>
-          <input type="text" class="form-control" id="departmentNameInput" th:placeholder="#{department.add.placeholder}">
+          <input type="text" class="form-control" id="departmentNameInput" th:placeholder="#{department.add.placeholder}" required>
         </div>
         <div class="form-group" style="padding-top:5%;">
           <button class="btn btn-primary btn-block" type="submit" id='department_save_btn'

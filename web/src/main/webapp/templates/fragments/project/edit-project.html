@@ -34,7 +34,7 @@
             <div class="form-group">
               <label for="project_modal_name" th:text="#{project.edit.modal.label}"></label>
               <input type="text" class="form-control" id="project_modal_name"
-                     th:placeholder="#{project.edit.modal.placeholder}">
+                     th:placeholder="#{project.edit.modal.placeholder}" required>
             </div>
             <div class="form-group" sec:authorize="hasAuthority('ADMIN')">
               <div class="container-fluid">

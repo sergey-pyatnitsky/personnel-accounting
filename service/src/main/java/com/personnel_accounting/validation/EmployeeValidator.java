@@ -1,6 +1,8 @@
 package com.personnel_accounting.validation;
 
 import com.personnel_accounting.domain.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -8,6 +10,9 @@ import org.springframework.validation.Validator;
 
 @Component
 public class EmployeeValidator implements Validator {
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -19,10 +24,10 @@ public class EmployeeValidator implements Validator {
         Employee employee = (Employee) target;
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "name.required",
-                "Поле \"ФИО\" пустое или имеет лишние пробелы");
+                messageSource.getMessage("employee.validator.name.empty", null, null));
         if (!checkSize(employee.getName()))
             errors.rejectValue("name", "name.size",
-                    "Поле \"ФИО\" превышает максимальный допустимый размер");
+                    messageSource.getMessage("employee.validator.name.size", null, null));
     }
 
     private boolean checkSize(String input) {

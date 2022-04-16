@@ -14,6 +14,7 @@ import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.sql.Time;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,8 +45,11 @@ public class TaskRESTController {
     @Autowired
     private ConversionService conversionService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @PostMapping("/api/task/add")
-    public ResponseEntity<?> addTask(@RequestBody TaskDTO taskDTO, Authentication authentication) {
+    public ResponseEntity<?> addTask(@Valid @RequestBody TaskDTO taskDTO, Authentication authentication) {
         Task task = conversionService.convert(taskDTO, Task.class);
         task.setAssignee(employeeService.find(taskDTO.getAssignee().getId()));
         task.setReporter(employeeService.findByUser(userService.findByUsername(authentication.getName())));
@@ -81,12 +86,13 @@ public class TaskRESTController {
                             conversionService.convert(obj.getProject().getDepartment(), DepartmentDTO.class));
                     return taskDTO;
                 }).collect(Collectors.toList());
-        if (tasks.size() == 0) throw new NoSuchDataException("Задачи с данным статусом отсутствуют");
+        if (tasks.size() == 0) throw new NoSuchDataException(
+                messageSource.getMessage("task.error.existing", null, null));
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     @PutMapping("/api/task/edit/{id}")
-    public ResponseEntity<?> editTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<?> editTask(@PathVariable Long id, @Valid @RequestBody TaskDTO taskDTO) {
         Task task = employeeService.findTask(id);
         task.setName(taskDTO.getName());
         task.setDescription(taskDTO.getDescription());
