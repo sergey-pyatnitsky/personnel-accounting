@@ -18,6 +18,7 @@
         <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
         <HikariCP.version>5.0.1</HikariCP.version>
         <flyway-mysql.version>8.5.4</flyway-mysql.version>
+        <spring-aspects.version>5.3.16</spring-aspects.version>
     </properties>
 
     <dependencies>
@@ -50,6 +51,11 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-mysql</artifactId>
             <version>8.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring-aspects.version}</version>
         </dependency>
     </dependencies>
 

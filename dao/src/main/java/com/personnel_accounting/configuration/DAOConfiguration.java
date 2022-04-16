@@ -6,6 +6,7 @@ import org.flywaydb.core.Flyway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jndi.JndiTemplate;
@@ -21,6 +22,7 @@ import java.util.Properties;
 @ComponentScan("com.personnel_accounting")
 @PropertySource("classpath:database.properties")
 @EnableTransactionManagement
+@EnableAspectJAutoProxy
 public class DAOConfiguration {
     private final Environment env;
 
