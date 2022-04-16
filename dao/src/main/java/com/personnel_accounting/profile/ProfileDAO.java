@@ -16,7 +16,7 @@ public interface ProfileDAO {
     List<Profile> findByEmailPart(String emailPart);//TODO test
 
     Profile save(Profile profile);
-    Profile update(Profile profile);
+    Profile merge(Profile profile);
     boolean removeById(Long id);
     boolean remove(Profile profile);
 }

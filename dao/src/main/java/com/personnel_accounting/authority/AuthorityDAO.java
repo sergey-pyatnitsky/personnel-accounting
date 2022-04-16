@@ -11,7 +11,7 @@ public interface AuthorityDAO {
     List<Authority> findByRole(Role role);
 
     Authority save(Authority authority);
-    Authority update(Authority authority);
+    Authority merge(Authority authority);
     boolean removeByUsername(String username);
     boolean remove(Authority authority);
 }

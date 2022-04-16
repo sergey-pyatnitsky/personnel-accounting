@@ -49,7 +49,7 @@ public class PositionDAOImpl implements PositionDAO {
     }
 
     @Override
-    public Position update(Position position) {
+    public Position merge(Position position) {
         Session session = sessionFactory.getCurrentSession();
         return (Position) session.merge(position);
     }

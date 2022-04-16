@@ -49,7 +49,7 @@ public class AuthorityDAOImpl implements AuthorityDAO {
     }
 
     @Override
-    public Authority update(Authority authority) {
+    public Authority merge(Authority authority) {
         Session session = sessionFactory.getCurrentSession();
         return (Authority) session.merge(authority);
     }

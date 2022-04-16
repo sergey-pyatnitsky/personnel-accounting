@@ -15,10 +15,11 @@ public interface ProjectDAO {
     List<Project> findByDepartmentPaginated(PagingRequest pagingRequest, Department department);
 
     Long getProjectCount();
+    Long getProjectsByDepartmentCount(Department department);
 
     Project save(Project project);
     List<Project> save(List<Project> projects);
-    Project update(Project project);
+    Project merge(Project project);
     boolean removeById(Long id);
     boolean remove(Project project);
 

@@ -49,7 +49,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User update(User user) {
+    public User merge(User user) {
         Session session = sessionFactory.getCurrentSession();
         return (User) session.merge(user);
     }

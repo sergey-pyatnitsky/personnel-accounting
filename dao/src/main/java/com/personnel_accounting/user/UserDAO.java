@@ -10,7 +10,7 @@ public interface UserDAO {
     List<User> findAll();
 
     User save(User user);
-    User update(User user);
+    User merge(User user);
     boolean removeByUsername(String username);
     boolean remove(User user);
 

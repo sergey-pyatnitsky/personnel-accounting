@@ -1,7 +1,6 @@
 package com.personnel_accounting.employee;
 
 import com.personnel_accounting.domain.*;
-import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 
 import java.sql.Time;
@@ -25,6 +24,9 @@ public interface EmployeeService {
     ReportCard mergeReportCard(ReportCard reportCard);
 
     Long getEmployeeCount();
+    Long getEmployeeByDepartmentCount(Department department);
+    Long getEmployeeByProjectCount(Project project);
+    int getEmployeesWithOpenProjectByDepartmentCount(Department department);
 
     Task findTask(Long id);
     Task saveTask(Task task);
@@ -41,7 +43,7 @@ public interface EmployeeService {
     List<Employee> findByDepartmentPaginated(Department department, PagingRequest pagingRequest);
 
     Employee save(Employee employee);
-    Employee update(Employee employee);
+    Employee merge(Employee employee);
     boolean removeById(Long id);
     boolean remove(Employee employee);
 

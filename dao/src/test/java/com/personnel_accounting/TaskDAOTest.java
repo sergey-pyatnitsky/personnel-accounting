@@ -241,7 +241,7 @@ public class TaskDAOTest {
     public void update() {
         logger.info("START update");
         task.setTaskStatus(TaskStatus.CLOSED);
-        Task testTask = taskDAO.update(task);
+        Task testTask = taskDAO.merge(task);
         Assert.assertEquals(testTask.getId(), task.getId());
         Assert.assertEquals(testTask.getName(), task.getName());
         Assert.assertEquals(testTask.getDescription(), task.getDescription());

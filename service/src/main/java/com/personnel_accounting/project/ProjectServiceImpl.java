@@ -11,12 +11,12 @@ import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
-import com.personnel_accounting.exeption.ActiveStatusDataException;
-import com.personnel_accounting.exeption.ExistingDataException;
-import com.personnel_accounting.exeption.NoSuchDataException;
+import com.personnel_accounting.exception.ActiveStatusDataException;
+import com.personnel_accounting.exception.ExistingDataException;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.task.TaskDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,23 +26,23 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
-    private final ProjectDAO projectDAO;
-    private final DepartmentDAO departmentDAO;
-    private final EmployeePositionDAO employeePositionDAO;
-    private final PositionDAO positionDAO;
-    private final EmployeeDAO employeeDAO;
-    private final TaskDAO taskDAO;
+    @Autowired
+    private ProjectDAO projectDAO;
 
-    public ProjectServiceImpl(ProjectDAO projectDAO, DepartmentDAO departmentDAO,
-                              EmployeePositionDAO employeePositionDAO, PositionDAO positionDAO,
-                              EmployeeDAO employeeDAO, TaskDAO taskDAO) {
-        this.projectDAO = projectDAO;
-        this.departmentDAO = departmentDAO;
-        this.employeePositionDAO = employeePositionDAO;
-        this.positionDAO = positionDAO;
-        this.employeeDAO = employeeDAO;
-        this.taskDAO = taskDAO;
-    }
+    @Autowired
+    private DepartmentDAO departmentDAO;
+
+    @Autowired
+    private EmployeePositionDAO employeePositionDAO;
+
+    @Autowired
+    private PositionDAO positionDAO;
+
+    @Autowired
+    private EmployeeDAO employeeDAO;
+
+    @Autowired
+    private TaskDAO taskDAO;
 
     @Override //TODO test
     public Project addProject(Project project, Long departmentId) {
@@ -66,7 +66,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override //TODO test
     public boolean closeProject(Project project) {
-        Project tempProject = projectDAO.update(project);
+        Project tempProject = projectDAO.merge(project);
         if (tempProject.getStartDate() == null)
             return projectDAO.remove(tempProject);
         else {
@@ -116,17 +116,17 @@ public class ProjectServiceImpl implements ProjectService {
         Position tempPosition = positionDAO.findByName(position.getName());
         if (tempPosition == null)
             return positionDAO.save(position);
-        return positionDAO.update(tempPosition);
+        return positionDAO.merge(tempPosition);
     }
 
     @Override
     public EmployeePosition changeEmployeePositionInProject(EmployeePosition employeePosition, Position position) {
         if (!employeePosition.getPosition().equals(position)) {
-            position = positionDAO.update(position);
+            position = positionDAO.merge(position);
             employeePosition.setPosition(position);
-            return employeePositionDAO.update(employeePosition);
+            return employeePositionDAO.merge(employeePosition);
         }
-        return employeePositionDAO.update(employeePosition);
+        return employeePositionDAO.merge(employeePosition);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         for (EmployeePosition obj : employeePositions) {
             if (obj.getProject().getId().equals(project.getId()))
-                return employeePositionDAO.update(obj);
+                return employeePositionDAO.merge(obj);
         }
         EmployeePosition employeePosition = new EmployeePosition(false, employee, positionDAO.save(position),
                 project, project.getDepartment());
@@ -165,12 +165,22 @@ public class ProjectServiceImpl implements ProjectService {
             employeePosition.setEndDate(date);
             return employeePositionDAO.save(employeePosition);
         }
-        return employeePositionDAO.update(employeePosition);
+        return employeePositionDAO.merge(employeePosition);
     }
 
     @Override
     public Long getEmployeeCount() {
         return projectDAO.getProjectCount();
+    }
+
+    @Override
+    public Long getByEmployeeCount(Employee employee) {
+        return employeePositionDAO.getByEmployeeCount(employee);
+    }
+
+    @Override
+    public Long getTaskByStatusCount(Project project, TaskStatus status) {
+        return taskDAO.getTaskByStatusCount(project, status);
     }
 
     @Override
@@ -235,8 +245,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project update(Project project) {
-        return projectDAO.update(project);
+    public Project merge(Project project) {
+        return projectDAO.merge(project);
     }
 
     @Override
@@ -251,7 +261,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public boolean inactivate(Project project) {
-        project = projectDAO.update(project);
+        project = projectDAO.merge(project);
         employeePositionDAO.findByProject(project).forEach(employeePosition -> {
             employeePosition.setActive(true);
             employeePositionDAO.save(employeePosition);
@@ -262,7 +272,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public boolean activate(Project project) {
-        project = projectDAO.update(project);
+        project = projectDAO.merge(project);
         employeePositionDAO.findByProject(project).forEach(employeePosition -> {
             employeePosition.setActive(true);
             employeePositionDAO.save(employeePosition);

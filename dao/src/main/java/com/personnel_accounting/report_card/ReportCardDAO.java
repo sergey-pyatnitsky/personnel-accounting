@@ -15,7 +15,7 @@ public interface ReportCardDAO {
     List<ReportCard> findByEmployee(Employee employee);
 
     ReportCard save(ReportCard reportCard);
-    ReportCard update(ReportCard reportCard);
+    ReportCard merge(ReportCard reportCard);
     boolean removeById(Long id);
     boolean remove(ReportCard reportCard);
 }

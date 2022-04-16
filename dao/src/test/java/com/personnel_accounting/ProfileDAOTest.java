@@ -111,7 +111,7 @@ public class ProfileDAOTest {
     public void update() {
         logger.info("START update");
         profile.setEmail("qwerty123@mail.ru");
-        Assert.assertEquals(profileDAO.update(profile), profile);
+        Assert.assertEquals(profileDAO.merge(profile), profile);
     }
 
     @Test

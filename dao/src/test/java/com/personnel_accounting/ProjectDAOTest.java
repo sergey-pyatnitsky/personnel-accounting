@@ -153,7 +153,7 @@ public class ProjectDAOTest {
     public void update() {
         logger.info("START update");
         project.setName("Банковская система белагопромбанка");
-        Assert.assertEquals(projectDAO.update(project).getName(), "Банковская система белагопромбанка");
+        Assert.assertEquals(projectDAO.merge(project).getName(), "Банковская система белагопромбанка");
     }
 
     @Test

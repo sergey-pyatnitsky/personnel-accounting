@@ -1,7 +1,7 @@
 package com.personnel_accounting.configuration;
 
-import com.personnel_accounting.entity.converter.toDTO.*;
-import com.personnel_accounting.entity.converter.toDomain.*;
+import com.personnel_accounting.entity.converter.dto.*;
+import com.personnel_accounting.entity.converter.domain.*;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

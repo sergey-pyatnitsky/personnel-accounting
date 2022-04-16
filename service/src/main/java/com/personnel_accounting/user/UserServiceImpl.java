@@ -7,10 +7,10 @@ import com.personnel_accounting.domain.User;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.authority.AuthorityDAO;
 import com.personnel_accounting.employee.EmployeeDAO;
-import com.personnel_accounting.exeption.IncorrectDataException;
+import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.UserValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.DataBinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,19 +18,17 @@ import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final UserDAO userDAO;
-    private final EmployeeDAO employeeDAO;
-    private final AuthorityDAO authorityDAO;
+    @Autowired
+    private UserDAO userDAO;
 
-    private final UserValidator userValidator;
+    @Autowired
+    private EmployeeDAO employeeDAO;
 
-    public UserServiceImpl(UserDAO userDAO, EmployeeDAO employeeDAO,
-                           AuthorityDAO authorityDAO, UserValidator userValidator) {
-        this.userDAO = userDAO;
-        this.employeeDAO = employeeDAO;
-        this.authorityDAO = authorityDAO;
-        this.userValidator = userValidator;
-    }
+    @Autowired
+    private AuthorityDAO authorityDAO;
+
+    @Autowired
+    private UserValidator userValidator;
 
     @Override
     public Authority getAuthorityByUsername(String username) {
@@ -39,19 +37,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User changeAuthData(User user, String password) {
-        final DataBinder dataBinder = new DataBinder(user);
-        dataBinder.addValidators(userValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else {
-            if (!Objects.equals(user.getPassword(), password)) {
-                user.setPassword(password);
-                return userDAO.save(user);
-            }
-            return userDAO.update(user);
+        ValidationUtil.validate(user, userValidator);
+        if (!Objects.equals(user.getPassword(), password)) {
+            user.setPassword(password);
+            return userDAO.save(user);
         }
+        return userDAO.merge(user);
     }
 
     @Override
@@ -61,29 +52,22 @@ public class UserServiceImpl implements UserService {
             authority.setRole(role);
             authorityDAO.save(authority);
         }
-        return userDAO.update(user);
+        return userDAO.merge(user);
     }
 
     @Override
     public boolean registerUser(User user, String name, Role role) { //FIXME test
-        final DataBinder dataBinder = new DataBinder(user);
-        dataBinder.addValidators(userValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else {
-            User tempUser = userDAO.find(user.getUsername());
-            if (tempUser == null) {
-                user = userDAO.save(user);
-                authorityDAO.save(new Authority(user.getUsername(), role));
-                if (!role.equals(Role.SUPER_ADMIN)) {
-                    Employee employee = new Employee(name, false, user, new Profile());
-                    employeeDAO.save(employee);
-                }
-                return true;
-            } else return false;
-        }
+        ValidationUtil.validate(user, userValidator);
+        User tempUser = userDAO.find(user.getUsername());
+        if (tempUser == null) {
+            user = userDAO.save(user);
+            authorityDAO.save(new Authority(user.getUsername(), role));
+            if (!role.equals(Role.SUPER_ADMIN)) {
+                Employee employee = new Employee(name, false, user, new Profile());
+                employeeDAO.save(employee);
+            }
+            return true;
+        } else return false;
     }
 
     @Override
@@ -134,28 +118,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User user) {
-        final DataBinder dataBinder = new DataBinder(user);
-        dataBinder.addValidators(userValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else return userDAO.save(user);
+        ValidationUtil.validate(user, userValidator);
+        return userDAO.save(user);
     }
 
     @Override
     public User save(User user, Role role) {
-        final DataBinder dataBinder = new DataBinder(user);
-        dataBinder.addValidators(userValidator);
-        dataBinder.validate();
+        ValidationUtil.validate(user, userValidator);
+        Authority authority = new Authority(user.getUsername(), role);
+        user = userDAO.save(user);
+        authorityDAO.save(authority);
+        return user;
 
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else {
-            Authority authority = new Authority(user.getUsername(), role);
-            user = userDAO.save(user);
-            authorityDAO.save(authority);
-            return user;
-        }
     }
 }

@@ -130,7 +130,7 @@ public class DepartmentDAOTest {
     public void update() {
         logger.info("START update");
         department.setName("Отдел PHP разработки");
-        Assert.assertEquals(departmentDAO.update(department), department);
+        Assert.assertEquals(departmentDAO.merge(department), department);
     }
 
     @Test

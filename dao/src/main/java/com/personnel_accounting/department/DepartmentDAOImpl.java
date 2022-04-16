@@ -84,7 +84,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     }
 
     @Override
-    public Department update(Department department) {
+    public Department merge(Department department) {
         Session session = sessionFactory.getCurrentSession();
         return (Department) session.merge(department);
     }

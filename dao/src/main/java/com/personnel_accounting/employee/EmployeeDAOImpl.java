@@ -58,6 +58,14 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
+    public Long getEmployeeByDepartmentCount(Department department) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Employee where department =:department");
+        query.setParameter("department", department);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
     public List<Employee> findByName(String name) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(
@@ -143,7 +151,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
-    public Employee update(Employee employee) {
+    public Employee merge(Employee employee) {
         Session session = sessionFactory.getCurrentSession();
         return (Employee) session.merge(employee);
     }

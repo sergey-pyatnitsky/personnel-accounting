@@ -73,6 +73,14 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
+    public Long getProjectsByDepartmentCount(Department department) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Project where department =:department");
+        query.setParameter("department", department);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
     public List<Project> findByName(String name) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("from Project where name = :name");
@@ -110,7 +118,7 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public Project update(Project project) {
+    public Project merge(Project project) {
         Session session = sessionFactory.getCurrentSession();
         return (Project) session.merge(project);
     }

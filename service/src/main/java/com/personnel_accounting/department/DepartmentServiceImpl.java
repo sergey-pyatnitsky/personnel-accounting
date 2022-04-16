@@ -1,23 +1,18 @@
 package com.personnel_accounting.department;
 
-import com.personnel_accounting.domain.Department;
-import com.personnel_accounting.domain.Employee;
-import com.personnel_accounting.domain.EmployeePosition;
-import com.personnel_accounting.domain.Position;
-import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.*;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
-import com.personnel_accounting.exeption.IncorrectDataException;
-import com.personnel_accounting.pagination.entity.Page;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.project.ProjectDAO;
 import com.personnel_accounting.task.TaskDAO;
+import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.DepartmentValidator;
 import com.personnel_accounting.validation.PositionValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.DataBinder;
 
 import javax.transaction.Transactional;
 import java.sql.Date;
@@ -25,39 +20,34 @@ import java.util.List;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
-    private final DepartmentDAO departmentDAO;
-    private final ProjectDAO projectDAO;
-    private final EmployeeDAO employeeDAO;
-    private final EmployeePositionDAO employeePositionDAO;
-    private final PositionDAO positionDAO;
-    private final TaskDAO taskDAO;
+    @Autowired
+    private DepartmentDAO departmentDAO;
 
-    private final DepartmentValidator departmentValidator;
-    private final PositionValidator positionValidator;
+    @Autowired
+    private ProjectDAO projectDAO;
 
-    public DepartmentServiceImpl(DepartmentDAO departmentDAO, ProjectDAO projectDAO,
-                                 EmployeeDAO employeeDAO, EmployeePositionDAO employeePositionDAO,
-                                 PositionDAO positionDAO, TaskDAO taskDAO, DepartmentValidator departmentValidator,
-                                 PositionValidator positionValidator) {
-        this.departmentDAO = departmentDAO;
-        this.projectDAO = projectDAO;
-        this.employeeDAO = employeeDAO;
-        this.employeePositionDAO = employeePositionDAO;
-        this.positionDAO = positionDAO;
-        this.taskDAO = taskDAO;
-        this.departmentValidator = departmentValidator;
-        this.positionValidator = positionValidator;
-    }
+    @Autowired
+    private EmployeeDAO employeeDAO;
+
+    @Autowired
+    private EmployeePositionDAO employeePositionDAO;
+
+    @Autowired
+    private PositionDAO positionDAO;
+
+    @Autowired
+    private TaskDAO taskDAO;
+
+    @Autowired
+    private DepartmentValidator departmentValidator;
+
+    @Autowired
+    private PositionValidator positionValidator;
 
     @Override //TODO test
     public Department addDepartment(Department department) {
-        final DataBinder dataBinder = new DataBinder(department);
-        dataBinder.addValidators(departmentValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        }else return departmentDAO.findByName(department.getName())
+        ValidationUtil.validate(department, departmentValidator);
+        return departmentDAO.findByName(department.getName())
                 .stream().allMatch(obj -> obj.getEndDate() != null)
                 ? departmentDAO.save(department)
                 : department;
@@ -65,7 +55,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override //TODO test
     public boolean closeDepartment(Department department) {
-        Department tempDepartment = departmentDAO.update(department);
+        Department tempDepartment = departmentDAO.merge(department);
         if (tempDepartment.getStartDate() == null)
             return departmentDAO.remove(tempDepartment);
         else {
@@ -84,13 +74,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department editDepartmentName(Department department, String name) {
         department.setName(name);
         department.setModifiedDate(new Date(System.currentTimeMillis()));
-        final DataBinder dataBinder = new DataBinder(department);
-        dataBinder.addValidators(departmentValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        }else return departmentDAO.save(department);
+        ValidationUtil.validate(department, departmentValidator);
+        return departmentDAO.save(department);
     }
 
     @Override
@@ -122,7 +107,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             employee.setDepartment(department);
             return employeeDAO.save(employee);
         }
-        return employeeDAO.update(employee);
+        return employeeDAO.merge(employee);
     }
 
     @Override
@@ -166,24 +151,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department save(Department department) {
-        final DataBinder dataBinder = new DataBinder(department);
-        dataBinder.addValidators(departmentValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        }else return departmentDAO.save(department);
+        ValidationUtil.validate(department, departmentValidator);
+        return departmentDAO.save(department);
     }
 
     @Override
-    public Department update(Department department) {
-        final DataBinder dataBinder = new DataBinder(department);
-        dataBinder.addValidators(departmentValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        }else return departmentDAO.update(department);
+    public Department merge(Department department) {
+        ValidationUtil.validate(department, departmentValidator);
+        return departmentDAO.merge(department);
     }
 
     @Override
@@ -218,13 +193,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override //TODO test
     public Position addPosition(Position position) {
-        final DataBinder dataBinder = new DataBinder(position);
-        dataBinder.addValidators(positionValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        }else return positionDAO.findAll().stream().filter(obj -> obj.getName().equals(position.getName()))
+        ValidationUtil.validate(position, positionValidator);
+        return positionDAO.findAll().stream().filter(obj -> obj.getName().equals(position.getName()))
                 .findFirst().orElse(null) != null
                 ? position
                 : positionDAO.save(position);
@@ -242,7 +212,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Position mergePosition(Position position) {
-        return positionDAO.update(position);
+        return positionDAO.merge(position);
     }
 
     @Override
@@ -252,6 +222,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public EmployeePosition mergeEmployeePosition(EmployeePosition employeePosition) {
-        return employeePositionDAO.update(employeePosition);
+        return employeePositionDAO.merge(employeePosition);
+    }
+
+    @Override
+    public Long getProjectsByDepartmentCount(Department department) {
+        return projectDAO.getProjectsByDepartmentCount(department);
     }
 }

@@ -17,6 +17,7 @@ public interface DepartmentService {
     Department editDepartmentName(Department department, String name);
 
     Long getDepartmentCount();
+    Long getProjectsByDepartmentCount(Department department);
 
     Position addPosition(Position position);
     Position mergePosition(Position position);
@@ -33,7 +34,7 @@ public interface DepartmentService {
     List<Department> findByName(String name);
 
     Department save(Department department);
-    Department update(Department department);
+    Department merge(Department department);
     boolean remove(Department department);
     boolean removeById(Long id);
     boolean inactivate(Department department);

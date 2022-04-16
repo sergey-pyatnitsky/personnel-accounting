@@ -271,7 +271,7 @@ public class EmployeePositionDAOTest {
     public void update() {
         logger.info("START update");
         employeePosition.setPosition(secondPosition);
-        EmployeePosition tempEmployeePosition = employeePositionDAO.update(employeePosition);
+        EmployeePosition tempEmployeePosition = employeePositionDAO.merge(employeePosition);
         Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
         Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
                 employeePosition.getCreateDate().toString());

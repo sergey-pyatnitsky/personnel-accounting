@@ -109,7 +109,7 @@ public class AuthorityDAOTest {
     public void update(){
         logger.info("START update");
         authority.setRole(Role.SUPER_ADMIN);
-        Assert.assertEquals(authorityDAO.update(authority), authority);
+        Assert.assertEquals(authorityDAO.merge(authority), authority);
     }
 
     @Test

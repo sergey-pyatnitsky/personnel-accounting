@@ -30,6 +30,8 @@ public interface ProjectService {
     List<EmployeePosition> findByEmployeePaginated(PagingRequest pagingRequest, Employee employee);
 
     Long getEmployeeCount();
+    Long getByEmployeeCount(Employee employee);
+    Long getTaskByStatusCount(Project project, TaskStatus status);
 
     Project find(Long id);
     List<Project> findByActive(boolean isActive);
@@ -41,7 +43,7 @@ public interface ProjectService {
     List<Task> findTasksByEmployeeInProjectWithStatus(Employee employee, Project project, TaskStatus taskStatus);
 
     Project save(Project project);
-    Project update(Project project);
+    Project merge(Project project);
     boolean remove(Project project);
     boolean removeById(Long id);
 

@@ -94,7 +94,7 @@ public class ProfileDAOImpl implements ProfileDAO {
     }
 
     @Override
-    public Profile update(Profile profile) {
+    public Profile merge(Profile profile) {
         Session session = sessionFactory.getCurrentSession();
         return (Profile) session.merge(profile);
     }

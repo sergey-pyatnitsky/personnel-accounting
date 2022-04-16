@@ -18,8 +18,10 @@ public interface TaskDAO {
     List<Task> findByAssignee(Employee assignee);
     List<Task> findByStatus(TaskStatus status);
 
+    Long getTaskByStatusCount(Project project, TaskStatus status);
+
     Task save(Task task);
-    Task update(Task task);
+    Task merge(Task task);
     boolean removeById(Long id);
     boolean remove(Task task);
 }

@@ -96,6 +96,15 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
+    public Long getTaskByStatusCount(Project project, TaskStatus status) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Task where taskStatus = :status and project =:project");
+        query.setParameter("status", status);
+        query.setParameter("project", project);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
     public Task save(Task task) {
         Session session = sessionFactory.getCurrentSession();
         session.saveOrUpdate(task);
@@ -103,7 +112,7 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public Task update(Task task) {
+    public Task merge(Task task) {
         Session session = sessionFactory.getCurrentSession();
         return (Task) session.merge(task);
     }

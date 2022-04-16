@@ -20,10 +20,11 @@ public interface EmployeeDAO {
     Employee findByProfile(Profile profile);//TODO test
 
     Long getEmployeeCount();
+    Long getEmployeeByDepartmentCount(Department department);
 
     Employee save(Employee employee);
     List<Employee> save(List<Employee> employees);
-    Employee update(Employee employee);
+    Employee merge(Employee employee);
     boolean removeById(Long id);
     boolean remove(Employee employee);
 

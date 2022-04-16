@@ -67,7 +67,7 @@ public class ReportCardDAOImpl implements ReportCardDAO {
     }
 
     @Override
-    public ReportCard update(ReportCard reportCard) {
+    public ReportCard merge(ReportCard reportCard) {
         Session session = sessionFactory.getCurrentSession();
         return (ReportCard) session.merge(reportCard);
     }

@@ -97,7 +97,7 @@ public class UserDAOTest {
     public void update() {
         logger.info("START update");
         user.setPassword("admin");
-        user = userDAO.update(user);
+        user = userDAO.merge(user);
         Assert.assertEquals(user.getUsername(), "admin");
         Assert.assertEquals(user.getPassword(), "admin");
         Assert.assertTrue(user.isActive());

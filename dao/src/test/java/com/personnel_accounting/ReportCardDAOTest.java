@@ -244,7 +244,7 @@ public class ReportCardDAOTest {
     public void update() {
         logger.info("START update");
         reportCard.setTask(secondTask);
-        ReportCard tempReportCard = reportCardDAO.update(reportCard);
+        ReportCard tempReportCard = reportCardDAO.merge(reportCard);
         Assert.assertEquals(tempReportCard.getId(), reportCard.getId());
         Assert.assertEquals(tempReportCard.getWorkingTime(), reportCard.getWorkingTime());
         Assert.assertEquals(tempReportCard.getDate().toString(), reportCard.getDate().toString());

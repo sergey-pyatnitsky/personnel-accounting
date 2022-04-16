@@ -3,16 +3,16 @@ package com.personnel_accounting.employee;
 import com.personnel_accounting.domain.*;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
-import com.personnel_accounting.exeption.IncorrectDataException;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.profile.ProfileDAO;
 import com.personnel_accounting.report_card.ReportCardDAO;
 import com.personnel_accounting.task.TaskDAO;
+import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.EmployeeValidator;
 import com.personnel_accounting.validation.ProfileValidator;
 import com.personnel_accounting.validation.TaskValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.DataBinder;
 
 import javax.transaction.Transactional;
 import java.sql.Date;
@@ -22,29 +22,29 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
-    private final EmployeeDAO employeeDAO;
-    private final TaskDAO taskDAO;
-    private final ReportCardDAO reportCardDAO;
-    private final ProfileDAO profileDAO;
-    private final EmployeePositionDAO employeePositionDAO;
+    @Autowired
+    private EmployeeDAO employeeDAO;
 
-    private final EmployeeValidator employeeValidator;
-    private final TaskValidator taskValidator;
-    private final ProfileValidator profileValidator;
+    @Autowired
+    private TaskDAO taskDAO;
 
-    public EmployeeServiceImpl(EmployeeDAO employeeDAO, TaskDAO taskDAO,
-                               ReportCardDAO reportCardDAO, ProfileDAO profileDAO,
-                               EmployeePositionDAO employeePositionDAO, EmployeeValidator employeeValidator,
-                               TaskValidator taskValidator, ProfileValidator profileValidator) {
-        this.employeeDAO = employeeDAO;
-        this.taskDAO = taskDAO;
-        this.reportCardDAO = reportCardDAO;
-        this.profileDAO = profileDAO;
-        this.employeePositionDAO = employeePositionDAO;
-        this.employeeValidator = employeeValidator;
-        this.taskValidator = taskValidator;
-        this.profileValidator = profileValidator;
-    }
+    @Autowired
+    private ReportCardDAO reportCardDAO;
+
+    @Autowired
+    private ProfileDAO profileDAO;
+
+    @Autowired
+    private EmployeePositionDAO employeePositionDAO;
+
+    @Autowired
+    private EmployeeValidator employeeValidator;
+
+    @Autowired
+    private TaskValidator taskValidator;
+
+    @Autowired
+    private ProfileValidator profileValidator;
 
     @Override //FIXME test
     public ReportCard trackTime(Task task, Time time) {
@@ -63,31 +63,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         task.setProject(project);
         task.setTaskStatus(TaskStatus.OPEN);
         task.setCreateDate(new Date(System.currentTimeMillis()));
-        final DataBinder dataBinder = new DataBinder(task);
-        dataBinder.addValidators(taskValidator);
-        dataBinder.validate();
 
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else return taskDAO.save(task);
+        ValidationUtil.validate(task, taskValidator);
+        return taskDAO.save(task);
     }
 
     @Override
     @Transactional
     public Employee addProfileData(Employee employee, Profile profile) {
-        employee = employeeDAO.update(employee);
+        employee = employeeDAO.merge(employee);
         employee.getProfile().setSkills(profile.getSkills());
         employee.getProfile().setEmail(profile.getEmail());
         employee.getProfile().setPhone(profile.getPhone());
         employee.getProfile().setAddress(profile.getAddress());
         employee.getProfile().setEducation(profile.getEducation());
-        final DataBinder dataBinder = new DataBinder(employee.getProfile());
-        dataBinder.addValidators(profileValidator);
-        dataBinder.validate();
 
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else return employeeDAO.save(employee);
+        ValidationUtil.validate(employee.getProfile(), profileValidator);
+        return employeeDAO.save(employee);
     }
 
     @Override
@@ -95,12 +87,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setName(name);
         employee.setModifiedDate(new Date(System.currentTimeMillis()));
 
-        final DataBinder dataBinder = new DataBinder(employee);
-        dataBinder.addValidators(employeeValidator);
-        dataBinder.validate();
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else return employeeDAO.save(employee);
+        ValidationUtil.validate(employee, employeeValidator);
+        return employeeDAO.save(employee);
     }
 
     @Override
@@ -110,16 +98,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Task saveTask(Task task) {
-        final DataBinder dataBinder = new DataBinder(task);
-        dataBinder.addValidators(taskValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else {
-            task.setModifiedDate(new Date(System.currentTimeMillis()));
-            return taskDAO.save(task);
-        }
+        ValidationUtil.validate(task, taskValidator);
+        task.setModifiedDate(new Date(System.currentTimeMillis()));
+        return taskDAO.save(task);
     }
 
     @Override
@@ -159,13 +140,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public List<Employee> getEmployeesWithOpenProjectByDepartment(Department department, PagingRequest pagingRequest) { //TODO test
-        List<Employee> employees = employeeDAO.findByDepartmentPaginated(department, pagingRequest)
-                .stream().filter(employee ->
-                        employeePositionDAO.findByEmployee(employee)
-                                .stream().filter(employeePosition -> employeePosition.getProject() != null
-                                        && employeePosition.getProject().getEndDate() == null)
-                                .findFirst().orElse(null) != null
-                ).collect(Collectors.toList());
         return employeeDAO.findByDepartmentPaginated(department, pagingRequest)
                 .stream().filter(employee ->
                         employeePositionDAO.findByEmployee(employee)
@@ -173,6 +147,17 @@ public class EmployeeServiceImpl implements EmployeeService {
                                         && employeePosition.getProject().getEndDate() == null)
                                 .findFirst().orElse(null) != null
                 ).collect(Collectors.toList());
+    }
+
+    @Override
+    public int getEmployeesWithOpenProjectByDepartmentCount(Department department) {
+        return (int) employeeDAO.findByDepartment(department)
+                .stream().filter(employee ->
+                        employeePositionDAO.findByEmployee(employee)
+                                .stream().filter(employeePosition -> employeePosition.getProject() != null
+                                        && employeePosition.getProject().getEndDate() == null)
+                                .findFirst().orElse(null) != null
+                ).count();
     }
 
     @Override
@@ -188,6 +173,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Long getEmployeeCount() {
         return employeeDAO.getEmployeeCount();
+    }
+
+    @Override
+    public Long getEmployeeByDepartmentCount(Department department) {
+        return employeeDAO.getEmployeeByDepartmentCount(department);
+    }
+
+    @Override
+    public Long getEmployeeByProjectCount(Project project) {
+        return employeePositionDAO.getEmployeeByProjectCount(project);
     }
 
     @Override
@@ -217,24 +212,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee save(Employee employee) {
-        final DataBinder dataBinder = new DataBinder(employee);
-        dataBinder.addValidators(employeeValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else return employeeDAO.save(employee);
+        ValidationUtil.validate(employee, employeeValidator);
+        return employeeDAO.save(employee);
     }
 
     @Override
-    public Employee update(Employee employee) {
-        final DataBinder dataBinder = new DataBinder(employee);
-        dataBinder.addValidators(employeeValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else return employeeDAO.update(employee);
+    public Employee merge(Employee employee) {
+        ValidationUtil.validate(employee, employeeValidator);
+        return employeeDAO.merge(employee);
     }
 
     @Override
@@ -307,22 +292,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public ReportCard mergeReportCard(ReportCard reportCard) {
-        return reportCardDAO.update(reportCard);
+        return reportCardDAO.merge(reportCard);
     }
 
     @Override
     public Task createTask(Task task) {
-        final DataBinder dataBinder = new DataBinder(task);
-        dataBinder.addValidators(taskValidator);
-        dataBinder.validate();
-
-        if (dataBinder.getBindingResult().hasErrors()) {
-            throw new IncorrectDataException(dataBinder.getBindingResult().getFieldError().getDefaultMessage());
-        } else return taskDAO.save(task);
+        ValidationUtil.validate(task, taskValidator);
+        return taskDAO.save(task);
     }
 
     @Override
     public Task mergeTask(Task task) {
-        return taskDAO.update(task);
+        return taskDAO.merge(task);
     }
 }

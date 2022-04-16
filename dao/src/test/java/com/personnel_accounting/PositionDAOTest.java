@@ -82,7 +82,7 @@ public class PositionDAOTest {
     public void update() {
         logger.info("START update");
         position.setName("Проеткировщик архитектуры");
-        Assert.assertEquals(positionDAO.update(position), position);
+        Assert.assertEquals(positionDAO.merge(position), position);
     }
 
     @Test

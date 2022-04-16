@@ -10,7 +10,7 @@ public interface PositionDAO {
     Position findByName(String name);
 
     Position save(Position position);
-    Position update(Position position);
+    Position merge(Position position);
     boolean removeById(Long id);
     boolean remove(Position position);
 }

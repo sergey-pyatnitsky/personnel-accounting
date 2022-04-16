@@ -68,7 +68,7 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
         Order order = pagingRequest.getOrder().get(0);
         Column column = pagingRequest.getColumns().get(order.getColumn());
         String hql = "from EmployeePosition where project = :project";
-        if(!pagingRequest.getSearch().getValue().equals(""))
+        if (!pagingRequest.getSearch().getValue().equals(""))
             hql += " and where concat(employee.id, employee.name, employee.user.username, employee.user.authority.role, isActive) " +
                     "like '%" + pagingRequest.getSearch().getValue() + "%'";
         hql += " order by " + column.getData() + " " + order.getDir().toString();
@@ -85,7 +85,7 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
         Order order = pagingRequest.getOrder().get(0);
         Column column = pagingRequest.getColumns().get(order.getColumn());
         String hql = "from EmployeePosition where employee = :employee";
-        if(!pagingRequest.getSearch().getValue().equals(""))
+        if (!pagingRequest.getSearch().getValue().equals(""))
             hql += " and where concat(employee.id, employee.name, employee.user.username, employee.user.authority.role, isActive) " +
                     "like '%" + pagingRequest.getSearch().getValue() + "%'";
         hql += " order by " + column.getData() + " " + order.getDir().toString();
@@ -115,6 +115,24 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
     }
 
     @Override
+    public Long getEmployeeByProjectCount(Project project) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "from EmployeePosition where project = :project");
+        query.setParameter("project", project);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getByEmployeeCount(Employee employee) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "from EmployeePosition where employee = :employee");
+        query.setParameter("employee", employee);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
     public EmployeePosition save(EmployeePosition employeePosition) {
         Session session = sessionFactory.getCurrentSession();
         session.saveOrUpdate(employeePosition);
@@ -129,7 +147,7 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
     }
 
     @Override
-    public EmployeePosition update(EmployeePosition employeePosition) {
+    public EmployeePosition merge(EmployeePosition employeePosition) {
         Session session = sessionFactory.getCurrentSession();
         return (EmployeePosition) session.merge(employeePosition);
     }

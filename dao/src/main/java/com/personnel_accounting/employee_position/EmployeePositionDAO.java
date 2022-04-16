@@ -16,9 +16,12 @@ public interface EmployeePositionDAO {
     List<EmployeePosition> findByDepartment(Department department);
     List<EmployeePosition> findByActive(boolean isActive);
 
+    Long getEmployeeByProjectCount(Project project);
+    Long getByEmployeeCount(Employee employee);
+
     EmployeePosition save(EmployeePosition employeePosition);
     List<EmployeePosition> save(List<EmployeePosition> employeePositions);
-    EmployeePosition update(EmployeePosition employeePosition);
+    EmployeePosition merge(EmployeePosition employeePosition);
     boolean activate(EmployeePosition employeePosition); //TODO test
     boolean inactivate(EmployeePosition employeePosition); //TODO test
     boolean removeById(Long id);
