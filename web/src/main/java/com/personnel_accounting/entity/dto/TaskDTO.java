@@ -17,12 +17,8 @@ public class TaskDTO {
 
     @NotBlank(message = "{task.validator.description.empty}")
     private String description;
-
-    @NotEmpty(message = "{task.validator.project.empty}")
     private ProjectDTO project;
     private EmployeeDTO reporter;
-
-    @NotEmpty(message = "{task.validator.assignee.empty}")
     private EmployeeDTO assignee;
     private TaskStatus status;
     private String create_date;

@@ -33,7 +33,7 @@ function add_position() {
     timeout: 600000,
     success: function (data) {
       $('.alert').empty();
-      if (data != "")
+      if (data.id == null)
         $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
       else {
         let message = get_message(localStorage.getItem("lang"), "department.alert.add.position").replace("0", data.name);

@@ -67,7 +67,7 @@ function loadEditTable(table_id, req_url) {
         }
       },
       {
-        "data": "isActive", render: function (data) {
+        "data": "active", render: function (data) {
           return data
             ? '<p class="text-success">+</p>'
             : '<p class="text-danger">-</p>';

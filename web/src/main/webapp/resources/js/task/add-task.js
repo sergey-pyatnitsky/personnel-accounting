@@ -199,7 +199,7 @@ function loadDepartmentaddTable(table_id, req_url) {
           let message = get_message(localStorage.getItem("lang"),
             "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_department_add"' +
-            'value="' + data.id + '">' + message +'</button>'
+            'value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -228,14 +228,15 @@ function add_task() {
     timeout: 600000,
     success: function (data) {
       $('.alert').empty();
-      if (data.status != undefined)
-        $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
-      else {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Задача с ID ` + task.id + ` создана</div>`);
+      if (data.status != undefined) {
+        let message = get_message(localStorage.getItem("lang"),
+          "my_task.list.button.done");
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         $('#taskNameInput').val('');
         $('#taskDescriptionInput').val('');
       }
+      else
+        $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
     },
     error: function (error) {
       console.log(error);

@@ -60,9 +60,10 @@ public class EmployeeRESTController {
     public ResponseEntity<?> registerEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
         Employee employee = conversionService.convert(employeeDTO, Employee.class);
         employee.setUser(conversionService.convert(employeeDTO.getUser(), User.class));
-        employee.getUser().setPassword("{bcrypt}" + (new BCryptPasswordEncoder()).encode(employee.getUser().getPassword()));
         employee.setCreateDate(new Date(System.currentTimeMillis()));
-        if (!userService.registerUser(employee.getUser(), employeeDTO.getName(), Role.EMPLOYEE))
+        if (!userService.registerUser(employee.getUser(),
+                "{bcrypt}" + (new BCryptPasswordEncoder()).encode(employee.getUser().getPassword()),
+                employeeDTO.getName(), Role.EMPLOYEE))
             throw new ExistingDataException(messageSource.getMessage("user.error.existing", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -84,7 +85,7 @@ public class EmployeeRESTController {
     }
 
     @PostMapping("/api/employee/get_all/admins")
-    public ResponseEntity<?> getAllAdmins(@Valid @RequestBody PagingRequest pagingRequest) {
+    public ResponseEntity<?> getAllAdmins(@RequestBody PagingRequest pagingRequest) {
         return new ResponseEntity<>(getPage(employeeService.findAll(pagingRequest)
                 .stream().map(employee -> {
                     EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
@@ -180,7 +181,7 @@ public class EmployeeRESTController {
     }
 
     @PostMapping("/api/employee/assign/department")
-    public ResponseEntity<?> assignEmployeeToDepartment(@Valid @RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity<?> assignEmployeeToDepartment(@RequestBody EmployeeDTO employeeDTO) {
         Employee employee = conversionService.convert(employeeService.find(employeeDTO.getId()), Employee.class);
         Department department = departmentService.find(employeeDTO.getDepartment().getId());
         employee.setDepartment(department);

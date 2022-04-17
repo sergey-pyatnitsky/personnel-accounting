@@ -7,7 +7,7 @@ $(document).ready(function () {
     $('.alert').replaceWith(`<div class="alert"></div>`);
     hideAllContent();
     $("#content-activate-user").show();
-    if (activate_table != null) table.destroy();
+    if (activate_table != null) activate_table.destroy();
     current_url_for_activate_table = "/api/employee/get_all";
     loadActivateTable("#content-activate-user #activate_users_table", current_url_for_activate_table);
 

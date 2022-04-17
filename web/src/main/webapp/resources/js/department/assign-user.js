@@ -111,7 +111,7 @@ function loadAssignTable(table_id, req_url) {
               'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">' + message + '</button>'
           } else {
             let message = get_message(localStorage.getItem("lang"),
-              "department.button.text.assign=");
+              "department.button.text.assign");
             return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
               'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">' + message + '</button>';
           }

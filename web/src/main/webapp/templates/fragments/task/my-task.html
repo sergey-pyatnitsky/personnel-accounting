@@ -6,13 +6,13 @@
   <h3 class="mb-4" th:text="#{my_task.page.title}">Просмотр моих задач</h3>
   <div class="alert"></div>
   <div class="row mb-5" id="tab_edit_task"
-       sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER')">
+       sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'EMPLOYEE')">
     <div class="col-12">
       <ul class="nav nav-tabs justify-content-center">
         <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
           <a class="nav-link" id="departmentBtnTomy_taskTask" th:text="#{my_task.tab.department}">Выбрать отдел</a>
         </li>
-        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER')">
+        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'EMPLOYEE')">
           <a class="nav-link" id="projectBtnTomy_taskTask" th:text="#{my_task.tab.project}">Выбрать проект</a>
         </li>
       </ul>
@@ -34,7 +34,7 @@
       </div>
     </div>
     <div class="row" id="div_project_my_task_task_table"
-         sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER')">
+         sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'EMPLOYEE')">
       <div class="col">
         <table class="table table-hover" id="project_my_task_task_table">
           <thead>

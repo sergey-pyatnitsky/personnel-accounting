@@ -35,8 +35,8 @@ public class MainExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError apiError = ApiError.ApiErrorBuilder.anApiError()
                 .withTimestamp(new Date(System.currentTimeMillis()))
                 .withStatus(HttpStatus.OK.value())
-                .withError(e.getMessage()).build();
-        logger.error(e.getMessage());
+                .withError(e.getBindingResult().getFieldError().getDefaultMessage()).build();
+        logger.error(e.getBindingResult().getFieldError().getDefaultMessage());
         return new ResponseEntity<>(apiError, HttpStatus.OK);
     }
 }

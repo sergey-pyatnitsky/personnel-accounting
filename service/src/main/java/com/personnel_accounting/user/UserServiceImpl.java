@@ -38,11 +38,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User changeAuthData(User user, String password) {
         ValidationUtil.validate(user, userValidator);
-        if (!Objects.equals(user.getPassword(), password)) {
-            user.setPassword(password);
-            return userDAO.save(user);
-        }
-        return userDAO.merge(user);
+        user.setPassword(password);
+        return userDAO.save(user);
     }
 
     @Override
@@ -56,8 +53,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean registerUser(User user, String name, Role role) { //FIXME test
+    public boolean registerUser(User user, String pass, String name, Role role) { //FIXME test
         ValidationUtil.validate(user, userValidator);
+        user.setPassword(pass);
         User tempUser = userDAO.find(user.getUsername());
         if (tempUser == null) {
             user = userDAO.save(user);

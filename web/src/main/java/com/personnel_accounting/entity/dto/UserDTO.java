@@ -6,7 +6,6 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class UserDTO {
-    @NotBlank(message = "{user.validator.login.empty}")
     private String username;
 
     @NotBlank(message = "{user.validator.password.empty}")

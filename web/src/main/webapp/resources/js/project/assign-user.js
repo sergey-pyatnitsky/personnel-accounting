@@ -253,8 +253,8 @@ function assign_user(employee_id, project_id, position_id) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "project.alert.assign_user").replace("0", data.name);
-        message = message.replace("1", data.id);
+          "project.alert.assign_user").replace("0", employee_id);
+        message = message.replace("1", project_id);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         assign_user_table.destroy();
         loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);

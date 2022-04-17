@@ -13,8 +13,6 @@ public class ProjectDTO {
     @NotBlank(message = "{project.validator.name.empty}")
     @Size(max = 256, message = "{project.validator.name.size}")
     private String name;
-
-    @NotEmpty(message = "{project.validator.department.empty}")
     private DepartmentDTO department;
     private boolean isActive;
     private String startDate;

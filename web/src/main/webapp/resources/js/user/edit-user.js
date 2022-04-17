@@ -76,7 +76,7 @@ function loadEditTable(table_id, req_url) {
           let message1 = get_message(localStorage.getItem("lang"),
             "user.alert.button.edit");
           let message2 = get_message(localStorage.getItem("lang"),
-            "task.alert.button.remove");
+            "user.alert.button.remove");
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
             + ' data-target="#editUserModal" value="' + data.user.username + '">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="removeUserBtn"'
@@ -144,9 +144,8 @@ function delete_employee(employeeId) {
       let message = get_message(localStorage.getItem("lang"),
         "user.alert.done");
       $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
-
       edit_table.destroy();
-      loadActivateTable("#content-activate-user #edit_users_table", current_url_for_edit_table);
+      loadEditTable("#content-activate-user #edit_users_table", current_url_for_edit_table);
     },
     error: function (error) {
       console.log(error);
