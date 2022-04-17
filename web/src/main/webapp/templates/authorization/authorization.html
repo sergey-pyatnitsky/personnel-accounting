@@ -16,7 +16,7 @@
     <h1 th:text="#{login.input_data}"></h1>
     <div th:if="${param.error}" class="alert alert-danger" role="alert" th:text="#{login.error.login_password}"></div>
     <div th:if="${param.logout}" class="alert alert-danger" role="alert" th:text="#{login.logout}"></div>
-    <form th:action="@{/login}" method="post">
+    <form th:action="@{/login(lang=${lang})}" method="post">
       <div class="form-group">
         <div class="input-group">
           <span class="input-group-addon"><i class="fa fa-user ti-user"></i></span>
@@ -35,7 +35,7 @@
 
   <div class="login-links">
     <p class="text-center" th:text="#{login.no_account}"></p>
-    <a class="txt-brand" href="/registration" th:text="#{login.sign_up}"
+    <a class="txt-brand" th:href="@{/registration(lang=${lang})}" th:text="#{login.sign_up}"
        style="color: #29aafe;display: block;  text-align:center"></a>
   </div>
 </main>

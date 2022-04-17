@@ -9,9 +9,11 @@ function hide_preloader() {
 }
 
 $(document).ready(function () {
-  if (localStorage.getItem("lang") != null && window.location.href.indexOf("lang") <= -1)
+  if (localStorage.getItem("lang") != null && window.location.href.indexOf("logout") > -1
+    && window.location.href.indexOf("lang") <= -1)
+    window.location.replace('?logout' + '&lang=' + localStorage.getItem("lang"));
+  else if(localStorage.getItem("lang") != null && window.location.href.indexOf("lang") <= -1)
     window.location.replace('?lang=' + localStorage.getItem("lang"));
-  else if(localStorage.getItem("lang") == null) localStorage.setItem("lang", "en");
 
   $("#en_lang").click(function () {
     window.location.replace('?lang=' + $('#en_lang').val());
