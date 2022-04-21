@@ -12,8 +12,8 @@ public interface ProfileDAO {
     Profile findByPhone(String phone);
     Profile findByEmail(String email);
 
-    List<Profile> findByPhonePart(String phonePart);//TODO personnel_accounting
-    List<Profile> findByEmailPart(String emailPart);//TODO personnel_accounting
+    List<Profile> findByPhonePart(String phonePart);
+    List<Profile> findByEmailPart(String emailPart);
 
     Profile save(Profile profile);
     Profile merge(Profile profile);

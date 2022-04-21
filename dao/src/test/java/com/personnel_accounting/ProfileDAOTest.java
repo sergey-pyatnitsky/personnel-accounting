@@ -101,10 +101,24 @@ public class ProfileDAOTest {
     }
 
     @Test
+    public void findByPhonePart() {
+        logger.info("START findByPhonePart");
+        profileDAO.findByPhonePart("+375294894")
+                .forEach(profile -> Assert.assertTrue(profile.getPhone().contains("+375294894")));
+    }
+
+    @Test
     public void findByEmail() {
         logger.info("START findByEmail");
         Assert.assertEquals(profileDAO.findByEmail("qwerty@mail.ru").getEmail(),
                 "qwerty@mail.ru");
+    }
+
+    @Test
+    public void findByEmailPart() {
+        logger.info("START findByEmailPart");
+        profileDAO.findByEmailPart("qwerty@mail")
+                .forEach(profile -> Assert.assertTrue(profile.getEmail().contains("qwerty@mail")));
     }
 
     @Test

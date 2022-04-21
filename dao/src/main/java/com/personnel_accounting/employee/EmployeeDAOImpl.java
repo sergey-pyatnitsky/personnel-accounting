@@ -1,12 +1,10 @@
 package com.personnel_accounting.employee;
 
-import com.mysql.cj.x.protobuf.MysqlxCrud;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.pagination.entity.Column;
-import com.personnel_accounting.pagination.entity.Direction;
 import com.personnel_accounting.pagination.entity.Order;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import org.hibernate.Session;
@@ -40,7 +38,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         Order order = pagingRequest.getOrder().get(0);
         Column column = pagingRequest.getColumns().get(order.getColumn());
         String hql = "from Employee";
-        if(!pagingRequest.getSearch().getValue().equals(""))
+        if (!pagingRequest.getSearch().getValue().equals(""))
             hql += " where concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
                     "like '%" + pagingRequest.getSearch().getValue() + "%'";
         hql += " order by " + column.getData() + " " + order.getDir().toString();
@@ -116,7 +114,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         Order order = pagingRequest.getOrder().get(0);
         Column column = pagingRequest.getColumns().get(order.getColumn());
         String hql = "from Employee where department = :department";
-        if(!pagingRequest.getSearch().getValue().equals(""))
+        if (!pagingRequest.getSearch().getValue().equals(""))
             hql += " and where concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
                     "like '%" + pagingRequest.getSearch().getValue() + "%'";
         hql += " order by " + column.getData() + " " + order.getDir().toString();

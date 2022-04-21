@@ -1,6 +1,12 @@
 package com.personnel_accounting.employee;
 
-import com.personnel_accounting.domain.*;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Profile;
+import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.ReportCard;
+import com.personnel_accounting.domain.Task;
+import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.pagination.entity.PagingRequest;
@@ -46,12 +52,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private ProfileValidator profileValidator;
 
-    @Override //FIXME test
+    @Override
     public ReportCard trackTime(Task task, Time time) {
         return reportCardDAO.save(new ReportCard(new Date(System.currentTimeMillis()), task, task.getAssignee(), time));
     }
 
-    @Override //FIXME test
+    @Override
     public Task changeTaskStatus(Task task) {
         task.setTaskStatus(TaskStatus.values()[task.getTaskStatus().ordinal() + 1]);
         task.setModifiedDate(new Date(System.currentTimeMillis()));
@@ -128,7 +134,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public List<Employee> getEmployeesWithProjectByDepartment(Department department, PagingRequest pagingRequest) { //TODO test
+    public List<Employee> getEmployeesWithProjectByDepartment(Department department, PagingRequest pagingRequest) {
         return employeeDAO.findByDepartmentPaginated(department, pagingRequest)
                 .stream().filter(employee ->
                         employeePositionDAO.findByEmployee(employee)
@@ -139,7 +145,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public List<Employee> getEmployeesWithOpenProjectByDepartment(Department department, PagingRequest pagingRequest) { //TODO test
+    public List<Employee> getEmployeesWithOpenProjectByDepartment(Department department, PagingRequest pagingRequest) {
         return employeeDAO.findByDepartmentPaginated(department, pagingRequest)
                 .stream().filter(employee ->
                         employeePositionDAO.findByEmployee(employee)
@@ -223,7 +229,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public boolean removeById(Long id) { //TODO test
+    public boolean removeById(Long id) {
         Date date = new Date(System.currentTimeMillis());
         Employee employee = employeeDAO.find(id);
         employeePositionDAO.findByEmployee(employee)
@@ -253,7 +259,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeDAO.remove(employee);
     }
 
-    @Override //TODO test
+    @Override
     public boolean inactivate(Employee employee) {
         Date date = new Date(System.currentTimeMillis());
         employeePositionDAO.findByEmployee(employee).forEach(employeePosition -> {
@@ -276,7 +282,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeDAO.inactivate(employee);
     }
 
-    @Override //TODO test
+    @Override
     public boolean activate(Employee employee) {
         employeePositionDAO.findByEmployee(employee).forEach(employeePosition -> {
             employeePosition.setModifiedDate(new Date(System.currentTimeMillis()));

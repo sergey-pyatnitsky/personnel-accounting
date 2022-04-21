@@ -1,12 +1,12 @@
 package com.personnel_accounting.user;
 
+import com.personnel_accounting.authority.AuthorityDAO;
 import com.personnel_accounting.domain.Authority;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.User;
-import com.personnel_accounting.enums.Role;
-import com.personnel_accounting.authority.AuthorityDAO;
 import com.personnel_accounting.employee.EmployeeDAO;
+import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -53,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean registerUser(User user, String pass, String name, Role role) { //FIXME test
+    public boolean registerUser(User user, String pass, String name, Role role) {
         ValidationUtil.validate(user, userValidator);
         user.setPassword(pass);
         User tempUser = userDAO.find(user.getUsername());
@@ -92,7 +91,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Role findRoleByUsername(String username) { //TODO test
+    public Role findRoleByUsername(String username) {
         return authorityDAO.find(username).getRole();
     }
 
@@ -108,7 +107,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean remove(User user) {
-        if (authorityDAO.removeByUsername(user.getUsername())){
+        if (authorityDAO.removeByUsername(user.getUsername())) {
             return userDAO.remove(userDAO.find(user.getUsername()));
         }
         return false;

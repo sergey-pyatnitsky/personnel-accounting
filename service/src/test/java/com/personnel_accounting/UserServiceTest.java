@@ -1,12 +1,11 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.authority.AuthorityDAO;
 import com.personnel_accounting.configuration.ServiceTestConfiguration;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.User;
-import com.personnel_accounting.enums.Role;
-import com.personnel_accounting.authority.AuthorityDAO;
-import com.personnel_accounting.configuration.ServiceConfiguration;
 import com.personnel_accounting.employee.EmployeeService;
+import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.user.UserService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -99,24 +98,25 @@ public class UserServiceTest {
         Assert.assertTrue(user.isActive());
     }
 
-    /*@Test
+    @Test
     public void registerUser() {
         logger.info("START registerUser");
         userService.remove(secondUser);
-        //secondUser = userService.registerUser(secondUser, "Иванов Иван Иванович", Role.EMPLOYEE);
+        Assert.assertTrue(
+                userService.registerUser(secondUser, secondUser.getPassword(), "Иванов Иван Иванович", Role.EMPLOYEE));
 
         Assert.assertEquals(secondUser.getUsername(), "employee");
-        Assert.assertEquals(secondUser.getPassword(), "123qwerty");
+        Assert.assertEquals(secondUser.getPassword(), "@123Qwerty");
         Assert.assertFalse(secondUser.isActive());
 
         secondUser = userService.find(secondUser.getUsername());
         Assert.assertEquals(secondUser.getUsername(), "employee");
-        Assert.assertEquals(secondUser.getPassword(), "123qwerty");
+        Assert.assertEquals(secondUser.getPassword(), "@123Qwerty");
         Assert.assertFalse(secondUser.isActive());
 
         Employee employee = employeeService.findByUser(secondUser);
         Assert.assertEquals(employee.getName(), "Иванов Иван Иванович");
 
         employeeService.remove(employee);
-    }*/
+    }
 }

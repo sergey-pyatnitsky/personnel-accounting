@@ -1,6 +1,10 @@
 package com.personnel_accounting.employee_position;
 
-import com.personnel_accounting.domain.*;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.EmployeePosition;
+import com.personnel_accounting.domain.Position;
+import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.pagination.entity.Column;
 import com.personnel_accounting.pagination.entity.Order;
 import com.personnel_accounting.pagination.entity.PagingRequest;

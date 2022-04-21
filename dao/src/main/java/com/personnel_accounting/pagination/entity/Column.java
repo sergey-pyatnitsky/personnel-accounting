@@ -18,4 +18,11 @@ public class Column {
     public Column(String data) {
         this.data = data;
     }
+
+    public Column(String data, Boolean searchable, Boolean orderable, Search search) {
+        this.data = data;
+        this.searchable = searchable;
+        this.orderable = orderable;
+        this.search = search;
+    }
 }

@@ -1,19 +1,21 @@
 package com.personnel_accounting;
 
 import com.personnel_accounting.configuration.ServiceTestConfiguration;
+import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.ReportCard;
 import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.domain.User;
+import com.personnel_accounting.employee.EmployeeService;
+import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.enums.TaskStatus;
-import com.personnel_accounting.task.TaskDAO;
-import com.personnel_accounting.configuration.ServiceConfiguration;
-import com.personnel_accounting.department.DepartmentService;
-import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.project.ProjectService;
+import com.personnel_accounting.report_card.ReportCardDAO;
+import com.personnel_accounting.task.TaskDAO;
 import com.personnel_accounting.user.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +27,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.sql.Time;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ServiceTestConfiguration.class)
@@ -41,6 +45,9 @@ public class EmployeeServiceTest {
     private Department department;
 
     @Autowired
+    private EmployeePositionDAO employeePositionDAO;
+
+    @Autowired
     private EmployeeService employeeService;
     private Employee employee;
     private Employee secondEmployee;
@@ -54,9 +61,18 @@ public class EmployeeServiceTest {
     private TaskDAO taskDAO;
     private Task task;
 
+    @Autowired
+    private ReportCardDAO reportCardDAO;
+    private ReportCard reportCard;
+
     @After
     public void deleteEntity() {
         logger.info("START deleteEntity");
+        try {
+            reportCardDAO.remove(reportCard);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             taskDAO.remove(task);
         } catch (Exception e) {
@@ -170,18 +186,50 @@ public class EmployeeServiceTest {
         Assert.assertEquals(task.getProject(), project);
     }
 
-    /*@Test
+    @Test
     public void changeTaskStatus() {
         logger.info("START changeTaskStatus");
-        task = employeeService.changeTaskStatus(task, TaskStatus.CLOSED);
+        task = employeeService.changeTaskStatus(task);
         Assert.assertEquals(task.getName(), "Исправить баг");
         Assert.assertEquals(task.getDescription(), "Ошибка отображения окна");
-        Assert.assertEquals(task.getTaskStatus(), TaskStatus.CLOSED);
+        Assert.assertEquals(task.getTaskStatus(), TaskStatus.IN_PROGRESS);
         Assert.assertEquals(task.getProject(), project);
 
         task = taskDAO.find(task.getId());
         Assert.assertEquals(task.getName(), "Исправить баг");
         Assert.assertEquals(task.getDescription(), "Ошибка отображения окна");
-        Assert.assertEquals(task.getTaskStatus(), TaskStatus.CLOSED);
-    }*/
+        Assert.assertEquals(task.getTaskStatus(), TaskStatus.IN_PROGRESS);
+    }
+
+    @Test
+    public void activate() {
+        logger.info("START activate");
+        Assert.assertTrue(employeeService.activate(employee));
+        employeePositionDAO.findByEmployee(employee).forEach(obj -> Assert.assertTrue(obj.isActive()));
+
+        Assert.assertTrue(employeeService.find(employee.getId()).isActive());
+    }
+
+    @Test
+    public void inactivate() {
+        logger.info("START inactivate");
+        Assert.assertTrue(employeeService.inactivate(employee));
+        employeePositionDAO.findByEmployee(employee).forEach(obj -> Assert.assertFalse(obj.isActive()));
+
+        Assert.assertFalse(employeeService.find(employee.getId()).isActive());
+    }
+
+    @Test
+    public void trackTime() {
+        logger.info("START trackTime");
+        reportCard = employeeService.trackTime(task, new Time(23, 25, 00));
+        Assert.assertEquals(reportCard.getWorkingTime().getHours(), 23);
+        Assert.assertEquals(reportCard.getWorkingTime().getMinutes(), 25);
+
+        Task tempTask = reportCard.getTask();
+        Assert.assertEquals(tempTask.getName(), "Исправить баг");
+        Assert.assertEquals(tempTask.getDescription(), "Ошибка отображения окна");
+        Assert.assertEquals(tempTask.getTaskStatus(), TaskStatus.OPEN);
+        Assert.assertEquals(tempTask.getProject(), project);
+    }
 }

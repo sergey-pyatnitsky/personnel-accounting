@@ -7,6 +7,11 @@ import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.department.DepartmentDAO;
 import com.personnel_accounting.employee.EmployeeDAO;
+import com.personnel_accounting.pagination.entity.Column;
+import com.personnel_accounting.pagination.entity.Direction;
+import com.personnel_accounting.pagination.entity.Order;
+import com.personnel_accounting.pagination.entity.PagingRequest;
+import com.personnel_accounting.pagination.entity.Search;
 import com.personnel_accounting.profile.ProfileDAO;
 import com.personnel_accounting.user.UserDAO;
 import org.apache.log4j.LogManager;
@@ -179,6 +184,13 @@ public class EmployeeDAOTest {
     }
 
     @Test
+    public void findByNamePart() {
+        logger.info("START findByNamePart");
+        List<Employee> employeeFromDB = employeeDAO.findByNamePart("Иванов Игорь Иванов");
+        Assert.assertEquals(employeeFromDB.get(employeeFromDB.size() - 1).getName(), "Иванов Игорь Иванович");
+    }
+
+    @Test
     public void find() {
         logger.info("START find");
         Employee tempEmployee = employeeDAO.find(employee.getId());
@@ -186,10 +198,45 @@ public class EmployeeDAOTest {
         Assert.assertFalse(tempEmployee.isActive());
     }
 
-    /*@Test
-    public void findAll() {
-        logger.info("START findAll");
-        List<Employee> employeeListFromDB = employeeDAO.findAll();
+    private PagingRequest getPagingRequestGetAll(Direction direction){
+        PagingRequest pagingRequest = new PagingRequest();
+        pagingRequest.setDraw(1);
+
+        List<Column> columns = new ArrayList<>();
+        columns.add(new Column("id", true, true, new Search("", "false")));
+        columns.add(new Column("user.username", true, true, new Search("", "false")));
+        columns.add(new Column("name", true, true, new Search("", "false")));
+        columns.add(new Column("user.authority.role", true, true, new Search("", "false")));
+        columns.add(new Column("active", true, true, new Search("", "false")));
+        pagingRequest.setColumns(columns);
+
+        List<Order> orders = new ArrayList<>();
+        orders.add(new Order(0, direction));
+        pagingRequest.setOrder(orders);
+        pagingRequest.setStart(0);
+        pagingRequest.setLength(10);
+        pagingRequest.setSearch(new Search("", "false"));
+
+        return pagingRequest;
+    }
+
+    @Test
+    public void getEmployeeCount() {
+        logger.info("START getEmployeeCount");
+        Assert.assertEquals(employeeDAO.getEmployeeCount(), Long.valueOf(2));
+    }
+
+    @Test
+    public void getEmployeeByDepartmentCount() {
+        logger.info("START getEmployeeByDepartmentCount");
+        Assert.assertEquals(employeeDAO.getEmployeeByDepartmentCount(department), Long.valueOf(2));
+    }
+
+    @Test
+    public void findByDepartmentPaginated() {
+        logger.info("START findByDepartmentPaginated");
+        List<Employee> employeeListFromDB =
+                employeeDAO.findByDepartmentPaginated(department, getPagingRequestGetAll(Direction.asc));
 
         Employee tempEmployee = employeeListFromDB.get(employeeListFromDB.size() - 2);
 
@@ -200,7 +247,39 @@ public class EmployeeDAOTest {
 
         Assert.assertEquals(tempEmployee.getName(), "Иванов Игорь Иванович");
         Assert.assertFalse(tempEmployee.isActive());
-    }*/
+    }
+
+    @Test
+    public void findAllAsc() {
+        logger.info("START findAllAsc");
+        List<Employee> employeeListFromDB = employeeDAO.findAll(getPagingRequestGetAll(Direction.asc));
+
+        Employee tempEmployee = employeeListFromDB.get(employeeListFromDB.size() - 2);
+
+        Assert.assertEquals(tempEmployee.getName(), "Иванов Иван Иванович");
+        Assert.assertFalse(tempEmployee.isActive());
+
+        tempEmployee = employeeListFromDB.get(employeeListFromDB.size() - 1);
+
+        Assert.assertEquals(tempEmployee.getName(), "Иванов Игорь Иванович");
+        Assert.assertFalse(tempEmployee.isActive());
+    }
+
+    @Test
+    public void findAllDesc() {
+        logger.info("START findAllDesc");
+        List<Employee> employeeListFromDB = employeeDAO.findAll(getPagingRequestGetAll(Direction.desc));
+
+        Employee tempEmployee = employeeListFromDB.get(employeeListFromDB.size() - 1);
+
+        Assert.assertEquals(tempEmployee.getName(), "Иванов Иван Иванович");
+        Assert.assertFalse(tempEmployee.isActive());
+
+        tempEmployee = employeeListFromDB.get(employeeListFromDB.size() - 2);
+
+        Assert.assertEquals(tempEmployee.getName(), "Иванов Игорь Иванович");
+        Assert.assertFalse(tempEmployee.isActive());
+    }
 
     @Test
     public void findByDepartment() {

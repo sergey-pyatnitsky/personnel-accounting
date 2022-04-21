@@ -1,8 +1,14 @@
 package com.personnel_accounting;
 
 import com.personnel_accounting.configuration.DAOTestConfiguration;
-import com.personnel_accounting.domain.*;
 import com.personnel_accounting.department.DepartmentDAO;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.EmployeePosition;
+import com.personnel_accounting.domain.Position;
+import com.personnel_accounting.domain.Profile;
+import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.position.PositionDAO;
@@ -144,7 +150,7 @@ public class EmployeePositionDAOTest {
     }
 
     @Test
-    public void saveList(){
+    public void saveList() {
         logger.info("START saveList");
 
         try {
@@ -275,6 +281,22 @@ public class EmployeePositionDAOTest {
         Assert.assertEquals(tempEmployeePosition.getId(), employeePosition.getId());
         Assert.assertEquals(tempEmployeePosition.getCreateDate().toString(),
                 employeePosition.getCreateDate().toString());
+    }
+
+    @Test
+    public void inactivate() {
+        logger.info("START inactivate");
+        employeePosition.setActive(true);
+        Assert.assertTrue(employeePositionDAO.inactivate(employeePosition));
+        Assert.assertFalse(employeePositionDAO.find(employeePosition.getId()).isActive());
+    }
+
+    @Test
+    public void activate() {
+        logger.info("START activate");
+        employeePosition.setActive(false);
+        Assert.assertTrue(employeePositionDAO.activate(employeePosition));
+        Assert.assertTrue(employeePositionDAO.find(employeePosition.getId()).isActive());
     }
 
     @Test

@@ -1,8 +1,14 @@
 package com.personnel_accounting;
 
 import com.personnel_accounting.configuration.DAOTestConfiguration;
-import com.personnel_accounting.domain.*;
 import com.personnel_accounting.department.DepartmentDAO;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.pagination.entity.Column;
+import com.personnel_accounting.pagination.entity.Direction;
+import com.personnel_accounting.pagination.entity.Order;
+import com.personnel_accounting.pagination.entity.PagingRequest;
+import com.personnel_accounting.pagination.entity.Search;
 import com.personnel_accounting.project.ProjectDAO;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -135,10 +141,33 @@ public class ProjectDAOTest {
         Assert.assertTrue(tempProject.isActive());
     }
 
-    /*@Test
+    private PagingRequest getPagingRequestGetAll(Direction direction){
+        PagingRequest pagingRequest = new PagingRequest();
+        pagingRequest.setDraw(1);
+
+        List<Column> columns = new ArrayList<>();
+        columns.add(new Column("id", true, true, new Search("", "false")));
+        columns.add(new Column("name", true, true, new Search("", "false")));
+        columns.add(new Column("department", true, true, new Search("", "false")));
+        columns.add(new Column("isActive", true, true, new Search("", "false")));
+        columns.add(new Column("startDate", true, true, new Search("", "false")));
+        columns.add(new Column("endDate", true, true, new Search("", "false")));
+        pagingRequest.setColumns(columns);
+
+        List<Order> orders = new ArrayList<>();
+        orders.add(new Order(0, direction));
+        pagingRequest.setOrder(orders);
+        pagingRequest.setStart(0);
+        pagingRequest.setLength(10);
+        pagingRequest.setSearch(new Search("", "false"));
+
+        return pagingRequest;
+    }
+
+    @Test
     public void findAll() {
         logger.info("START findAll");
-        List<Project> projectListFromDB = projectDAO.findAll();
+        List<Project> projectListFromDB = projectDAO.findAll(getPagingRequestGetAll(Direction.asc));
 
         Project tempProject = projectListFromDB.get(projectListFromDB.size() - 1);
         Assert.assertEquals(tempProject.getName(), "Система учёта товаров на складе");
@@ -147,7 +176,7 @@ public class ProjectDAOTest {
         tempProject = projectListFromDB.get(projectListFromDB.size() - 2);
         Assert.assertEquals(tempProject.getName(), "Банковская система");
         Assert.assertTrue(tempProject.isActive());
-    }*/
+    }
 
     @Test
     public void merge() {
@@ -160,6 +189,7 @@ public class ProjectDAOTest {
     public void inactivateById() {
         logger.info("START inactivateById");
         Assert.assertTrue(projectDAO.inactivateById(project.getId()));
+        Assert.assertFalse(projectDAO.find(project.getId()).isActive());
     }
 
     @Test
@@ -167,12 +197,14 @@ public class ProjectDAOTest {
         logger.info("START activateById");
         project.setActive(false);
         Assert.assertTrue(projectDAO.activateById(project.getId()));
+        Assert.assertTrue(projectDAO.find(project.getId()).isActive());
     }
 
     @Test
     public void inactivate() {
         logger.info("START inactivate");
         Assert.assertTrue(projectDAO.inactivate(project));
+        Assert.assertFalse(projectDAO.find(project.getId()).isActive());
     }
 
     @Test
@@ -180,6 +212,7 @@ public class ProjectDAOTest {
         logger.info("START activate");
         project.setActive(false);
         Assert.assertTrue(projectDAO.activate(project));
+        Assert.assertTrue(projectDAO.find(project.getId()).isActive());
     }
 
     @Test

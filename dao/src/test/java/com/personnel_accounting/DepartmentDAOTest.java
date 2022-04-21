@@ -3,6 +3,11 @@ package com.personnel_accounting;
 import com.personnel_accounting.configuration.DAOTestConfiguration;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.department.DepartmentDAO;
+import com.personnel_accounting.pagination.entity.Column;
+import com.personnel_accounting.pagination.entity.Direction;
+import com.personnel_accounting.pagination.entity.Order;
+import com.personnel_accounting.pagination.entity.PagingRequest;
+import com.personnel_accounting.pagination.entity.Search;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -111,10 +116,32 @@ public class DepartmentDAOTest {
         Assert.assertTrue(departmentDAO.find(department.getId()).isActive());
     }
 
-    /*@Test
+    private PagingRequest getPagingRequestGetAll(){
+        PagingRequest pagingRequest = new PagingRequest();
+        pagingRequest.setDraw(1);
+
+        List<Column> columns = new ArrayList<>();
+        columns.add(new Column("id", true, true, new Search("", "false")));
+        columns.add(new Column("name", true, true, new Search("", "false")));
+        columns.add(new Column("active", true, true, new Search("", "false")));
+        columns.add(new Column("startDate", true, true, new Search("", "false")));
+        columns.add(new Column("endDate", true, true, new Search("", "false")));
+        pagingRequest.setColumns(columns);
+
+        List<Order> orders = new ArrayList<>();
+        orders.add(new Order(0, Direction.asc));
+        pagingRequest.setOrder(orders);
+        pagingRequest.setStart(0);
+        pagingRequest.setLength(10);
+        pagingRequest.setSearch(new Search("", "false"));
+
+        return pagingRequest;
+    }
+
+    @Test
     public void findAll() {
         logger.info("START findAll");
-        List<Department> departmentListFromDB = departmentDAO.findAll();
+        List<Department> departmentListFromDB = departmentDAO.findAll(getPagingRequestGetAll());
 
         Assert.assertEquals(departmentListFromDB.get(departmentListFromDB.size() - 2).getName(),
                 "Отдел Java разработки");
@@ -123,7 +150,13 @@ public class DepartmentDAOTest {
         Assert.assertEquals(departmentListFromDB.get(departmentListFromDB.size() - 1).getName(),
                 "Отдел Python разработки");
         Assert.assertTrue(departmentListFromDB.get(departmentListFromDB.size() - 1).isActive());
-    }*/
+    }
+
+    @Test
+    public void getDepartmentCount() {
+        logger.info("START getDepartmentCount");
+        Assert.assertEquals(departmentDAO.getDepartmentCount(), Long.valueOf(2));
+    }
 
     @Test
     public void merge() {
@@ -136,6 +169,7 @@ public class DepartmentDAOTest {
     public void inactivateById() {
         logger.info("START inactivateById");
         Assert.assertTrue(departmentDAO.inactivateById(department.getId()));
+        Assert.assertFalse(departmentDAO.find(department.getId()).isActive());
     }
 
     @Test
@@ -143,12 +177,14 @@ public class DepartmentDAOTest {
         logger.info("START activateById");
         department.setActive(false);
         Assert.assertTrue(departmentDAO.activateById(department.getId()));
+        Assert.assertTrue(departmentDAO.find(department.getId()).isActive());
     }
 
     @Test
     public void inactivate() {
         logger.info("START inactivate");
         Assert.assertTrue(departmentDAO.inactivate(department));
+        Assert.assertFalse(departmentDAO.find(department.getId()).isActive());
     }
 
     @Test
@@ -156,6 +192,7 @@ public class DepartmentDAOTest {
         logger.info("START activate");
         department.setActive(false);
         Assert.assertTrue(departmentDAO.activate(department));
+        Assert.assertTrue(departmentDAO.find(department.getId()).isActive());
     }
 
     @Test

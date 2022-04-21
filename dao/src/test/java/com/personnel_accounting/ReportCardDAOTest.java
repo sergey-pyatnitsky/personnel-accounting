@@ -1,7 +1,13 @@
 package com.personnel_accounting;
 
 import com.personnel_accounting.configuration.DAOTestConfiguration;
-import com.personnel_accounting.domain.*;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Profile;
+import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.ReportCard;
+import com.personnel_accounting.domain.Task;
+import com.personnel_accounting.domain.User;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.department.DepartmentDAO;
 import com.personnel_accounting.employee.EmployeeDAO;

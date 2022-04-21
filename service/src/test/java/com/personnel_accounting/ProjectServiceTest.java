@@ -1,13 +1,17 @@
 package com.personnel_accounting;
 
 import com.personnel_accounting.configuration.ServiceTestConfiguration;
-import com.personnel_accounting.domain.*;
-import com.personnel_accounting.enums.Role;
-import com.personnel_accounting.employee_position.EmployeePositionDAO;
-import com.personnel_accounting.position.PositionDAO;
-import com.personnel_accounting.configuration.ServiceConfiguration;
 import com.personnel_accounting.department.DepartmentService;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.EmployeePosition;
+import com.personnel_accounting.domain.Position;
+import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeService;
+import com.personnel_accounting.employee_position.EmployeePositionDAO;
+import com.personnel_accounting.enums.Role;
+import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -32,10 +36,12 @@ public class ProjectServiceTest {
     @Autowired
     private ProjectService projectService;
     private Project project;
+    private Project secondProject;
 
     @Autowired
     private DepartmentService departmentService;
     private Department department;
+    private Department secondDepartment;
 
     @Autowired
     private EmployeeService employeeService;
@@ -84,6 +90,11 @@ public class ProjectServiceTest {
             e.printStackTrace();
         }
         try {
+            projectService.remove(secondProject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             employeeService.remove(employee);
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,6 +106,11 @@ public class ProjectServiceTest {
         }
         try {
             departmentService.remove(department);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            departmentService.remove(secondDepartment);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -145,7 +161,25 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void findProjectEmployeePositions(){
+    public void addProject() {
+        logger.info("START addProject");
+        secondDepartment = departmentService.save(
+                new Department("Отдел C# Разработки", true));
+        secondProject = new Project("Банковская система Агропромыва", department, true);
+        secondProject = projectService.addProject(secondProject, secondDepartment.getId());
+        Assert.assertEquals(projectService.find(secondProject.getId()).getDepartment().getId(), secondDepartment.getId());
+    }
+
+    @Test
+    public void findDepartmentByUser() {
+        logger.info("START findDepartmentByUser");
+        Department tempDepartment = projectService.findDepartmentByUser(user);
+        Assert.assertEquals(tempDepartment.getName(), "Отдел Java Разработки");
+        Assert.assertTrue(tempDepartment.isActive());
+    }
+
+    @Test
+    public void findProjectEmployeePositions() {
         logger.info("START findProjectEmployeePositions");
         EmployeePosition tempEmployeePosition = projectService.findProjectEmployeePositions(employee, project).stream()
                 .filter(obj -> obj.getId().equals(employeePosition.getId())).findFirst().orElse(null);
@@ -191,7 +225,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void addNewPosition(){
+    public void addNewPosition() {
         logger.info("START addNewPosition");
         Position position = projectService.addNewPosition(new Position("Архитектор БД"));
         Assert.assertEquals(position.getName(), "Архитектор БД");
@@ -203,7 +237,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void changeEmployeePositionInProject(){
+    public void changeEmployeePositionInProject() {
         logger.info("START changeEmployeePositionInProject");
         secondPosition = positionDAO.save(new Position("Архитектор БД"));
         secondEmployeePosition = projectService.changeEmployeePositionInProject(

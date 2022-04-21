@@ -1,6 +1,10 @@
 package com.personnel_accounting.employee_position;
 
-import com.personnel_accounting.domain.*;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.EmployeePosition;
+import com.personnel_accounting.domain.Position;
+import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 
 import java.util.List;
@@ -22,8 +26,8 @@ public interface EmployeePositionDAO {
     EmployeePosition save(EmployeePosition employeePosition);
     List<EmployeePosition> save(List<EmployeePosition> employeePositions);
     EmployeePosition merge(EmployeePosition employeePosition);
-    boolean activate(EmployeePosition employeePosition); //TODO personnel_accounting
-    boolean inactivate(EmployeePosition employeePosition); //TODO personnel_accounting
+    boolean activate(EmployeePosition employeePosition);
+    boolean inactivate(EmployeePosition employeePosition);
     boolean removeById(Long id);
     boolean remove(EmployeePosition employeePosition);
 }

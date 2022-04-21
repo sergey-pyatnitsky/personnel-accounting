@@ -44,27 +44,27 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private TaskDAO taskDAO;
 
-    @Override //TODO test
+    @Override
     public Project addProject(Project project, Long departmentId) {
         project.setCreateDate(new Date(System.currentTimeMillis()));
         project.setActive(false);
         List<Project> projects = projectDAO.findByName(project.getName())
                 .stream().filter(obj -> obj.getEndDate() == null).collect(Collectors.toList());
-        if(projects.size() != 0){
-            if(!projects.stream().allMatch(obj -> !obj.getDepartment().getId().equals(departmentId)
-                            && obj.getDepartment().isActive()))
+        if (projects.size() != 0) {
+            if (!projects.stream().allMatch(obj -> !obj.getDepartment().getId().equals(departmentId)
+                    && obj.getDepartment().isActive()))
                 throw new ActiveStatusDataException("Данный отдел неактивен для добавление проектов!");
             else throw new ExistingDataException("Данный проект уже существует!");
         }
         return assignProjectToDepartmentId(project, departmentId);
     }
 
-    @Override //TODO test
+    @Override
     public Department findDepartmentByUser(User user) {
         return employeeDAO.findByUser(user).getDepartment();
     }
 
-    @Override //TODO test
+    @Override
     public boolean closeProject(Project project) {
         Project tempProject = projectDAO.merge(project);
         if (tempProject.getStartDate() == null)
@@ -144,7 +144,7 @@ public class ProjectServiceImpl implements ProjectService {
         return employeePositionDAO.save(employeePosition);
     }
 
-    @Override //TODO test
+    @Override
     public Project assignProjectToDepartmentId(Project project, Long departmentId) {
         List<Project> projects = projectDAO.findByName(project.getName())
                 .stream().filter(obj -> obj.getEndDate() == null).collect(Collectors.toList());

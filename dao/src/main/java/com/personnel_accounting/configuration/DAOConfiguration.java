@@ -30,12 +30,6 @@ public class DAOConfiguration {
 
     @Bean
     public DataSource dataSource() {
-        /*HikariConfig hikariConfig = new HikariConfig();
-        try {
-            hikariConfig.setDataSource((DataSource) new JndiTemplate().lookup(env.getProperty("db.jndi.value")));
-        } catch (NamingException e) {
-            e.printStackTrace();
-        }*/
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setDriverClassName(env.getProperty("datasource.setDriverClassName"));
         hikariConfig.setJdbcUrl(System.getProperty("datasource.url"));

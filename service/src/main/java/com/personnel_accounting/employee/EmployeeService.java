@@ -1,6 +1,12 @@
 package com.personnel_accounting.employee;
 
-import com.personnel_accounting.domain.*;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Profile;
+import com.personnel_accounting.domain.Project;
+import com.personnel_accounting.domain.ReportCard;
+import com.personnel_accounting.domain.Task;
+import com.personnel_accounting.domain.User;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 
 import java.sql.Time;
@@ -16,9 +22,9 @@ public interface EmployeeService {
     Employee editEmployeeName(Employee employee, String name);
     Profile findProfileByEmployee(Employee employee);
 
-    List<Employee> findByNamePart(String namePart);//TODO test
-    List<Employee> findByPhonePart(String phonePart);//TODO test
-    List<Employee> findByEmailPart(String emailPart);//TODO test
+    List<Employee> findByNamePart(String namePart);
+    List<Employee> findByPhonePart(String phonePart);
+    List<Employee> findByEmailPart(String emailPart);
 
     ReportCard saveReportCard(ReportCard reportCard);
     ReportCard mergeReportCard(ReportCard reportCard);

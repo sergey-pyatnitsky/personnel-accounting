@@ -1,6 +1,10 @@
 package com.personnel_accounting.department;
 
-import com.personnel_accounting.domain.*;
+import com.personnel_accounting.domain.Department;
+import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.EmployeePosition;
+import com.personnel_accounting.domain.Position;
+import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
@@ -44,7 +48,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Autowired
     private PositionValidator positionValidator;
 
-    @Override //TODO test
+    @Override
     public Department addDepartment(Department department) {
         ValidationUtil.validate(department, departmentValidator);
         return departmentDAO.findByName(department.getName())
@@ -53,7 +57,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                 : department;
     }
 
-    @Override //TODO test
+    @Override
     public boolean closeDepartment(Department department) {
         Department tempDepartment = departmentDAO.merge(department);
         if (tempDepartment.getStartDate() == null)
@@ -171,7 +175,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departmentDAO.removeById(id);
     }
 
-    @Override //TODO test
+    @Override
     public boolean inactivate(Department department) {
         projectDAO.findByDepartment(department).forEach(project -> {
             taskDAO.findByProject(project).forEach(task -> task.setTaskStatus(TaskStatus.CLOSED));
@@ -181,7 +185,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departmentDAO.inactivate(department);
     }
 
-    @Override //TODO test
+    @Override
     public boolean activate(Department department) {
         List<Project> projects = projectDAO.findByDepartment(department);
         projects.forEach(project -> {
@@ -191,7 +195,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departmentDAO.activate(department);
     }
 
-    @Override //TODO test
+    @Override
     public Position addPosition(Position position) {
         ValidationUtil.validate(position, positionValidator);
         return positionDAO.findAll().stream().filter(obj -> obj.getName().equals(position.getName()))

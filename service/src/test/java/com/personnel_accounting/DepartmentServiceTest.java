@@ -1,14 +1,15 @@
 package com.personnel_accounting;
 
 import com.personnel_accounting.configuration.ServiceTestConfiguration;
+import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Position;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.User;
-import com.personnel_accounting.enums.Role;
-import com.personnel_accounting.configuration.ServiceConfiguration;
-import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.employee.EmployeeService;
+import com.personnel_accounting.enums.Role;
+import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
 import org.apache.log4j.LogManager;
@@ -32,6 +33,11 @@ public class DepartmentServiceTest {
     @Autowired
     private DepartmentService departmentService;
     private Department department;
+    private Department secondDepartment;
+
+    @Autowired
+    private PositionDAO positionDAO;
+    private Position position;
 
     @Autowired
     private EmployeeService employeeService;
@@ -86,6 +92,16 @@ public class DepartmentServiceTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        try {
+            departmentService.remove(secondDepartment);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            positionDAO.remove(position);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Before
@@ -115,6 +131,26 @@ public class DepartmentServiceTest {
         System.out.println(secondEmployee.getName() + " - " + secondEmployee.getId());
         System.out.println(project.getName() + " - " + project.getId());
         System.out.println(secondProject.getName() + " - " + project.getId());
+    }
+
+    @Test
+    public void addDepartment() {
+        logger.info("START addDepartment");
+        secondDepartment = departmentService.addDepartment(new Department("Отдел Python разработки", true));
+        Assert.assertEquals(secondDepartment.getName(), "Отдел Python разработки");
+        Assert.assertTrue(secondDepartment.isActive());
+
+        secondDepartment = departmentService.find(secondDepartment.getId());
+        Assert.assertEquals(secondDepartment.getName(), "Отдел Python разработки");
+        Assert.assertTrue(secondDepartment.isActive());
+    }
+
+    @Test
+    public void addPosition() {
+        logger.info("START addPosition");
+        position = departmentService.addPosition(new Position("Разработчик"));
+        Assert.assertEquals(position.getName(), "Разработчик");
+        Assert.assertEquals(positionDAO.find(position.getId()).getName(), position.getName());
     }
 
     @Test
@@ -172,7 +208,20 @@ public class DepartmentServiceTest {
         Assert.assertFalse(department.isActive());
 
         employeeService.findByDepartment(department).forEach(obj -> Assert.assertFalse(obj.isActive()));
-        projectService.findByDepartment(department).forEach(obj-> Assert.assertFalse(obj.isActive()));
+        projectService.findByDepartment(department).forEach(obj -> Assert.assertFalse(obj.isActive()));
     }
 
+    @Test
+    public void inactivate() {
+        logger.info("START inactivate");
+        Assert.assertTrue(departmentService.inactivate(department));
+        projectService.findByDepartment(department).forEach(obj -> Assert.assertFalse(obj.isActive()));
+    }
+
+    @Test
+    public void activate() {
+        logger.info("START activate");
+        Assert.assertTrue(departmentService.activate(department));
+        projectService.findByDepartment(department).forEach(obj -> Assert.assertTrue(obj.isActive()));
+    }
 }
