@@ -22,8 +22,8 @@ public interface EmployeePositionDAO {
     EmployeePosition save(EmployeePosition employeePosition);
     List<EmployeePosition> save(List<EmployeePosition> employeePositions);
     EmployeePosition merge(EmployeePosition employeePosition);
-    boolean activate(EmployeePosition employeePosition); //TODO test
-    boolean inactivate(EmployeePosition employeePosition); //TODO test
+    boolean activate(EmployeePosition employeePosition); //TODO personnel_accounting
+    boolean inactivate(EmployeePosition employeePosition); //TODO personnel_accounting
     boolean removeById(Long id);
     boolean remove(EmployeePosition employeePosition);
 }

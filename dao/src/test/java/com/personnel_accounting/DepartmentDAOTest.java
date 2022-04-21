@@ -1,7 +1,7 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.DAOTestConfiguration;
 import com.personnel_accounting.domain.Department;
-import com.personnel_accounting.configuration.DAOConfiguration;
 import com.personnel_accounting.department.DepartmentDAO;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DAOConfiguration.class)
+@ContextConfiguration(classes = DAOTestConfiguration.class)
 public class DepartmentDAOTest {
 
     private static final Logger logger = LogManager.getLogger("DepartmentDAOTest logger");
@@ -97,13 +97,12 @@ public class DepartmentDAOTest {
         departmentListFromDB.forEach(obj -> Assert.assertTrue(obj.isActive()));
     }
 
-    //FIXME
-    /*@Test
+    @Test
     public void findByName() {
         logger.info("START findByName");
-        Assert.assertEquals(departmentDAO.findByName("Отдел Python разработки").getName(),
-                "Отдел Python разработки");
-    }*/
+        departmentDAO.findByName("Отдел Python разработки")
+                .forEach(department -> Assert.assertEquals(department.getName(), "Отдел Python разработки"));
+    }
 
     @Test
     public void find() {
@@ -127,8 +126,8 @@ public class DepartmentDAOTest {
     }*/
 
     @Test
-    public void update() {
-        logger.info("START update");
+    public void merge() {
+        logger.info("START merge");
         department.setName("Отдел PHP разработки");
         Assert.assertEquals(departmentDAO.merge(department), department);
     }

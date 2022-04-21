@@ -12,12 +12,12 @@ public interface EmployeeDAO {
     Employee find(Long id);
     List<Employee> findAll(PagingRequest pagingRequest);
     List<Employee> findByName(String name);
-    List<Employee> findByNamePart(String namePart);//TODO test
+    List<Employee> findByNamePart(String namePart);//TODO personnel_accounting
     List<Employee> findByActive(boolean isActive);
     Employee findByUser(User user);
     List<Employee> findByDepartment(Department department);
     List<Employee> findByDepartmentPaginated(Department department, PagingRequest pagingRequest);
-    Employee findByProfile(Profile profile);//TODO test
+    Employee findByProfile(Profile profile);//TODO personnel_accounting
 
     Long getEmployeeCount();
     Long getEmployeeByDepartmentCount(Department department);

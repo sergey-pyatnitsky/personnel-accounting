@@ -1,7 +1,7 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.DAOTestConfiguration;
 import com.personnel_accounting.domain.*;
-import com.personnel_accounting.configuration.DAOConfiguration;
 import com.personnel_accounting.department.DepartmentDAO;
 import com.personnel_accounting.project.ProjectDAO;
 import org.apache.log4j.LogManager;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DAOConfiguration.class)
+@ContextConfiguration(classes = DAOTestConfiguration.class)
 public class ProjectDAOTest {
 
     private static final Logger logger = LogManager.getLogger("ProjectDAOTest logger");
@@ -150,8 +150,8 @@ public class ProjectDAOTest {
     }*/
 
     @Test
-    public void update() {
-        logger.info("START update");
+    public void merge() {
+        logger.info("START merge");
         project.setName("Банковская система белагопромбанка");
         Assert.assertEquals(projectDAO.merge(project).getName(), "Банковская система белагопромбанка");
     }

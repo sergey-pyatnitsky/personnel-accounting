@@ -1,5 +1,6 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.ServiceTestConfiguration;
 import com.personnel_accounting.domain.*;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
@@ -23,7 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ServiceConfiguration.class)
+@ContextConfiguration(classes = ServiceTestConfiguration.class)
 public class ProjectServiceTest {
 
     private static final Logger logger = LogManager.getLogger("ProjectServiceTest logger");
@@ -88,12 +89,12 @@ public class ProjectServiceTest {
             e.printStackTrace();
         }
         try {
-            departmentService.remove(department);
+            userService.remove(user);
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            userService.remove(user);
+            departmentService.remove(department);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,7 +108,7 @@ public class ProjectServiceTest {
         project = projectService.save(
                 new Project("Банковская система", department, true));
 
-        user = userService.save(new User("employee", "qwerty", false), Role.EMPLOYEE);
+        user = userService.save(new User("employee", "@123Qwerty", false), Role.EMPLOYEE);
 
         employee = new Employee("Иванов Иван Иванович", false, user);
         employee.setDepartment(department);

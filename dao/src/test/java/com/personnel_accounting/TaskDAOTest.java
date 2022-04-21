@@ -1,8 +1,8 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.DAOTestConfiguration;
 import com.personnel_accounting.domain.*;
 import com.personnel_accounting.enums.TaskStatus;
-import com.personnel_accounting.configuration.DAOConfiguration;
 import com.personnel_accounting.department.DepartmentDAO;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.profile.ProfileDAO;
@@ -23,7 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DAOConfiguration.class)
+@ContextConfiguration(classes = DAOTestConfiguration.class)
 public class TaskDAOTest {
 
     private static final Logger logger = LogManager.getLogger("TaskDAOTest logger");
@@ -238,8 +238,8 @@ public class TaskDAOTest {
     }
 
     @Test
-    public void update() {
-        logger.info("START update");
+    public void merge() {
+        logger.info("START merge");
         task.setTaskStatus(TaskStatus.CLOSED);
         Task testTask = taskDAO.merge(task);
         Assert.assertEquals(testTask.getId(), task.getId());

@@ -1,7 +1,7 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.DAOTestConfiguration;
 import com.personnel_accounting.domain.User;
-import com.personnel_accounting.configuration.DAOConfiguration;
 import com.personnel_accounting.user.UserDAO;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DAOConfiguration.class)
+@ContextConfiguration(classes = DAOTestConfiguration.class)
 public class UserDAOTest {
     private static final Logger logger = LogManager.getLogger("UserDAOTest logger");
 
@@ -94,8 +94,8 @@ public class UserDAOTest {
     }
 
     @Test
-    public void update() {
-        logger.info("START update");
+    public void merge() {
+        logger.info("START merge");
         user.setPassword("admin");
         user = userDAO.merge(user);
         Assert.assertEquals(user.getUsername(), "admin");

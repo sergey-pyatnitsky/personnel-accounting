@@ -153,7 +153,7 @@ public class ProjectDAOImpl implements ProjectDAO {
         }
     }
 
-    @Override //FIXME test
+    @Override //FIXME personnel_accounting
     public boolean inactivateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Project project = session.get(Project.class, id);
@@ -170,7 +170,7 @@ public class ProjectDAOImpl implements ProjectDAO {
         return true;
     }
 
-    @Override //FIXME test
+    @Override //FIXME personnel_accounting
     public boolean inactivate(Project project) {
         Session session = sessionFactory.getCurrentSession();
         project = (Project) session.merge(project);
@@ -188,7 +188,7 @@ public class ProjectDAOImpl implements ProjectDAO {
         return true;
     }
 
-    @Override //FIXME test
+    @Override //FIXME personnel_accounting
     public boolean activateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Project project = session.get(Project.class, id);
@@ -208,7 +208,7 @@ public class ProjectDAOImpl implements ProjectDAO {
         return true;
     }
 
-    @Override //FIXME test
+    @Override //FIXME personnel_accounting
     public boolean activate(Project project) {
         Session session = sessionFactory.getCurrentSession();
         project = (Project) session.merge(project);

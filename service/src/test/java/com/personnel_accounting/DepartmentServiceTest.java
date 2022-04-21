@@ -1,5 +1,6 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.ServiceTestConfiguration;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Project;
@@ -24,9 +25,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ServiceConfiguration.class)
+@ContextConfiguration(classes = ServiceTestConfiguration.class)
 public class DepartmentServiceTest {
-
     private static final Logger logger = LogManager.getLogger("DepartmentServiceTest logger");
 
     @Autowired
@@ -93,13 +93,13 @@ public class DepartmentServiceTest {
         logger.info("START entityToPersist");
         department = departmentService.save(new Department("Отдел Java разработки", true));
 
-        user = userService.save(new User("employee", "qwerty", false), Role.EMPLOYEE);
+        user = userService.save(new User("employee", "@123Qwerty", false), Role.EMPLOYEE);
 
         employee = new Employee("Иванов Иван Иванович", false, user);
         employee.setDepartment(department);
         employee = employeeService.save(employee);
 
-        secondUser = userService.save(new User("secondEmployee", "qwerty123", false), Role.EMPLOYEE);
+        secondUser = userService.save(new User("secondEmployee", "@123Qwerty", false), Role.EMPLOYEE);
 
         secondEmployee = new Employee("Иванов Игорь Иванович", false, secondUser);
         secondEmployee.setDepartment(department);

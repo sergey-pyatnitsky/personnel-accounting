@@ -1,7 +1,7 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.DAOTestConfiguration;
 import com.personnel_accounting.domain.Profile;
-import com.personnel_accounting.configuration.DAOConfiguration;
 import com.personnel_accounting.profile.ProfileDAO;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DAOConfiguration.class)
+@ContextConfiguration(classes = DAOTestConfiguration.class)
 public class ProfileDAOTest {
 
     private static final Logger logger = LogManager.getLogger("ProfileDAOTest logger");
@@ -108,8 +108,8 @@ public class ProfileDAOTest {
     }
 
     @Test
-    public void update() {
-        logger.info("START update");
+    public void merge() {
+        logger.info("START merge");
         profile.setEmail("qwerty123@mail.ru");
         Assert.assertEquals(profileDAO.merge(profile), profile);
     }

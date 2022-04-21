@@ -1,11 +1,10 @@
-/*
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.DAOTestConfiguration;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.User;
-import com.personnel_accounting.configuration.DAOConfiguration;
 import com.personnel_accounting.department.DepartmentDAO;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.profile.ProfileDAO;
@@ -25,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DAOConfiguration.class)
+@ContextConfiguration(classes = DAOTestConfiguration.class)
 public class EmployeeDAOTest {
 
     private static final Logger logger = LogManager.getLogger("EmployeeDAOTest logger");
@@ -187,7 +186,7 @@ public class EmployeeDAOTest {
         Assert.assertFalse(tempEmployee.isActive());
     }
 
-    @Test
+    /*@Test
     public void findAll() {
         logger.info("START findAll");
         List<Employee> employeeListFromDB = employeeDAO.findAll();
@@ -201,7 +200,7 @@ public class EmployeeDAOTest {
 
         Assert.assertEquals(tempEmployee.getName(), "Иванов Игорь Иванович");
         Assert.assertFalse(tempEmployee.isActive());
-    }
+    }*/
 
     @Test
     public void findByDepartment() {
@@ -228,10 +227,10 @@ public class EmployeeDAOTest {
     }
 
     @Test
-    public void update() {
-        logger.info("START update");
+    public void merge() {
+        logger.info("START merge");
         employee.setName("Григорьев Иван Иванович");
-        Assert.assertEquals(employeeDAO.update(employee).getName(), "Григорьев Иван Иванович");
+        Assert.assertEquals(employeeDAO.merge(employee).getName(), "Григорьев Иван Иванович");
     }
 
     @Test
@@ -272,4 +271,3 @@ public class EmployeeDAOTest {
         Assert.assertTrue(employeeDAO.remove(employee));
     }
 }
-*/

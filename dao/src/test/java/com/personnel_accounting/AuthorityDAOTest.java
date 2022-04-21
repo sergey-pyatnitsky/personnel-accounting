@@ -1,10 +1,10 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.DAOTestConfiguration;
 import com.personnel_accounting.domain.Authority;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.authority.AuthorityDAO;
-import com.personnel_accounting.configuration.DAOConfiguration;
 import com.personnel_accounting.user.UserDAO;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,7 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DAOConfiguration.class)
+@ContextConfiguration(classes = DAOTestConfiguration.class)
 public class AuthorityDAOTest {
     private static final Logger logger = LogManager.getLogger("AuthorityDAOTest logger");
 
@@ -106,8 +106,8 @@ public class AuthorityDAOTest {
     }
 
     @Test
-    public void update(){
-        logger.info("START update");
+    public void merge(){
+        logger.info("START merge");
         authority.setRole(Role.SUPER_ADMIN);
         Assert.assertEquals(authorityDAO.merge(authority), authority);
     }

@@ -108,8 +108,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean remove(User user) {
-        if (authorityDAO.removeByUsername(user.getUsername()))
-            return userDAO.remove(user);
+        if (authorityDAO.removeByUsername(user.getUsername())){
+            return userDAO.remove(userDAO.find(user.getUsername()));
+        }
         return false;
 
     }

@@ -119,7 +119,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         }
     }
 
-    @Override //FIXME test
+    @Override //FIXME personnel_accounting
     public boolean inactivateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Department department = session.get(Department.class, id);
@@ -136,7 +136,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         return true;
     }
 
-    @Override //FIXME test
+    @Override //FIXME personnel_accounting
     public boolean inactivate(Department department) {
         Session session = sessionFactory.getCurrentSession();
         department = (Department) session.merge(department);
@@ -154,7 +154,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         return true;
     }
 
-    @Override //FIXME test
+    @Override //FIXME personnel_accounting
     public boolean activateById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Department department = session.get(Department.class, id);
@@ -173,7 +173,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
         return true;
     }
 
-    @Override //FIXME test
+    @Override //FIXME personnel_accounting
     public boolean activate(Department department) {
         Session session = sessionFactory.getCurrentSession();
         department = (Department) session.merge(department);

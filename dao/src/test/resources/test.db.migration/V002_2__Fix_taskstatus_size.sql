@@ -1,0 +1,2 @@
+ALTER TABLE task
+MODIFY status VARCHAR(15);

@@ -1,5 +1,6 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.ServiceTestConfiguration;
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Profile;
@@ -26,7 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ServiceConfiguration.class)
+@ContextConfiguration(classes = ServiceTestConfiguration.class)
 public class EmployeeServiceTest {
 
     private static final Logger logger = LogManager.getLogger("EmployeeServiceTest logger");
@@ -101,13 +102,13 @@ public class EmployeeServiceTest {
         project = projectService.save(
                 new Project("Банковская система", department, true));
 
-        user = userService.save(new User("employee", "qwerty", false), Role.EMPLOYEE);
+        user = userService.save(new User("employee", "@123Qwerty", false), Role.EMPLOYEE);
 
         employee = new Employee("Иванов Иван Иванович", false, user);
         employee.setDepartment(department);
         employee = employeeService.save(employee);
 
-        secondUser = userService.save(new User("reporter", "qwerty123", true), Role.PROJECT_MANAGER);
+        secondUser = userService.save(new User("reporter", "@123Qwerty", true), Role.PROJECT_MANAGER);
 
         secondEmployee = employeeService.save(new Employee("Игорев Иван Иванович", true, secondUser));
 
@@ -126,7 +127,7 @@ public class EmployeeServiceTest {
     public void addProfileData() {
         logger.info("START addProfileData");
         Profile profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 89",
-                "+375294894561", "qwerty@mail.ru", "Java Python");
+                "+375(29)489-45-61", "qwerty@mail.ru", "Java Python");
         employee = employeeService.addProfileData(employee, profile);
         Assert.assertEquals(employee.getName(), "Иванов Иван Иванович");
         Assert.assertFalse(employee.isActive());
@@ -134,7 +135,7 @@ public class EmployeeServiceTest {
         Profile tempProfile = employeeService.findProfileByEmployee(employee);
         Assert.assertEquals(tempProfile.getSkills(), "Java Python");
         Assert.assertEquals(tempProfile.getEmail(), "qwerty@mail.ru");
-        Assert.assertEquals(tempProfile.getPhone(), "+375294894561");
+        Assert.assertEquals(tempProfile.getPhone(), "+375(29)489-45-61");
         Assert.assertEquals(tempProfile.getAddress(), "г.Минск ул.Якуба Коласа 89");
         Assert.assertEquals(tempProfile.getEducation(), "Инженер-программист");
     }
@@ -143,12 +144,12 @@ public class EmployeeServiceTest {
     public void findProfileByEmployee() {
         logger.info("START findProfileByEmployee");
         Profile profile = new Profile("Инженер-программист", "г.Минск ул.Якуба Коласа 89",
-                "+375294894561", "qwerty@mail.ru", "Java Python");
+                "+375(29)489-45-61", "qwerty@mail.ru", "Java Python");
         employee = employeeService.addProfileData(employee, profile);
         Profile tempProfile = employeeService.findProfileByEmployee(employee);
         Assert.assertEquals(tempProfile.getSkills(), "Java Python");
         Assert.assertEquals(tempProfile.getEmail(), "qwerty@mail.ru");
-        Assert.assertEquals(tempProfile.getPhone(), "+375294894561");
+        Assert.assertEquals(tempProfile.getPhone(), "+375(29)489-45-61");
         Assert.assertEquals(tempProfile.getAddress(), "г.Минск ул.Якуба Коласа 89");
         Assert.assertEquals(tempProfile.getEducation(), "Инженер-программист");
     }

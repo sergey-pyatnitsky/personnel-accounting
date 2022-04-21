@@ -1,8 +1,8 @@
 package com.personnel_accounting;
 
+import com.personnel_accounting.configuration.DAOTestConfiguration;
 import com.personnel_accounting.domain.*;
 import com.personnel_accounting.enums.TaskStatus;
-import com.personnel_accounting.configuration.DAOConfiguration;
 import com.personnel_accounting.department.DepartmentDAO;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.profile.ProfileDAO;
@@ -26,7 +26,7 @@ import java.sql.Time;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DAOConfiguration.class)
+@ContextConfiguration(classes = DAOTestConfiguration.class)
 public class ReportCardDAOTest {
 
     private static final Logger logger = LogManager.getLogger("ReportCardDAOTest logger");
@@ -241,8 +241,8 @@ public class ReportCardDAOTest {
     }
 
     @Test
-    public void update() {
-        logger.info("START update");
+    public void merge() {
+        logger.info("START merge");
         reportCard.setTask(secondTask);
         ReportCard tempReportCard = reportCardDAO.merge(reportCard);
         Assert.assertEquals(tempReportCard.getId(), reportCard.getId());
