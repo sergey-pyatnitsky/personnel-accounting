@@ -13,10 +13,13 @@
 
     <properties>
         <core.version>1.0-SNAPSHOT</core.version>
+        <java.version>8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-context.version>5.3.16</spring-context.version>
         <spring-orm.version>5.3.16</spring-orm.version>
         <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
-        <HikariCP.version>5.0.1</HikariCP.version>
+        <HikariCP.version>3.4.5</HikariCP.version>
         <flyway-mysql.version>8.5.4</flyway-mysql.version>
         <spring-aspects.version>5.3.16</spring-aspects.version>
     </properties>

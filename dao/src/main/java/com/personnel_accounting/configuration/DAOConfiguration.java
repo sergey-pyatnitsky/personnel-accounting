@@ -9,12 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -32,12 +30,17 @@ public class DAOConfiguration {
 
     @Bean
     public DataSource dataSource() {
-        HikariConfig hikariConfig = new HikariConfig();
+        /*HikariConfig hikariConfig = new HikariConfig();
         try {
             hikariConfig.setDataSource((DataSource) new JndiTemplate().lookup(env.getProperty("db.jndi.value")));
         } catch (NamingException e) {
             e.printStackTrace();
-        }
+        }*/
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setDriverClassName(env.getProperty("datasource.setDriverClassName"));
+        hikariConfig.setJdbcUrl(System.getProperty("datasource.url"));
+        hikariConfig.setUsername(System.getProperty("datasource.username"));
+        hikariConfig.setPassword(System.getProperty("datasource.password"));
         hikariConfig.addDataSourceProperty("dataSource.cachePrepStmts",
                 env.getProperty("hikari.dataSource.cachePrepStmts"));
         hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSize",
