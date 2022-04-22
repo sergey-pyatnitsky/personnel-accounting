@@ -12,7 +12,7 @@ $(document).ready(function () {
     let current_row = null;
     $("body").on('show.bs.modal', "#projectEditModal", function (event) {
       if (department_table != null) department_table.destroy();
-      loadDeartmentsTable("#departments_table", "/api/department/get_all/open");
+      loadDeartmentsTable("#content-edit-project #departments_table", "/api/department/get_all/open");
       current_row = $(event.relatedTarget).closest('tr');
       let modal = $(this);
 
@@ -60,7 +60,7 @@ function loadEditTable(table_id, req_url) {
       },
       { "data": "startDate" },
       {
-        "data": "isActive", render: function (data) {
+        "data": "active", render: function (data) {
           return data
             ? '<p class="text-success">+</p>'
             : '<p class="text-danger">-</p>';

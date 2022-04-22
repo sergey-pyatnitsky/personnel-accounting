@@ -41,7 +41,7 @@ function loadViewTable(table_id, req_url) {
       { "data": "name" },
       { "data": "user.authority.role" },
       {
-        "data": "active", render: function (data) {
+        "data": "user.active", render: function (data) {
           return data
             ? '<p class="text-success">+</p>'
             : '<p class="text-danger">-</p>';

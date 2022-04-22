@@ -193,7 +193,7 @@ public class EmployeeRESTController {
 
     @DeleteMapping("/api/employee/remove/{id}")
     public ResponseEntity<?> removeUser(@PathVariable Long id) {
-        if (!employeeService.removeById(id))
+        if (!employeeService.inactivate(employeeService.find(id)))
             throw new OperationExecutionException(messageSource.getMessage("user.error.remove", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }

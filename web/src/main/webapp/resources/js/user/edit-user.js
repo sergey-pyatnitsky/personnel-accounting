@@ -145,7 +145,7 @@ function delete_employee(employeeId) {
         "user.alert.done");
       $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
       edit_table.destroy();
-      loadEditTable("#content-activate-user #edit_users_table", current_url_for_edit_table);
+      loadEditTable("#content-edit-user #edit_users_table", current_url_for_edit_table);
     },
     error: function (error) {
       console.log(error);

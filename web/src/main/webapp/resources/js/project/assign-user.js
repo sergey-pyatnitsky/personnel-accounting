@@ -42,14 +42,14 @@ $(document).ready(function () {
         $("#positionSelect").append(content);
         $("#positionSelectDiv").show();
         if (project_modal_table != null) project_modal_table.destroy();
-        loadProjectModalTable("#projectAssignModelTable", "/api/department/projects/open/" +
+        loadProjectModalTable("#content-assign-user #projectAssignModelTable", "/api/department/projects/open/" +
           current_row.find(".department_cell").text().split("-")[0]);
         let message = get_message(localStorage.getItem("lang"),
           "project.modal.title.assign");
         modal.find("#modal_header_title").text(message);
       } else {
         if (project_modal_table != null) project_modal_table.destroy();
-        loadProjectModalTable("#projectAssignModelTable", "/api/project/by_employee/open/" +
+        loadProjectModalTable("#content-assign-user #projectAssignModelTable", "/api/project/by_employee/open/" +
           current_row.find(".employee_id").text());
         let message = get_message(localStorage.getItem("lang"),
           "project.modal.title.remove");
@@ -58,7 +58,9 @@ $(document).ready(function () {
         $("#assign_modal_save_btn").hide();
       }
 
-      $("body").on("click", "#content-assign-user #save_assign_project_modal_btn", function () {
+      $("body").on("click", "#content-assign-user #save_assign_project_modal_btn", function (event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
         if (current_row.find("#assign_user_btn").text() == "Назначить" ||
           current_row.find("#assign_user_btn").text() == "Assign")
           assign_user(current_row.find(".employee_id").text(), $(this).val(),
@@ -78,14 +80,14 @@ function showAssignUserTable(department_id) {
   loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
 
   $("#content-assign-user #assignEmployeeBtn").click(function () {
-    assign_user_table.destroy();
+    if (assign_user_table != null) assign_user_table.destroy();
     current_url_for_assign_user_table = "/api/employee/get_all/department/" + department_id;
     mode = "1";
     loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
   });
 
   $("#content-assign-user #removeEmployeeBtn").click(function () {
-    assign_user_table.destroy();
+    if (assign_user_table != null) assign_user_table.destroy();
     current_url_for_assign_user_table = "/api/employee/get_with_project/department/" + department_id;
     mode = "2";
     loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
@@ -175,8 +177,6 @@ function loadAssignUserTable(table_id, req_url) {
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
-        console.log(123);
-        console.log(JSON.stringify(d));
         return JSON.stringify(d);
       }
     },
@@ -256,7 +256,7 @@ function assign_user(employee_id, project_id, position_id) {
           "project.alert.assign_user").replace("0", employee_id);
         message = message.replace("1", project_id);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
-        assign_user_table.destroy();
+        if (assign_user_table != null) assign_user_table.destroy();
         loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
     },
@@ -288,7 +288,7 @@ function cancel_user(employee_id, project_id) {
           "project.alert.cancel").replace("0", employee_position.employee.id);
         message = message.replace("1", employee_position.project.id);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
-        assign_user_table.destroy();
+        if (assign_user_table != null) assign_user_table.destroy();
         loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
       } else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
     },

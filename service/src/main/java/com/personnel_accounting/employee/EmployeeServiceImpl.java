@@ -230,27 +230,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public boolean removeById(Long id) {
-        Date date = new Date(System.currentTimeMillis());
         Employee employee = employeeDAO.find(id);
         employeePositionDAO.findByEmployee(employee)
-                .forEach(employeePosition -> {
-                    employeePosition.setActive(false);
-                    employeePosition.setModifiedDate(date);
-                    employeePosition.setEndDate(date);
-                });
+                .forEach(employeePosition -> employeePositionDAO.remove(employeePosition));
         List<Task> tasks = taskDAO.findByAssignee(employee);
-        tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.IN_PROGRESS).collect(Collectors.toList())
-                .forEach(task -> {
-                    task.setModifiedDate(date);
-                    task.setAssignee(null);
-                    task.setTaskStatus(TaskStatus.OPEN);
-                });
-        tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.DONE).collect(Collectors.toList())
-                .forEach(task -> {
-                    task.setModifiedDate(date);
-                    task.setTaskStatus(TaskStatus.CLOSED);
-                    task.setAssignee(null);
-                });
+        tasks.forEach(task -> taskDAO.remove(task));
         return employeeDAO.removeById(id);
     }
 
@@ -270,14 +254,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.IN_PROGRESS).collect(Collectors.toList())
                 .forEach(task -> {
                     task.setModifiedDate(date);
-                    task.setAssignee(null);
                     task.setTaskStatus(TaskStatus.OPEN);
                 });
         tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.DONE).collect(Collectors.toList())
                 .forEach(task -> {
                     task.setModifiedDate(date);
                     task.setTaskStatus(TaskStatus.CLOSED);
-                    task.setAssignee(null);
                 });
         return employeeDAO.inactivate(employee);
     }

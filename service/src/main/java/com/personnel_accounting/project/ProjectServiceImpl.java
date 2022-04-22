@@ -134,7 +134,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<EmployeePosition> employeePositions = employeePositionDAO.findByEmployee(employee);
 
         for (EmployeePosition obj : employeePositions) {
-            if (obj.getProject().getId().equals(project.getId()))
+            if (obj.getProject().getId().equals(project.getId()) && obj.getEndDate() == null)
                 return employeePositionDAO.merge(obj);
         }
         EmployeePosition employeePosition = new EmployeePosition(false, employee, positionDAO.save(position),

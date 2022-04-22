@@ -131,7 +131,7 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
     public Long getByEmployeeCount(Employee employee) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(
-                "from EmployeePosition where employee = :employee");
+                "select count(*) from EmployeePosition where employee = :employee");
         query.setParameter("employee", employee);
         return (Long) query.getSingleResult();
     }

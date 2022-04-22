@@ -110,7 +110,7 @@ function edit_department(department_id, department_name) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "department.alert.edit").replace("0", department.id);
+          "department.alert.edit").replace("0", department_id);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-department #edit_departments_table", current_url_for_edit_table);
