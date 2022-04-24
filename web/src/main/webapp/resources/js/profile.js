@@ -1,7 +1,10 @@
-let employee = null;
+let employee = null, file = null, image_id = "1", name = null;
 
 $(document).ready(function () {
   get_profile_data();
+  $("#profile_image").attr("src", "http://localhost:8080/api/downloadFile/" + image_id);
+  localStorage.setItem("imageUrl", "http://localhost:8080/api/downloadFile/" + image_id);
+  $("#profile_name").text(localStorage.getItem("name"));
 
   $('#edit_profile').click(function () {
     edit_profile_data();
@@ -11,17 +14,46 @@ $(document).ready(function () {
     $('.alert_pass').empty();
   })
 
+  $('input[type=file]').on('change', function () {
+    file = this.files[0];
+  });
+
+  $('#input_file').click(function () {
+    setImage();
+  })
+
   $("#modal_save").click(function () {
     if ($("#modal_input_new_pass").val() != $("#modal_input_repeat").val()) {
       $('.alert_pass').empty();
       $('.alert_pass').append(`<div class="alert alert-danger"role="alert">
       Пароли не совпадают!</div>`);
-    }
-    else {
+    } else {
       check_old_password();
     }
   })
 });
+
+function setImage() {
+  var inputFile = new FormData();
+  inputFile.append("file", file);
+  $.ajax({
+    type: "POST",
+    contentType: false,
+    processData: false,
+    url: "/api/uploadFile",
+    data: inputFile,
+    success: function (data) {
+      $("#profile_image").attr("src", data);
+      localStorage.setItem("imageUrl", data);
+    },
+    error: function (error) {
+      console.log(error);
+      let message = get_message(localStorage.getItem("lang"),
+        "image.error.size");
+      alert(message);
+    }
+  });
+}
 
 function edit_profile_data() {
   employee.name = $('#name').val();
@@ -39,10 +71,10 @@ function edit_profile_data() {
     cache: false,
     timeout: 600000,
     success: function (data) {
-      $('.alert').empty();
       data != ""
         ? $('.alert').append(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`)
         : $('.alert').append(`<div class="alert alert-success" role="alert">Сохранено!</div>`);
+      localStorage.setItem("name", employee.name);
     },
     error: function (error) {
       console.log(error);
@@ -67,6 +99,7 @@ function get_profile_data() {
       $('#email').val(data.profile.email);
       $('#education').val(data.profile.education);
       $('#experience').val(data.profile.skills);
+      image_id = data.profile.imageId.toString();
     },
     error: function () {
       $('.alert').empty();
@@ -77,7 +110,7 @@ function get_profile_data() {
 
 function check_old_password() {
   let entity = {};
-  Object.assign(entity, { password: $("#modal_input_old_pass").val() });
+  Object.assign(entity, {password: $("#modal_input_old_pass").val()});
 
   $.ajax({
     type: "POST",
@@ -102,7 +135,7 @@ function check_old_password() {
 
 function save_password() {
   let entity = {};
-  Object.assign(entity, { password: $("#modal_input_new_pass").val() });
+  Object.assign(entity, {password: $("#modal_input_new_pass").val()});
 
   $.ajax({
     type: "POST",

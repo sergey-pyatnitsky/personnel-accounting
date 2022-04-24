@@ -22,6 +22,7 @@
         <HikariCP.version>3.4.5</HikariCP.version>
         <flyway-mysql.version>8.5.4</flyway-mysql.version>
         <spring-aspects.version>5.3.16</spring-aspects.version>
+        <spring-web.version>5.3.16</spring-web.version>
     </properties>
 
     <dependencies>
@@ -29,6 +30,11 @@
             <groupId>com.personnel_accounting</groupId>
             <artifactId>core</artifactId>
             <version>${core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring-web.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

@@ -15,7 +15,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
           integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
           crossorigin="anonymous"></script>
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <link th:href="@{/resources/css/profile-page.css}" rel="stylesheet" type="text/css">
   <script type="text/javascript" th:src="@{/resources/js/main.js}"></script>
   <script type="text/javascript" th:src="@{/resources/js/profile.js}"></script>
@@ -28,10 +28,15 @@
     <div class="row">
       <div class="col border-bottom">
         <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-          <img class="rounded-circle mt-5" width="150px"
-               src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
-          <span class="font-weight-bold">Иванов Иван</span>
+          <img class="rounded-circle mt-5" width="150px" id="profile_image">
+          <span class="font-weight-bold" id="profile_name"></span>
           <span class="text-black-50">[[${#httpServletRequest.remoteUser}]]</span>
+          <div class="form-group">
+            <form id="fileUploadForm">
+              <input type="file" name="file" form="input_file" class="form-control-file" required>
+            </form>
+          </div>
+          <button type="submit" class="btn btn-primary" id="input_file">Изменить картинку</button>
         </div>
       </div>
     </div>

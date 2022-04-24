@@ -2,6 +2,7 @@ package com.personnel_accounting.employee;
 
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Image;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.ReportCard;
@@ -9,6 +10,7 @@ import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
+import com.personnel_accounting.image.ImageDAO;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.profile.ProfileDAO;
 import com.personnel_accounting.report_card.ReportCardDAO;
@@ -50,7 +52,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     private TaskValidator taskValidator;
 
     @Autowired
+    private ImageDAO imageDAO;
+
+    @Autowired
     private ProfileValidator profileValidator;
+
+    @Override
+    public Image editProfileImage(Image image, User user) {
+        Profile profile = employeeDAO.findByUser(user).getProfile();
+        if(profile.getImageId() != 1)
+            imageDAO.removeById(profile.getImageId());
+        profile.setImageId(image.getId());
+        profileDAO.save(profile);
+        return image;
+    }
 
     @Override
     public ReportCard trackTime(Task task, Time time) {

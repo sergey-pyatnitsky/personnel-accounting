@@ -3,12 +3,7 @@ package com.personnel_accounting.domain;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
@@ -35,6 +30,9 @@ public class Profile {
 
     @Column(name = "skills")
     private String skills;
+
+    @Column(name = "image_id")
+    private Long imageId;
 
     public Profile(String education, String address, String phone, String email, String skills) {
         this.education = education;

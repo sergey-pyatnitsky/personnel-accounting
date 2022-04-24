@@ -20,4 +20,5 @@ public class ProfileDTO {
     @Size(max = 256, message = "{profile.validator.email.size}")
     private String email;
     private String skills;
+    private Long imageId;
 }

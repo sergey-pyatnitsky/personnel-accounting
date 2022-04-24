@@ -2,6 +2,7 @@ package com.personnel_accounting.employee;
 
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
+import com.personnel_accounting.domain.Image;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.ReportCard;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public interface EmployeeService {
     List<Employee> getEmployeesWithProjectByDepartment(Department department, PagingRequest pagingRequest);
-
+    Image editProfileImage(Image image, User user);
     ReportCard trackTime(Task task, Time time);
     Task changeTaskStatus(Task task);
     Task addTaskInProject(Project project, Task task);

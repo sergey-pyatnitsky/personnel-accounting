@@ -1,0 +1,2 @@
+ALTER TABLE profile
+ADD image_id BIGINT DEFAULT 1;

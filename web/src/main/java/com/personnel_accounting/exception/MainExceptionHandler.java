@@ -19,7 +19,7 @@ public class MainExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({NoSuchDataException.class, ExistingDataException.class,
             ActiveStatusDataException.class, OperationExecutionException.class,
-            IncorrectDataException.class})
+            IncorrectDataException.class, FileStorageException.class})
     public ResponseEntity<ApiError> handleCustomException(Exception e) {
         ApiError apiError = ApiError.ApiErrorBuilder.anApiError()
                 .withTimestamp(new Date(System.currentTimeMillis()))
