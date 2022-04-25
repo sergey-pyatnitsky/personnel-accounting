@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:regexp.properties")
 @Component
 public class ProfileValidator implements Validator {
     private final Environment env;

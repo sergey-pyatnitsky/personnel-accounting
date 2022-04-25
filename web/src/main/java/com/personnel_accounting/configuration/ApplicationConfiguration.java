@@ -33,7 +33,7 @@ import java.util.Locale;
 @ComponentScan(basePackages = "com.personnel_accounting")
 @Import(ServiceConfiguration.class)
 @EnableWebMvc
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:image.properties")
 public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements WebMvcConfigurer {
     private final Environment env;
 

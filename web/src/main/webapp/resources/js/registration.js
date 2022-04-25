@@ -12,8 +12,10 @@ $(document).ready(function () {
 });
 
 function reg_user() {
-  let employee = {};
+  let employee = {}, profile = {};
   employee.name = $('#name').val();
+  Object.assign(employee, { profile });
+  employee.profile.email = $('#email').val();
   Object.assign(employee, { user: { username: $('#username').val(), password: $("#password").val() } });
 
   $.ajax({

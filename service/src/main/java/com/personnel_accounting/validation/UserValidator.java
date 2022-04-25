@@ -7,12 +7,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.MessageCodeFormatter;
 import org.springframework.validation.Validator;
 
-import java.util.Locale;
-
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:regexp.properties")
 @Component
 public class UserValidator implements Validator {
     private final Environment env;

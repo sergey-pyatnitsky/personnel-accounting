@@ -63,7 +63,7 @@ public class EmployeeRESTController {
         employee.setCreateDate(new Date(System.currentTimeMillis()));
         if (!userService.registerUser(employee.getUser(),
                 "{bcrypt}" + (new BCryptPasswordEncoder()).encode(employee.getUser().getPassword()),
-                employeeDTO.getName(), Role.EMPLOYEE))
+                employeeDTO.getName(), Role.EMPLOYEE, employeeDTO.getProfile().getEmail()))
             throw new ExistingDataException(messageSource.getMessage("user.error.existing", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }

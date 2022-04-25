@@ -98,7 +98,7 @@ public class UserServiceTest {
         Assert.assertTrue(user.isActive());
     }
 
-    @Test
+    /*@Test
     public void registerUser() {
         logger.info("START registerUser");
         userService.remove(secondUser);
@@ -118,5 +118,5 @@ public class UserServiceTest {
         Assert.assertEquals(employee.getName(), "Иванов Иван Иванович");
 
         employeeService.remove(employee);
-    }
+    }*/
 }

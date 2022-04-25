@@ -41,8 +41,12 @@
           <input type="password" class="form-control" id="repeat_password" placeholder="Example@123" required>
         </div>
         <div class="form-group reg_input">
-          <label for="name" th:text="#{registration.name}">ФИО</label>
+          <label for="name" th:text="#{registration.name}"></label>
           <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="form-group reg_input">
+          <label for="email">Email</label>
+          <input type="text" class="form-control" id="email" required>
         </div>
         <div class="alert_reg"></div>
         <button class="btn btn-primary btn-block" id="reg_button" type="button"

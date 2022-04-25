@@ -11,7 +11,7 @@ public interface UserService {
 
     User changeAuthData(User user, String password);
     User changeUserRole(User user, Role role);
-    boolean registerUser(User user, String pass, String name, Role role);
+    boolean registerUser(User user, String pass, String name, Role role, String email);
 
     User find(String username);
     List<User> findAll();

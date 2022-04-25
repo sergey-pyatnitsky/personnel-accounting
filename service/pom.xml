@@ -13,6 +13,8 @@
 
     <properties>
         <dao.version>1.0-SNAPSHOT</dao.version>
+        <spring-context-support.version>5.3.16</spring-context-support.version>
+        <mail.version>1.4.7</mail.version>
     </properties>
 
     <dependencies>
@@ -20,6 +22,16 @@
             <groupId>com.personnel_accounting</groupId>
             <artifactId>dao</artifactId>
             <version>${dao.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring-context-support.version}</version>
         </dependency>
     </dependencies>
 </project>

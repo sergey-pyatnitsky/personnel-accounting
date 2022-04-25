@@ -5,11 +5,14 @@ import com.personnel_accounting.domain.Authority;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.User;
+import com.personnel_accounting.email.EmailService;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.enums.Role;
+import com.personnel_accounting.profile.ProfileDAO;
 import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,6 +31,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserValidator userValidator;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private ProfileDAO profileDAO;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     public Authority getAuthorityByUsername(String username) {
@@ -52,7 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean registerUser(User user, String pass, String name, Role role) {
+    public boolean registerUser(User user, String pass, String name, Role role, String email) {
         ValidationUtil.validate(user, userValidator);
         user.setPassword(pass);
         User tempUser = userDAO.find(user.getUsername());
@@ -61,7 +73,14 @@ public class UserServiceImpl implements UserService {
             authorityDAO.save(new Authority(user.getUsername(), role));
             if (!role.equals(Role.SUPER_ADMIN)) {
                 Employee employee = new Employee(name, false, user, new Profile());
+                Profile profile = new Profile();
+                profile.setEmail(email);
+                profile = profileDAO.save(profile);
+                employee.setProfile(profile);
                 employeeDAO.save(employee);
+                emailService.sendSimpleEmail(email,
+                        messageSource.getMessage("email.welcome.title", null, null),
+                        messageSource.getMessage("email.welcome.message", null, null));
             }
             return true;
         } else return false;
@@ -97,12 +116,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean inactivate(User user) {
-        return userDAO.inactivate(user);
+        boolean isActive = userDAO.inactivate(user);
+        if (isActive) {
+            employeeDAO.findByUser(user).getProfile().getEmail();
+            emailService.sendSimpleEmail(employeeDAO.findByUser(user).getProfile().getEmail(),
+                    messageSource.getMessage("email.deactivate.success.title", null, null),
+                    messageSource.getMessage("email.deactivate.success.message", null, null));
+        }
+        return isActive;
     }
 
     @Override
     public boolean activate(User user) {
-        return userDAO.activate(user);
+        boolean isActive = userDAO.activate(user);
+        if (isActive) {
+            employeeDAO.findByUser(user).getProfile().getEmail();
+            emailService.sendSimpleEmail(employeeDAO.findByUser(user).getProfile().getEmail(),
+                    messageSource.getMessage("email.activate.success.title", null, null),
+                    messageSource.getMessage("email.activate.success.message", null, null));
+        }
+        return isActive;
     }
 
     @Override
