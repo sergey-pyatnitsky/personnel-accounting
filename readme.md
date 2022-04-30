@@ -1,4 +1,4 @@
-#Personnel accounting
+# Personnel accounting
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=java&logoColor=white)
 ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
 ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
@@ -8,7 +8,7 @@
 This project is designed to account for IT company personnel.<br>
 The project provides for the accounting of tasks and tracking the time spent on the tasks of each employee.
 
-##Backend technologies
+## Backend technologies
 1. Java
 2. MySQL
 3. Hibernate
@@ -21,7 +21,7 @@ The project provides for the accounting of tasks and tracking the time spent on 
    4. Spring REST
 7. Thymeleaf
 
-##Frontend technologies
+## Frontend technologies
 1. HTML
 2. CSS
 3. Bootstrap
@@ -29,5 +29,5 @@ The project provides for the accounting of tasks and tracking the time spent on 
 5. jQuery
 6. Ajax
 
-##Database schema
+## Database schema
 ![DB_schema](DB.png)
