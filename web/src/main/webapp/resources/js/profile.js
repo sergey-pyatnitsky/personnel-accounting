@@ -90,6 +90,7 @@ function get_profile_data() {
     contentType: "application/json",
     url: "/api/employee/profile/get_profile_data",
     cache: false,
+    async: false,
     timeout: 600000,
     success: function (data) {
       employee = data;
@@ -99,7 +100,7 @@ function get_profile_data() {
       $('#email').val(data.profile.email);
       $('#education').val(data.profile.education);
       $('#experience').val(data.profile.skills);
-      image_id = data.profile.imageId.toString();
+      image_id = data.profile.image.id.toString();
     },
     error: function () {
       $('.alert').empty();

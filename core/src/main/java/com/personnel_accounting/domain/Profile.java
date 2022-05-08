@@ -31,8 +31,9 @@ public class Profile {
     @Column(name = "skills")
     private String skills;
 
-    @Column(name = "image_id")
-    private Long imageId;
+    @ManyToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     public Profile(String education, String address, String phone, String email, String skills) {
         this.education = education;

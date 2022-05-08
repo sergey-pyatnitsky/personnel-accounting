@@ -1,5 +1,6 @@
 package com.personnel_accounting.entity.dto;
 
+import com.personnel_accounting.domain.Image;
 import lombok.Data;
 
 import javax.validation.constraints.Size;
@@ -20,5 +21,5 @@ public class ProfileDTO {
     @Size(max = 256, message = "{profile.validator.email.size}")
     private String email;
     private String skills;
-    private Long imageId;
+    private Image image;
 }
