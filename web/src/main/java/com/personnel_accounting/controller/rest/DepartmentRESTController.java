@@ -101,18 +101,20 @@ public class DepartmentRESTController {
 
     @PutMapping("/api/department/activate/{id}")
     public ResponseEntity<?> activateDepartment(@PathVariable Long id) {
-        if (!departmentService.activate(departmentService.find(id)))
+        Department department = departmentService.find(id);
+        if (!departmentService.activate(department))
             throw new OperationExecutionException(
                     messageSource.getMessage("department.error.activation", null, null) + " " + id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(department, HttpStatus.OK);
     }
 
     @PutMapping("/api/department/inactivate/{id}")
     public ResponseEntity<?> inactivateDepartment(@PathVariable Long id) {
-        if (!departmentService.inactivate(departmentService.find(id)))
+        Department department = departmentService.find(id);
+        if (!departmentService.inactivate(department))
             throw new OperationExecutionException(
                     messageSource.getMessage("department.error.deactivation", null, null) + " " + id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(department, HttpStatus.OK);
     }
 
     @PutMapping("/api/department/edit/{id}")

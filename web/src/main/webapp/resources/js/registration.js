@@ -2,8 +2,9 @@ $(document).ready(function () {
   $('#reg_button').click(function () {
     if ($("#password").val() != $("#repeat_password").val()) {
       $('.alert_reg').empty();
-      $('.alert_reg').append(`<div class="alert alert-danger" role="alert">
-      Пароли не совпадают!</div>`);
+      let message = get_message(localStorage.getItem("lang"),
+        "registration.alert.password");
+      $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + message + `</div>`);
     }
     else {
       reg_user();
@@ -27,15 +28,20 @@ function reg_user() {
     timeout: 600000,
     success: function (data) {
       $('.alert_reg').empty();
-      data != ""
-        ? $('.alert_reg').append(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`)
-        : $('.alert_reg').append(`<div class="alert alert-success" role="alert">Зарегестрировано!</div>`);
+      if (data != "") {
+        $('.alert_reg').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`)
+      } else {
+        let message = get_message(localStorage.getItem("lang"),
+          "registration.alert.success");
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
+      }
     },
     error: function (error) {
       console.log(error);
       $('.alert_reg').empty();
-      $('.alert_reg').append(`<div class="alert alert-danger" role="alert">
-          Данный пользователь уже существует!</div>`);
+      let message = get_message(localStorage.getItem("lang"),
+        "registration.alert.exist");
+      $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + message + `</div>`);
     }
   });
 }

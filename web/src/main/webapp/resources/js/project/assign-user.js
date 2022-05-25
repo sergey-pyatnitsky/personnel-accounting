@@ -63,10 +63,10 @@ $(document).ready(function () {
         event.stopImmediatePropagation();
         if (current_row.find("#assign_user_btn").text() == "Назначить" ||
           current_row.find("#assign_user_btn").text() == "Assign")
-          assign_user(current_row.find(".employee_id").text(), $(this).val(),
+          assign_user(current_row.find(".employee_id").text(), current_row.find(".employee_name").text(), $(this).val(),
             $("#positionSelect option:selected").text().split("-")[0]);
         else
-          cancel_user(current_row.find(".employee_id").text(), $(this).val());
+          cancel_user(current_row.find(".employee_id").text(), current_row.find(".employee_name").text(), $(this).val());
       });
     });
   });
@@ -118,7 +118,7 @@ function loadProjectModalTable(table_id, req_url) {
           let message = get_message(localStorage.getItem("lang"),
             "project.button.text.select");
           return '<button type="button" class="btn btn-primary" id="save_assign_project_modal_btn"' +
-            'data-dismiss="modal" value="' + data.id + '">' + message + '</button>'
+            'data-dismiss="modal" value="' + data.id + '|' + data.name + '">' + message + '</button>'
         }
       }
     ],
@@ -183,7 +183,7 @@ function loadAssignUserTable(table_id, req_url) {
     "columns": [
       { "data": "id", "sClass": "employee_id" },
       { "data": "user.username" },
-      { "data": "name" },
+      { "data": "name", "sClass": "employee_name" },
       { "data": "user.authority.role" },
       {
         "data": "department", render: function (data) {
@@ -234,13 +234,13 @@ function get_positions() {
   hide_preloader();
 }
 
-function assign_user(employee_id, project_id, position_id) {
+function assign_user(employee_id, employee_name, project, position_id) {
   let employee_position = {}, project = {}, employee = {}, position = {};
   Object.assign(employee_position, { project });
   Object.assign(employee_position, { employee });
   Object.assign(employee_position, { position });
   employee_position.employee.id = employee_id;
-  employee_position.project.id = project_id;
+  employee_position.project.id = project.split('|')[0];
   employee_position.position.id = position_id;
   $.ajax({
     type: "POST",
@@ -253,8 +253,8 @@ function assign_user(employee_id, project_id, position_id) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "project.alert.assign_user").replace("0", employee_id);
-        message = message.replace("1", project_id);
+          "project.alert.assign_user").replace("0", employee_name);
+        message = message.replace("1", project.split('|')[1]);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         if (assign_user_table != null) assign_user_table.destroy();
         loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
@@ -268,12 +268,12 @@ function assign_user(employee_id, project_id, position_id) {
   });
 }
 
-function cancel_user(employee_id, project_id) {
+function cancel_user(employee_id, employee_name, project) {
   let employee_position = {}, project = {}, employee = {};
   Object.assign(employee_position, { project });
   Object.assign(employee_position, { employee });
   employee_position.employee.id = employee_id;
-  employee_position.project.id = project_id;
+  employee_position.project.id = project.split('|')[0];
   $.ajax({
     type: "POST",
     contentType: "application/json",
@@ -285,8 +285,8 @@ function cancel_user(employee_id, project_id) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "project.alert.cancel").replace("0", employee_position.employee.id);
-        message = message.replace("1", employee_position.project.id);
+          "project.alert.cancel").replace("0", employee_name);
+        message = message.replace("1", project.split('|')[1]);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         if (assign_user_table != null) assign_user_table.destroy();
         loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);

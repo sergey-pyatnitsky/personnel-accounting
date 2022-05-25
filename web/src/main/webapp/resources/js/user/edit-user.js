@@ -80,7 +80,7 @@ function loadEditTable(table_id, req_url) {
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
             + ' data-target="#editUserModal" value="' + data.user.username + '">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="removeUserBtn"'
-            + ' value="' + data.id + '">' + message2 + '</button>';
+            + ' value="' + data.id + '|' + data.name + '">' + message2 + '</button>';
         }
       }
     ],
@@ -111,7 +111,7 @@ function edit_user(id, name, emp_role) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "user.alert.activate").replace("0", employee.id);
+          "user.alert.activate").replace("0", employee.name);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-user #edit_users_table", current_url_for_edit_table);
@@ -127,14 +127,14 @@ function edit_user(id, name, emp_role) {
   hide_preloader();
 }
 
-function delete_employee(employeeId) {
+function delete_employee(employeeStr) {
   show_preloader();
   let employee = {};
-  employee.id = employeeId;
+  employee.id = employeeStr.split('|')[0];
   $.ajax({
     type: "DELETE",
     contentType: "application/json",
-    url: "/api/employee/remove/" + employeeId,
+    url: "/api/employee/remove/" + employee.id,
     data: JSON.stringify(employee),
     async: false,
     cache: false,
@@ -142,7 +142,7 @@ function delete_employee(employeeId) {
     success: function () {
       $('.alert').empty();
       let message = get_message(localStorage.getItem("lang"),
-        "user.alert.done");
+        "user.alert.remove").replace("0", employeeStr.split('|')[1]);
       $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
       edit_table.destroy();
       loadEditTable("#content-edit-user #edit_users_table", current_url_for_edit_table);

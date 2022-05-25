@@ -97,9 +97,9 @@ function activate_department(department_id, action) {
       async: false,
       cache: false,
       timeout: 600000,
-      success: function () {
+      success: function (data) {
         $('.alert').empty();
-        let message = get_message(localStorage.getItem("lang"), "department.alert.activate").replace("0", department_id);
+        let message = get_message(localStorage.getItem("lang"), "department.alert.activate").replace("0", data.name);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         activate_table.destroy();
         loadActivateTable("#content-activate-department #activate_departments_table", current_url_for_activate_table);
@@ -119,9 +119,9 @@ function activate_department(department_id, action) {
       async: false,
       cache: false,
       timeout: 600000,
-      success: function () {
+      success: function (data) {
         $('.alert').empty();
-        let message = get_message(localStorage.getItem("lang"), "department.alert.deactivate").replace("0", department_id);
+        let message = get_message(localStorage.getItem("lang"), "department.alert.deactivate").replace("0", data.name);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         activate_table.destroy();
         loadActivateTable("#content-activate-department #activate_departments_table", current_url_for_activate_table);

@@ -83,3 +83,7 @@ nav a:hover {
     bottom: 0;
     margin: auto
 }
+
+.sidebar_bold_element{
+    font-weight: bold;
+}

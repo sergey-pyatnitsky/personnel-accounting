@@ -50,7 +50,7 @@ function loadActivateTable(table_id, req_url) {
         "bSortable": false,
         "mRender": function (data) {
           let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0"'
-            + 'id="activate_project_btn" value="' + data.id + '">';
+            + 'id="activate_project_btn" value="' + data.id + '|' + data.name + '">';
           if (!data.active) {
             let message = get_message(localStorage.getItem("lang"),
               "project.button.text.activate");
@@ -72,10 +72,10 @@ function loadActivateTable(table_id, req_url) {
   $(table_id).removeClass("no-footer");
 }
 
-function activate_project(project_id, action) {
+function activate_project(project, action) {
   show_preloader();
   let project = {};
-  project.id = project_id;
+  project.id = project.split('|')[0];
   if (action === "Активировать" || action === "Activate") {
     $.ajax({
       type: "PUT",
@@ -88,7 +88,7 @@ function activate_project(project_id, action) {
         $('.alert').empty();
         if (data == "") {
           let message = get_message(localStorage.getItem("lang"),
-            "project.alert.activate").replace("0", project.id);
+            "project.alert.activate").replace("0", project.split('|')[1]);
           $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
           activate_table.destroy();
           loadActivateTable("#content-activate-project #activate_project_table", "/api/project/get_all/open");
@@ -114,7 +114,7 @@ function activate_project(project_id, action) {
         $('.alert').empty();
         if (data == "") {
           let message = get_message(localStorage.getItem("lang"),
-            "project.alert.deactivate").replace("0", project.id);
+            "project.alert.deactivate").replace("0", project.split('|')[1]);
           $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
           activate_table.destroy();
           loadActivateTable("#content-activate-project #activate_project_table", "/api/project/get_all/open");

@@ -13,10 +13,10 @@
   <div th:replace="~{fragments/navbar :: navbar}"></div>
   <div class="d-flex align-items-start my-own-container">
     <div th:replace="~{fragments/sidebar/sidebar :: sidebar}"></div>
-    <div id="content" class="p-4 p-md-5 pt-5">
+    <div id="content" class="p-4 p-md-5 pt-5" align="center">
       <h2 class="mb-4" th:text="#{main_page.title}"></h2>
       <h1 th:text="#{main_page.hello}"></h1>
-      <h1 th:inline="text">[[${#httpServletRequest.remoteUser}]]!</h1>
+      <h2 id="main_menu_name"></h2>
       <p th:text="#{main_page.hello.message}"></p>
     </div>
   </div>

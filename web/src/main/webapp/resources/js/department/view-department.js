@@ -2,6 +2,9 @@ let view_table = null;
 
 $(document).ready(function () {
   $("#view-department").click(function (event) {
+    $("#content-view-department .nav-link").removeClass('active');
+    $("#content-view-department #getOpenDepartmentsBtn").addClass('active');
+
     event.preventDefault();
     $('.alert').replaceWith(`<div class="alert"></div>`);
     hideAllContent();
@@ -14,12 +17,18 @@ $(document).ready(function () {
       view_table.destroy();
       loadViewTable("#content-view-department #view_departments_table", "/api/department/get_all/open");
       showColumn("#end_date_column", false);
+
+      $("#content-view-department .nav-link").removeClass('active');
+      $(this).addClass('active');
     });
 
     $("#content-view-department #getClosedDepartmentsBtn").click(function () {
       view_table.destroy();
       loadViewTable("#content-view-department #view_departments_table", "/api/department/get_all/closed");
       showColumn("#end_date_column", true);
+
+      $("#content-view-department .nav-link").removeClass('active');
+      $(this).addClass('active');
     });
   });
 });

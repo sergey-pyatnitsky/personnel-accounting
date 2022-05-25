@@ -33,10 +33,14 @@
           <span class="text-black-50">[[${#httpServletRequest.remoteUser}]]</span>
           <div class="form-group">
             <form id="fileUploadForm">
-              <input type="file" name="file" form="input_file" class="form-control-file" required>
+              <input type="button" id="loadFile" form="input_file" class="form-control-file"
+                     onclick="document.getElementById('input_file_button').click();" th:attr="value=#{profile.image_button}"/>
+              <input type="file" style="display:none;" name="file" id="input_file_button"/>
+              <label for="loadFile" id="labelForImageInput" th:text="#{profile.image}"></label>
+              <!--<input type="file" name="file" form="input_file" class="form-control-file" id="input_file_button" required>-->
             </form>
           </div>
-          <button type="submit" class="btn btn-primary" id="input_file">Изменить картинку</button>
+          <button type="submit" class="btn btn-primary" id="input_file" th:text="#{profile.edit_image}"></button>
         </div>
       </div>
     </div>

@@ -2,22 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ru">
 
 <body>
-  <th:block th:fragment="navbar">
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/" style="font-size: 30px; font-weight: bold;">Tasky</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
-          aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="d-flex">
+<th:block th:fragment="navbar">
+  <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd">
+    <div class="container-fluid">
+      <div class="row" style="width: 100%">
+        <div class="col-1" style="border-right:1px solid black;">
+          <a class="navbar-brand" href="/"
+             style="font-size: 30px; font-weight: bold; width: 100px">Tasky</a>
+        </div>
+        <div class="col-2" style="margin-top: 15px"th:text="${title}"></div>
+        <div class="col-5"></div>
+        <div class="d-flex col-4">
           <div>
             <h5 style="margin-right: 20px" id="navbar_name"></h5>
             <h6 style="margin-right: 20px; font-size: 12px">[[${#httpServletRequest.remoteUser}]]</h6>
           </div>
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="lang_menu" data-toggle="dropdown"
-              aria-expanded="true">
+                    aria-expanded="true">
               <img th:src="@{/resources/images/lang.png}" style="width: 57px; height: 55px">
               <span class="caret"></span>
             </button>
@@ -28,7 +30,7 @@
           </div>
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown"
-              aria-expanded="true">
+                    aria-expanded="true">
               <img id="navbar_image" class="round" style="width: 57px; height: 55px">
               <span class="caret"></span>
             </button>
@@ -41,8 +43,9 @@
           </div>
         </div>
       </div>
-    </nav>
-  </th:block>
+    </div>
+  </nav>
+</th:block>
 </body>
 
 </html>

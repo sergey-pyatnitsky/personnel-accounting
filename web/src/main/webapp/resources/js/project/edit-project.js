@@ -77,7 +77,7 @@ function loadEditTable(table_id, req_url) {
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
             + ' data-target="#projectEditModal">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="remove_project_btn"'
-            + ' value="' + data.id + '">' + message2 + '</button>';
+            + ' value="' + data.id + '|' + data.name + '">' + message2 + '</button>';
         }
       }
     ],
@@ -141,7 +141,7 @@ function edit_project(project_id, project_name, department_id) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "project.alert.edit").replace("0", project.id);
+          "project.alert.edit").replace("0", project.name);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-project #edit_project_table", "/api/project/get_all/open");
@@ -155,20 +155,20 @@ function edit_project(project_id, project_name, department_id) {
   });
 }
 
-function close_project(project_id) {
+function close_project(project) {
   let project = {};
   project.id = project_id;
   $.ajax({
     type: "DELETE",
     contentType: "application/json",
-    url: "/api/project/close/" + project_id,
+    url: "/api/project/close/" + project.split('|')[0],
     cache: false,
     timeout: 600000,
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "project.alert.close").replace("0", project.id);
+          "project.alert.close").replace("0", project.split('|')[1]);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-project #edit_project_table", "/api/project/get_all/open");

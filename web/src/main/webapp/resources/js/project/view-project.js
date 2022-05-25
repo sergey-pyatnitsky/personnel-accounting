@@ -6,6 +6,8 @@ $(document).ready(function () {
 
   $("#view-project").click(function (event) {
     event.preventDefault();
+    $("#content-view-project .nav-link").removeClass('active');
+    $("#content-view-project #getOpenProjectsBtn").addClass('active');
     $('.alert').replaceWith(`<div class="alert"></div>`);
     hideAllContent();
     $("#content-view-project").show();
@@ -17,12 +19,18 @@ $(document).ready(function () {
       view_table.destroy();
       loadViewTable("#content-view-project #view_projects_table", "/api/project/get_all/open");
       showColumn("#end_date_column", false);
+
+      $("#content-view-project .nav-link").removeClass('active');
+      $(this).addClass('active');
     });
 
     $("#content-view-project #getClosedProjectsBtn").click(function () {
       view_table.destroy();
       loadViewTable("#content-view-project #view_projects_table", "/api/project/get_all/closed");
       showColumn("#end_date_column", true);
+
+      $("#content-view-project .nav-link").removeClass('active');
+      $(this).addClass('active');
     });
   });
 });

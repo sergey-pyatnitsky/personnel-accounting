@@ -25,6 +25,7 @@ $(document).ready(function () {
   if (localStorage.getItem("imageUrl") != null) {
     $("#navbar_image").attr("src", localStorage.getItem("imageUrl"));
     $("#navbar_name").text(localStorage.getItem("name"));
+    $("#main_menu_name").text(localStorage.getItem("name"));
   }
   else {
     $.ajax({
@@ -39,10 +40,12 @@ $(document).ready(function () {
         localStorage.setItem("imageUrl", image);
         localStorage.setItem("name", data.name);
         $("#navbar_name").text(data.name);
+        $("#main_menu_name").text(data.name);
       },
-      error: function () {
+      error: function (error) {
+        console.log(error);
         $('.alert').empty();
-        $('.alert').append(`<div class="alert alert-danger"role="alert">Ошибка!</div>`);
+        $('.alert').append(`<div class="alert alert-danger"role="alert">500 Error!</div>`);
       }
     });
   }
@@ -51,6 +54,11 @@ $(document).ready(function () {
     window.location.replace('?lang=' + $('#en_lang').val());
     localStorage.setItem("lang", "en");
     switchTableLang(localStorage.getItem("lang"));
+  })
+
+  $(".sidebar_element").click(function () {
+    $(".sidebar_element").removeClass('sidebar_bold_element');
+    $(this).addClass('sidebar_bold_element');
   })
 
   $("#ru_lang").click(function () {

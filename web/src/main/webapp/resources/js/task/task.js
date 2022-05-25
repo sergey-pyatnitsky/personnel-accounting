@@ -5,3 +5,9 @@ function hideAllContent() {
   $("#content-view-task").hide();
   $("#content-my-task").hide();
 }
+
+$(document).ready(function () {
+  hide_preloader();
+  hideAllContent();
+  $("#view-task").click();
+});

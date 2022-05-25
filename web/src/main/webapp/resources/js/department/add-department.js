@@ -38,7 +38,7 @@ function add_department() {
       if (data.id == null)
         $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
       else {
-        let message = get_message(localStorage.getItem("lang"), "department.alert.add").replace("0", data.id);
+        let message = get_message(localStorage.getItem("lang"), "department.alert.add").replace("0", data.name);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         $('#departmentNameInput').val('');
       }

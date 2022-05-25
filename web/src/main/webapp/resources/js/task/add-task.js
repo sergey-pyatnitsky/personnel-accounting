@@ -230,7 +230,7 @@ function add_task() {
       $('.alert').empty();
       if (data.status != undefined) {
         let message = get_message(localStorage.getItem("lang"),
-          "my_task.list.button.done");
+          "task.alert.add").replace("0", task.name);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         $('#taskNameInput').val('');
         $('#taskDescriptionInput').val('');

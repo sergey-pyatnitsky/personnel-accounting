@@ -131,7 +131,7 @@ function loadProjecteditTable(table_id, req_url) {
           let message = get_message(localStorage.getItem("lang"),
             "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_project_edit"' +
-            'value="' + data.id + '">' + message +'</button>'
+            'value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -166,7 +166,7 @@ function loadDepartmenteditTable(table_id, req_url) {
           let message = get_message(localStorage.getItem("lang"),
             "task.alert.button.choice");
           return '<button type="button" class="btn btn-primary" id="select_department_edit"' +
-            'value="' + data.id + '">' + message +'</button>'
+            'value="' + data.id + '">' + message + '</button>'
         }
       }
     ],
@@ -214,7 +214,7 @@ function loadeditTable(table_id, req_url) {
           let message = get_message(localStorage.getItem("lang"),
             "task.alert.button.edit");
           return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0"' +
-            'data-toggle="modal" data-target="#task_edit_modal">' + message +'</button>'
+            'data-toggle="modal" data-target="#task_edit_modal">' + message + '</button>'
         }
       }
     ],
@@ -241,8 +241,9 @@ function edit_task(task_id, task_name, task_description, task_status) {
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-        Задача с ID ` + task.id + ` изменена</div>`);
+        let message = get_message(localStorage.getItem("lang"),
+          "task.alert.edit").replace("0", task.name);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadeditTable("#content-edit-task #edit_tasks_table",
           "/api/task/get_all/project/" + selected_edit_project + "/by_status/DONE");

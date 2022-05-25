@@ -60,10 +60,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Image editProfileImage(Image image, User user) {
         Profile profile = employeeDAO.findByUser(user).getProfile();
-        if(profile.getImage().getId() != 1)
-            imageDAO.removeById(profile.getImage().getId());
+        Long oldImageId = profile.getImage().getId();
         profile.setImage(image);
         profileDAO.save(profile);
+        if (oldImageId != 1) imageDAO.removeById(oldImageId);
         return image;
     }
 

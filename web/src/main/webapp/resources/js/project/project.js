@@ -5,6 +5,7 @@ $(document).ready(function () {
   $(function () {
     $('#departmentDivSelectEditModal').trigger('onload');
   });
+  $("#view-project").click();
 });
 
 function hideAllContent() {

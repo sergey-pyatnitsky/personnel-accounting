@@ -1,6 +1,7 @@
 $(document).ready(function () {
   hide_preloader();
   hideAllContent();
+  $("#view-department").click();
 });
 
 function hideAllContent() {

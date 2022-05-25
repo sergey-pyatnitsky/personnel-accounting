@@ -5,7 +5,6 @@ let tasks = null;
 $(document).ready(function () {
   hide_preloader();
   hideAllContent();
-
   $("#my-task").click(function (event) {
     event.preventDefault();
     hideAllContent();
@@ -66,6 +65,8 @@ $(document).ready(function () {
       edit_task_status($(this).attr("value"));
     });
   });
+
+  $("#my-task").click();
 });
 
 function showProjectSelectmy_taskTable(department_id) {
@@ -152,21 +153,23 @@ function loadDepartmentmy_taskTable(table_id, req_url) {
   $(table_id).removeClass("no-footer");
 }
 
-function edit_task_status(task_id) {
+function edit_task_status(task) {
   let time = null;
   if ($("#time_input").length != 0) time = $("#time_input").val();
   $.ajax({
     type: "PUT",
     contentType: "application/json",
-    url: "/api/task/edit/status/" + task_id,
+    url: "/api/task/edit/status/" + task.split('|')[0],
     data: JSON.stringify(time),
     cache: false,
     timeout: 600000,
     success: function (data) {
       $('.alert').empty();
-      if (data == "")
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">
-      Статус изменён!</div>`);
+      if (data == "") {
+        let message = get_message(localStorage.getItem("lang"),
+          "task.alert.edit.status").replace("0", task.split('|')[1]);
+        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
+      }
       else $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
     },
     error: function (error) {
@@ -229,7 +232,7 @@ function show_task_div(project_id, task_status) {
           "task.alert.button.edit.status");
         content += `<div class="col-2">
         <button type="button" class="btn btn-secondary" id="edit_task_status_btn" 
-        style="float: right" value="` + task.id + `">` + message + `</button></div>`;
+        style="float: right" value="` + task.id + '|' + task.name + `">` + message + `</button></div>`;
       }
       content += `</div></a>`;
     }

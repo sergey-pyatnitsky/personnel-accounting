@@ -84,7 +84,7 @@ function loadEditTable(table_id, req_url) {
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
             + ' data-target="#departmentEditModal">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="close_department_btn"'
-            + ' value="' + data.id + '">' + message2 + '</button>';
+            + ' value="' + data.id + '|' + data.name + '">' + message2 + '</button>';
         }
       }
     ],
@@ -110,7 +110,7 @@ function edit_department(department_id, department_name) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "department.alert.edit").replace("0", department_id);
+          "department.alert.edit").replace("0", department.name);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-department #edit_departments_table", current_url_for_edit_table);
@@ -125,9 +125,9 @@ function edit_department(department_id, department_name) {
   hide_preloader();
 }
 
-function close_department(departmentId) {
+function close_department(department) {
   let department = {};
-  department.id = departmentId;
+  department.id = department.split('|')[0];
   $.ajax({
     type: "DELETE",
     contentType: "application/json",
@@ -138,7 +138,7 @@ function close_department(departmentId) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "department.alert.close").replace("0", department.id);
+          "department.alert.close").replace("0", department.split('|')[1]);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-department #edit_departments_table", current_url_for_edit_table);
