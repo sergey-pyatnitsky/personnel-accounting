@@ -49,6 +49,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private PositionValidator positionValidator;
 
     @Override
+    @Transactional
     public Department addDepartment(Department department) {
         ValidationUtil.validate(department, departmentValidator);
         return departmentDAO.findByName(department.getName())
@@ -58,6 +59,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public boolean closeDepartment(Department department) {
         Department tempDepartment = departmentDAO.merge(department);
         if (tempDepartment.getStartDate() == null)
@@ -115,6 +117,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public Department changeDepartmentState(Department department, boolean isActive) {
         List<Project> projects = projectDAO.findByDepartment(department);
         projects.forEach(obj -> obj.setActive(isActive));
@@ -176,6 +179,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public boolean inactivate(Department department) {
         projectDAO.findByDepartment(department).forEach(project -> {
             taskDAO.findByProject(project).forEach(task -> task.setTaskStatus(TaskStatus.CLOSED));
@@ -186,6 +190,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public boolean activate(Department department) {
         List<Project> projects = projectDAO.findByDepartment(department);
         projects.forEach(project -> {
@@ -196,6 +201,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public Position addPosition(Position position) {
         ValidationUtil.validate(position, positionValidator);
         return positionDAO.findAll().stream().filter(obj -> obj.getName().equals(position.getName()))

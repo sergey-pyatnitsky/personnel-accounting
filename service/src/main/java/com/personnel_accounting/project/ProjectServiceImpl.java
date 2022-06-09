@@ -65,6 +65,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public boolean closeProject(Project project) {
         Project tempProject = projectDAO.merge(project);
         if (tempProject.getStartDate() == null)
@@ -112,6 +113,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public Position addNewPosition(Position position) {
         Position tempPosition = positionDAO.findByName(position.getName());
         if (tempPosition == null)
@@ -120,16 +122,18 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public EmployeePosition changeEmployeePositionInProject(EmployeePosition employeePosition, Position position) {
         if (!employeePosition.getPosition().equals(position)) {
             position = positionDAO.merge(position);
             employeePosition.setPosition(position);
-            return employeePositionDAO.merge(employeePosition);
+            return employeePositionDAO.save(employeePosition);
         }
         return employeePositionDAO.merge(employeePosition);
     }
 
     @Override
+    @Transactional
     public EmployeePosition assignToProject(Employee employee, Project project, Position position) {
         List<EmployeePosition> employeePositions = employeePositionDAO.findByEmployee(employee);
 
@@ -145,6 +149,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public Project assignProjectToDepartmentId(Project project, Long departmentId) {
         List<Project> projects = projectDAO.findByName(project.getName())
                 .stream().filter(obj -> obj.getEndDate() == null).collect(Collectors.toList());
@@ -260,6 +265,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public boolean inactivate(Project project) {
         project = projectDAO.merge(project);
         employeePositionDAO.findByProject(project).forEach(employeePosition -> {
@@ -271,6 +277,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public boolean activate(Project project) {
         project = projectDAO.merge(project);
         employeePositionDAO.findByProject(project).forEach(employeePosition -> {

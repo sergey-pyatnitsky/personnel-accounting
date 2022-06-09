@@ -58,6 +58,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private ProfileValidator profileValidator;
 
     @Override
+    @Transactional
     public Image editProfileImage(Image image, User user) {
         Profile profile = employeeDAO.findByUser(user).getProfile();
         Long oldImageId = profile.getImage().getId();
@@ -244,6 +245,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public boolean removeById(Long id) {
         Employee employee = employeeDAO.find(id);
         employeePositionDAO.findByEmployee(employee)
@@ -259,31 +261,37 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public boolean inactivate(Employee employee) {
         Date date = new Date(System.currentTimeMillis());
         employeePositionDAO.findByEmployee(employee).forEach(employeePosition -> {
             employeePosition.setModifiedDate(date);
             employeePosition.setActive(false);
+            employeePositionDAO.save(employeePosition);
         });
         List<Task> tasks = taskDAO.findByAssignee(employee);
         tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.IN_PROGRESS).collect(Collectors.toList())
                 .forEach(task -> {
                     task.setModifiedDate(date);
                     task.setTaskStatus(TaskStatus.OPEN);
+                    taskDAO.save(task);
                 });
         tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.DONE).collect(Collectors.toList())
                 .forEach(task -> {
                     task.setModifiedDate(date);
                     task.setTaskStatus(TaskStatus.CLOSED);
+                    taskDAO.save(task);
                 });
         return employeeDAO.inactivate(employee);
     }
 
     @Override
+    @Transactional
     public boolean activate(Employee employee) {
         employeePositionDAO.findByEmployee(employee).forEach(employeePosition -> {
             employeePosition.setModifiedDate(new Date(System.currentTimeMillis()));
             employeePosition.setActive(true);
+            employeePositionDAO.save(employeePosition);
         });
         return employeeDAO.activate(employee);
     }
