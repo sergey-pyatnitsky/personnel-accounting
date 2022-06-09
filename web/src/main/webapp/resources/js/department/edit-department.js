@@ -125,20 +125,20 @@ function edit_department(department_id, department_name) {
   hide_preloader();
 }
 
-function close_department(department) {
+function close_department(department_str) {
   let department = {};
-  department.id = department.split('|')[0];
+  department.id = department_str.split('|')[0];
   $.ajax({
     type: "DELETE",
     contentType: "application/json",
-    url: "/api/department/close/" + departmentId,
+    url: "/api/department/close/" + department.id,
     cache: false,
     timeout: 600000,
     success: function (data) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "department.alert.close").replace("0", department.split('|')[1]);
+          "department.alert.close").replace("0", department_str.split('|')[1]);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-department #edit_departments_table", current_url_for_edit_table);

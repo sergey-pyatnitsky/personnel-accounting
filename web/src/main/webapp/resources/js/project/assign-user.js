@@ -117,7 +117,7 @@ function loadProjectModalTable(table_id, req_url) {
         "mRender": function (data) {
           let message = get_message(localStorage.getItem("lang"),
             "project.button.text.select");
-          return '<button type="button" class="btn btn-primary" id="save_assign_project_modal_btn"' +
+          return '<button type="button" class="btn btn-primary" id="save_assign_project_modal_btn" ' +
             'data-dismiss="modal" value="' + data.id + '|' + data.name + '">' + message + '</button>'
         }
       }
@@ -152,7 +152,7 @@ function loadDepartmentAssignTable(table_id, req_url) {
         "mRender": function (data) {
           let message = get_message(localStorage.getItem("lang"),
             "project.button.text.select");
-          return '<button type="button" class="btn btn-primary" id="select_department_to_assign"' +
+          return '<button type="button" class="btn btn-primary" id="select_department_to_assign" ' +
             'data-dismiss="modal" value="' + data.id + '">' + message + '</button>'
         }
       }
@@ -197,12 +197,12 @@ function loadAssignUserTable(table_id, req_url) {
           if (mode == "1") {
             let message = get_message(localStorage.getItem("lang"),
               "project.button.text.assign");
-            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
+            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal" ' +
               'data-target="#assignUserModal" id="assign_user_btn" value="' + data.id + '">' + message + '</button>'
           } else {
             let message = get_message(localStorage.getItem("lang"),
               "project.button.text.remove");
-            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
+            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal" ' +
               'data-target="#assignUserModal" id="assign_user_btn" value="' + data.id + '">' + message + '</button>';
           }
         }
@@ -234,13 +234,13 @@ function get_positions() {
   hide_preloader();
 }
 
-function assign_user(employee_id, employee_name, project, position_id) {
+function assign_user(employee_id, employee_name, project_str, position_id) {
   let employee_position = {}, project = {}, employee = {}, position = {};
   Object.assign(employee_position, { project });
   Object.assign(employee_position, { employee });
   Object.assign(employee_position, { position });
   employee_position.employee.id = employee_id;
-  employee_position.project.id = project.split('|')[0];
+  employee_position.project.id = project_str.split('|')[0];
   employee_position.position.id = position_id;
   $.ajax({
     type: "POST",
@@ -254,7 +254,7 @@ function assign_user(employee_id, employee_name, project, position_id) {
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
           "project.alert.assign_user").replace("0", employee_name);
-        message = message.replace("1", project.split('|')[1]);
+        message = message.replace("1", project_str.split('|')[1]);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         if (assign_user_table != null) assign_user_table.destroy();
         loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
