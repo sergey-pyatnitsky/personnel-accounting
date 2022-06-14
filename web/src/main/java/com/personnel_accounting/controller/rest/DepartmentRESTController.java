@@ -2,13 +2,10 @@ package com.personnel_accounting.controller.rest;
 
 import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.domain.Department;
-import com.personnel_accounting.domain.Position;
 import com.personnel_accounting.entity.dto.DepartmentDTO;
-import com.personnel_accounting.entity.dto.PositionDTO;
 import com.personnel_accounting.entity.dto.ProjectDTO;
 import com.personnel_accounting.exception.ActiveStatusDataException;
 import com.personnel_accounting.exception.ExistingDataException;
-import com.personnel_accounting.exception.NoSuchDataException;
 import com.personnel_accounting.exception.OperationExecutionException;
 import com.personnel_accounting.pagination.entity.Page;
 import com.personnel_accounting.pagination.entity.PagingRequest;
@@ -18,11 +15,11 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -31,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("api/department")
 public class DepartmentRESTController {
     @Autowired
     private DepartmentService departmentService;
@@ -41,7 +39,7 @@ public class DepartmentRESTController {
     @Autowired
     private MessageSource messageSource;
 
-    @PostMapping("/api/department/add")
+    @PostMapping("/add")
     public ResponseEntity<?> addDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) {
         Department department = conversionService.convert(departmentDTO, Department.class);
         department.setActive(false);
@@ -53,23 +51,7 @@ public class DepartmentRESTController {
         return new ResponseEntity<>(conversionService.convert(department, DepartmentDTO.class), HttpStatus.OK);
     }
 
-    @PostMapping("/api/position/add")
-    public ResponseEntity<?> addPosition(@Valid @RequestBody PositionDTO positionDTO) {
-        Position position = departmentService.addPosition(conversionService.convert(positionDTO, Position.class));
-        if (position.getId() == null)
-            throw new ExistingDataException(messageSource.getMessage("position.error.add", null, null));
-        return new ResponseEntity<>(position, HttpStatus.OK);
-    }
-
-    @GetMapping("/api/position/get_all")
-    public ResponseEntity<?> getPositions() {
-        List<Position> position = departmentService.findAllPositions();
-        if (position.size() == 0)
-            throw new NoSuchDataException(messageSource.getMessage("position.error.list.empty", null, null));
-        return new ResponseEntity<>(position, HttpStatus.OK);
-    }
-
-    @PostMapping("/api/department/get_all/open")
+    @PostMapping("/get_all/open")
     public ResponseEntity<?> getAllOpenDepartments(@RequestBody PagingRequest pagingRequest) {
         return new ResponseEntity<>(getPage(departmentService.findAll(pagingRequest)
                 .stream().filter(department -> department.getEndDate() == null).collect(Collectors.toList())
@@ -78,7 +60,7 @@ public class DepartmentRESTController {
                 HttpStatus.OK);
     }
 
-    @PostMapping("/api/department/get_all/closed")
+    @PostMapping("/get_all/closed")
     public ResponseEntity<?> getAllClosedDepartments(@RequestBody PagingRequest pagingRequest) {
         return new ResponseEntity<>(getPage(departmentService.findAll(pagingRequest)
                 .stream().filter(department -> department.getEndDate() != null).collect(Collectors.toList())
@@ -87,7 +69,7 @@ public class DepartmentRESTController {
                 HttpStatus.OK);
     }
 
-    @PostMapping("/api/department/projects/open/{id}")
+    @PostMapping("/projects/open/{id}")
     public ResponseEntity<?> getAllOpenProjectsByDepartment(@RequestBody PagingRequest pagingRequest,
                                                             @PathVariable Long id) {
         Department department = departmentService.find(id);
@@ -99,7 +81,7 @@ public class DepartmentRESTController {
                 HttpStatus.OK);
     }
 
-    @PutMapping("/api/department/activate/{id}")
+    @PutMapping("/activate/{id}")
     public ResponseEntity<?> activateDepartment(@PathVariable Long id) {
         Department department = departmentService.find(id);
         if (!departmentService.activate(department))
@@ -108,7 +90,7 @@ public class DepartmentRESTController {
         return new ResponseEntity<>(department, HttpStatus.OK);
     }
 
-    @PutMapping("/api/department/inactivate/{id}")
+    @PutMapping("/inactivate/{id}")
     public ResponseEntity<?> inactivateDepartment(@PathVariable Long id) {
         Department department = departmentService.find(id);
         if (!departmentService.inactivate(department))
@@ -117,14 +99,14 @@ public class DepartmentRESTController {
         return new ResponseEntity<>(department, HttpStatus.OK);
     }
 
-    @PutMapping("/api/department/edit/{id}")
+    @PutMapping("/edit/{id}")
     public ResponseEntity<?> editDepartment(@PathVariable Long id, @RequestBody DepartmentDTO departmentDTO) {
         Department department = departmentService.find(id);
         departmentService.editDepartmentName(department, departmentDTO.getName());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/department/close/{id}")
+    @DeleteMapping("/close/{id}")
     public ResponseEntity<?> closeDepartment(@PathVariable Long id) {
         Department department = departmentService.find(id);
         if (department.isActive())

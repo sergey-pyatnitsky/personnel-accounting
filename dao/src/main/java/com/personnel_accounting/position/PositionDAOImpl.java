@@ -1,6 +1,9 @@
 package com.personnel_accounting.position;
 
 import com.personnel_accounting.domain.Position;
+import com.personnel_accounting.pagination.entity.Column;
+import com.personnel_accounting.pagination.entity.Order;
+import com.personnel_accounting.pagination.entity.PagingRequest;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -37,8 +40,22 @@ public class PositionDAOImpl implements PositionDAO {
     @Override
     public List<Position> findAll() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from Position ").list();
+        return session.createQuery("from Position").list();
 
+    }
+
+    @Override
+    public List<Position> findAllWithSearchSorting(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+
+        String hql = "from Position";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " where concat(id, name) like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        return query.list();
     }
 
     @Override

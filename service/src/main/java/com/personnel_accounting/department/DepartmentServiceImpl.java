@@ -8,6 +8,7 @@ import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
+import com.personnel_accounting.exception.ExistingDataException;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.project.ProjectDAO;
@@ -16,6 +17,8 @@ import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.DepartmentValidator;
 import com.personnel_accounting.validation.PositionValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -47,6 +50,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private PositionValidator positionValidator;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     @Transactional
@@ -208,6 +214,31 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .findFirst().orElse(null) != null
                 ? position
                 : positionDAO.save(position);
+    }
+
+    @Override
+    @Transactional
+    public Position editPosition(Position position) {
+        ValidationUtil.validate(position, positionValidator);
+        if(positionDAO.findByName(position.getName()) != null)
+            throw new ExistingDataException(
+                    messageSource.getMessage("position.alert.edit", null, LocaleContextHolder.getLocale()));
+        Position positionFromDB = positionDAO.find(position.getId());
+        positionFromDB.setName(position.getName());
+        return positionDAO.save(positionFromDB);
+    }
+
+    @Override
+    public boolean removePositionById(Long id) {
+        if(employeePositionDAO.findByPosition(positionDAO.find(id)).size() != 0)
+            throw new ExistingDataException(
+                    messageSource.getMessage("position.alert.remove", null, LocaleContextHolder.getLocale()));
+        return positionDAO.removeById(id);
+    }
+
+    @Override
+    public List<Position> findAllPositionsWithSearchSorting(PagingRequest pagingRequest) {
+        return positionDAO.findAllWithSearchSorting(pagingRequest);
     }
 
     @Override

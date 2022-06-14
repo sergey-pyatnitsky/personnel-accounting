@@ -10,5 +10,4 @@ function hideAllContent() {
   $("#content-activate-department").hide();
   $("#content-view-department").hide();
   $("#content-assign-user").hide();
-  $("#content-add-position").hide();
 }

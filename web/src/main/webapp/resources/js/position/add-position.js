@@ -36,8 +36,7 @@ function add_position() {
       if (data.id == null)
         $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`);
       else {
-        let message = get_message(localStorage.getItem("lang"), "department.alert.add.position").replace("0", data.name);
-        message = message.replace("1", data.id);
+        let message = get_message(localStorage.getItem("lang"), "position.alert.add.success").replace("0", data.name);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         $('#positionNameInput').val('');
       }

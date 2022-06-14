@@ -24,9 +24,12 @@ public interface DepartmentService {
     Long getProjectsByDepartmentCount(Department department);
 
     Position addPosition(Position position);
+    Position editPosition(Position position);
+    boolean removePositionById(Long id);
     Position mergePosition(Position position);
 
     List<Position> findAllPositions();
+    List<Position> findAllPositionsWithSearchSorting(PagingRequest pagingRequest);
     Position findPosition(Long id);
 
     EmployeePosition addEmployeePosition(EmployeePosition employeePosition);

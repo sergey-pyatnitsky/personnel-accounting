@@ -6,10 +6,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 @Controller
 public class PageController {
@@ -67,6 +63,14 @@ public class PageController {
         model.addAttribute("title", messageSource.getMessage("department.title",
                 null, LocaleContextHolder.getLocale()));
         return "department";
+    }
+
+    @GetMapping("/position")
+    public String getPositionPage(Model model) {
+        model.addAttribute("lang", LocaleContextHolder.getLocale().getLanguage());
+        model.addAttribute("title", messageSource.getMessage("position.title",
+                null, LocaleContextHolder.getLocale()));
+        return "position";
     }
 
     @GetMapping("/project")
