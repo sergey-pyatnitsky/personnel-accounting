@@ -10,6 +10,7 @@ import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
+import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.exception.ActiveStatusDataException;
 import com.personnel_accounting.exception.ExistingDataException;
@@ -95,21 +96,52 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Task> findTaskInProjectByStatus(PagingRequest pagingRequest, Project project, TaskStatus taskStatus) {
-        return taskDAO.findByProjectPaginated(pagingRequest, project)
-                .stream().filter(task -> task.getTaskStatus().equals(taskStatus))
-                .collect(Collectors.toList());
+    public List<Task> findTaskByStatus(PagingRequest pagingRequest, TaskStatus taskStatus, User user) {
+        if (user.getAuthority().getRole().equals(Role.ADMIN))
+            return taskDAO.findByStatusPaginated(pagingRequest, taskStatus);
+        else return taskDAO.findByStatusInProjectListPaginated(pagingRequest, taskStatus,
+                employeePositionDAO.findByEmployee(employeeDAO.findByUser(user))
+                        .stream().map(EmployeePosition::getProject).collect(Collectors.toList()));
     }
 
     @Override
-    @Transactional
-    public List<Task> findTasksByEmployeeInProjectWithStatus(Employee employee, Project project, TaskStatus taskStatus) {
-        List<Task> tasks = taskDAO.findByProject(project)
-                .stream().filter(task -> task.getTaskStatus().equals(taskStatus)
-                        && task.getAssignee().getId().equals(employee.getId()))
-                .collect(Collectors.toList());
-        tasks.forEach(obj -> obj.getProject().getDepartment());
-        return tasks;
+    public List<Task> findTaskByStatusAndEmployee(PagingRequest pagingRequest, Employee employee, TaskStatus taskStatus) {
+        return taskDAO.findTaskByStatusAndEmployee(pagingRequest, employee, taskStatus);
+    }
+
+    @Override
+    public Long getTaskByStatusCount(TaskStatus status, User user) {
+        if (user.getAuthority().getRole().equals(Role.ADMIN))
+            return taskDAO.getTaskByStatusCount(status);
+        else return taskDAO.getTaskByStatusInProjectListCount(
+                employeePositionDAO.findByEmployee(employeeDAO.findByUser(user))
+                        .stream().map(EmployeePosition::getProject).collect(Collectors.toList())
+                , status);
+    }
+
+    @Override
+    public Long getTaskByStatusAndEmployeeCount(Employee employee, TaskStatus status) {
+        return taskDAO.getTaskByStatusAndEmployeeCount(employee, status);
+    }
+
+    @Override
+    public List<Task> findTaskInProjectByStatus(PagingRequest pagingRequest, Project project, TaskStatus taskStatus) {
+        return taskDAO.findByStatusInProjectPaginated(pagingRequest, project, taskStatus);
+    }
+
+    @Override
+    public List<Task> findTaskInDepartmentByStatus(PagingRequest pagingRequest, Department department, TaskStatus taskStatus) {
+        return taskDAO.findTaskInDepartmentByStatusPaginated(pagingRequest, department, taskStatus);
+    }
+
+    @Override
+    public List<Task> findTaskInDepartmentByStatusAndEmployee(PagingRequest pagingRequest, Department department, Employee employee, TaskStatus taskStatus) {
+        return taskDAO.findTaskInDepartmentByStatusAndEmployee(pagingRequest, department, employee, taskStatus);
+    }
+
+    @Override
+    public List<Task> findTasksByEmployeeInProjectWithStatus(PagingRequest pagingRequest, Employee employee, Project project, TaskStatus taskStatus) {
+        return taskDAO.findTasksByEmployeeInProjectWithStatus(pagingRequest, employee, project, taskStatus);
     }
 
     @Override
@@ -156,6 +188,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (projects.size() == 0 || projects.stream().allMatch(obj ->
                 !obj.getDepartment().getId().equals(departmentId) && obj.getDepartment().isActive())) {
             project.setDepartment(departmentDAO.find(departmentId));
+            project = projectDAO.merge(project);
             return projectDAO.save(project);
         }
         return project;
@@ -184,8 +217,23 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Long getTaskByStatusCount(Project project, TaskStatus status) {
-        return taskDAO.getTaskByStatusCount(project, status);
+    public Long getTaskByStatusInProjectCount(Project project, TaskStatus status) {
+        return taskDAO.getTaskByStatusInProjectCount(project, status);
+    }
+
+    @Override
+    public Long getTaskByStatusInDepartmentCount(Department department, TaskStatus status) {
+        return taskDAO.getTaskByStatusInDepartmentCount(department, status);
+    }
+
+    @Override
+    public Long getTaskByStatusAndEmployeeInDepartmentCount(Department department, Employee employee, TaskStatus status) {
+        return taskDAO.getTaskByStatusAndEmployeeInDepartmentCount(department, employee, status);
+    }
+
+    @Override
+    public Long getTasksByEmployeeInProjectWithStatusCount(Employee employee, Project project, TaskStatus taskStatus) {
+        return taskDAO.getTasksByEmployeeInProjectWithStatusCount(employee, project, taskStatus);
     }
 
     @Override

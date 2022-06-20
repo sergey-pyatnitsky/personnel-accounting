@@ -31,3 +31,10 @@ The project provides for the accounting of tasks and tracking the time spent on 
 
 ## Database schema
 ![DB_schema](DB.png)
+
+##Getting Started
+To launch the application, go to the project folder in the console and enter the following commands:<br>
+```
+docker build -t personnel_accounting .
+docker run -d -p 8080:8080 -e CATALINA_OPTS="-Ddatasource.url=jdbc:mysql://host.docker.internal:3306/personnel_accounting -Ddatasource.username=root -Ddatasource.password=1234" personnel_accounting
+```

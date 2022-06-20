@@ -1,5 +1,6 @@
 package com.personnel_accounting.task;
 
+import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.Task;
@@ -55,17 +56,110 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public List<Task> findByProjectPaginated(PagingRequest pagingRequest, Project project) {
+    public List<Task> findByStatusInProjectPaginated(PagingRequest pagingRequest, Project project, TaskStatus taskStatus) {
         Session session = sessionFactory.getCurrentSession();
         Order order = pagingRequest.getOrder().get(0);
         Column column = pagingRequest.getColumns().get(order.getColumn());
-        String hql = "from Task where project = :project";
-        if(!pagingRequest.getSearch().getValue().equals(""))
-            hql += " and where concat(id, name, description, taskStatus) " +
+        String hql = "from Task where project = :project and taskStatus = :status";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, description, taskStatus) " +
                     "like '%" + pagingRequest.getSearch().getValue() + "%'";
         hql += " order by " + column.getData() + " " + order.getDir().toString();
         Query query = session.createQuery(hql);
         query.setParameter("project", project);
+        query.setParameter("status", taskStatus);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Task> findTaskInDepartmentByStatusPaginated(PagingRequest pagingRequest, Department department, TaskStatus taskStatus) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Task where project.department = :department and taskStatus = :status";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, description, taskStatus) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("department", department);
+        query.setParameter("status", taskStatus);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Task> findTasksByEmployeeInProjectWithStatus(PagingRequest pagingRequest, Employee employee, Project project, TaskStatus taskStatus) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Task where project = :project and assignee = :assignee and taskStatus = :status";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, description, taskStatus) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("project", project);
+        query.setParameter("assignee", employee);
+        query.setParameter("status", taskStatus);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Task> findTaskInDepartmentByStatusAndEmployee(PagingRequest pagingRequest, Department department, Employee employee, TaskStatus taskStatus) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Task where project.department = :department and assignee = :assignee and taskStatus = :status";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, description, taskStatus) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("department", department);
+        query.setParameter("assignee", employee);
+        query.setParameter("status", taskStatus);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Task> findTaskByStatusAndEmployee(PagingRequest pagingRequest, Employee employee, TaskStatus taskStatus) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Task where assignee = :assignee and taskStatus = :status";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, description, taskStatus) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("assignee", employee);
+        query.setParameter("status", taskStatus);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Task> findByStatusInProjectListPaginated(PagingRequest pagingRequest, TaskStatus taskStatus, List<Project> projects) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Task where taskStatus = :status and project in :projects";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, description, taskStatus) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("projects", projects);
+        query.setParameter("status", taskStatus);
         query.setFirstResult(pagingRequest.getStart());
         query.setMaxResults(pagingRequest.getLength());
         return query.list();
@@ -96,11 +190,85 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public Long getTaskByStatusCount(Project project, TaskStatus status) {
+    public List<Task> findByStatusPaginated(PagingRequest pagingRequest, TaskStatus status) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Task where taskStatus = :status";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, description, taskStatus) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("status", status);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public Long getTaskByStatusInProjectCount(Project project, TaskStatus status) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("select count(*) from Task where taskStatus = :status and project =:project");
         query.setParameter("status", status);
         query.setParameter("project", project);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getTaskByStatusInDepartmentCount(Department department, TaskStatus status) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Task where taskStatus = :status and project.department =:department");
+        query.setParameter("status", status);
+        query.setParameter("department", department);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getTaskByStatusInProjectListCount(List<Project> projects, TaskStatus status) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Task where taskStatus = :status and project in :projects");
+        query.setParameter("projects", projects);
+        query.setParameter("status", status);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getTasksByEmployeeInProjectWithStatusCount(Employee employee, Project project, TaskStatus status) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Task where taskStatus = :status " +
+                "and project =:project and assignee =:assignee");
+        query.setParameter("status", status);
+        query.setParameter("assignee", employee);
+        query.setParameter("project", project);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getTaskByStatusCount(TaskStatus status) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Task where taskStatus = :status");
+        query.setParameter("status", status);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getTaskByStatusAndEmployeeCount(Employee employee, TaskStatus status) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Task where taskStatus = :status and assignee =:assignee");
+        query.setParameter("status", status);
+        query.setParameter("assignee", employee);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getTaskByStatusAndEmployeeInDepartmentCount(Department department, Employee employee, TaskStatus status) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Task where taskStatus = :status " +
+                "and assignee =:assignee and project.department =: department");
+        query.setParameter("status", status);
+        query.setParameter("assignee", employee);
+        query.setParameter("department", department);
         return (Long) query.getSingleResult();
     }
 

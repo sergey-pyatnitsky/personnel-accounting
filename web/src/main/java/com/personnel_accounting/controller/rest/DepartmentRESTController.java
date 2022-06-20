@@ -87,7 +87,7 @@ public class DepartmentRESTController {
         if (!departmentService.activate(department))
             throw new OperationExecutionException(
                     messageSource.getMessage("department.error.activation", null, null) + " " + id);
-        return new ResponseEntity<>(department, HttpStatus.OK);
+        return new ResponseEntity<>(conversionService.convert(department, DepartmentDTO.class), HttpStatus.OK);
     }
 
     @PutMapping("/inactivate/{id}")
@@ -96,7 +96,7 @@ public class DepartmentRESTController {
         if (!departmentService.inactivate(department))
             throw new OperationExecutionException(
                     messageSource.getMessage("department.error.deactivation", null, null) + " " + id);
-        return new ResponseEntity<>(department, HttpStatus.OK);
+        return new ResponseEntity<>(conversionService.convert(department, DepartmentDTO.class), HttpStatus.OK);
     }
 
     @PutMapping("/edit/{id}")

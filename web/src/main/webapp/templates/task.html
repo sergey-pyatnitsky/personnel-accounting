@@ -18,7 +18,6 @@
   <div th:replace="~{fragments/sidebar/task-sidebar :: task-sidebar}"></div>
   <div th:replace="~{fragments/task/add-task :: add-task}"></div>
   <div th:replace="~{fragments/task/view-task :: view-task}"></div>
-  <div th:replace="~{fragments/task/edit-task :: edit-task}"></div>
 </div>
 <div id="preloader_malc" style="display: none">
   <div th:text="#{preloader.message}"></div>
@@ -37,7 +36,6 @@
         crossorigin="anonymous"></script>
 <script type="text/javascript" th:src="@{/resources/js/main.js}"></script>
 <script type="text/javascript" th:src="@{/resources/js/task/add-task.js}"></script>
-<script type="text/javascript" th:src="@{/resources/js/task/edit-task.js}"></script>
 <script type="text/javascript" th:src="@{/resources/js/task/view-task.js}"></script>
 <script type="text/javascript" th:src="@{/resources/js/task/task.js}"></script>
 </body>

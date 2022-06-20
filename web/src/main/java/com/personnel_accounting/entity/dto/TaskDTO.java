@@ -18,6 +18,7 @@ public class TaskDTO {
     @NotBlank(message = "{task.validator.description.empty}")
     private String description;
     private ProjectDTO project;
+    private DepartmentDTO department;
     private EmployeeDTO reporter;
     private EmployeeDTO assignee;
     private TaskStatus status;

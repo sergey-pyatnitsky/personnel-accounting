@@ -88,7 +88,7 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
         Session session = sessionFactory.getCurrentSession();
         Order order = pagingRequest.getOrder().get(0);
         Column column = pagingRequest.getColumns().get(order.getColumn());
-        String hql = "from EmployeePosition where employee = :employee";
+        String hql = "from EmployeePosition where employee = :employee and project.endDate = null and isActive = true";
         if (!pagingRequest.getSearch().getValue().equals(""))
             hql += " and where concat(employee.id, employee.name, employee.user.username, employee.user.authority.role, isActive) " +
                     "like '%" + pagingRequest.getSearch().getValue() + "%'";
@@ -131,7 +131,8 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
     public Long getByEmployeeCount(Employee employee) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(
-                "select count(*) from EmployeePosition where employee = :employee");
+                "select count(*) from EmployeePosition where employee = :employee " +
+                        "and project.endDate = null and isActive = true");
         query.setParameter("employee", employee);
         return (Long) query.getSingleResult();
     }

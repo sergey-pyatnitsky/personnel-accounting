@@ -1,5 +1,5 @@
 let edit_table = null;
-let current_url_for_edit_table = "/api/position/get_all";
+let current_url_for_edit_table = "/api/position/get_all/search-sorting";
 
 $(document).ready(function () {
   $("#edit-position").click(function (event) {
@@ -8,7 +8,7 @@ $(document).ready(function () {
     hideAllContent();
     $("#content-edit-position").show();
     if (edit_table != null) edit_table.destroy();
-    current_url_for_edit_table = "/api/position/get_all";
+    current_url_for_edit_table = "/api/position/get_all/search-sorting";
     loadEditTable("#content-edit-position #edit_positions_table", current_url_for_edit_table);
 
     let current_row = null;

@@ -31,7 +31,12 @@ public interface ProjectService {
 
     Long getEmployeeCount();
     Long getByEmployeeCount(Employee employee);
-    Long getTaskByStatusCount(Project project, TaskStatus status);
+    Long getTaskByStatusInProjectCount(Project project, TaskStatus status);
+    Long getTaskByStatusInDepartmentCount(Department department, TaskStatus status);
+    Long getTaskByStatusAndEmployeeInDepartmentCount(Department department, Employee employee, TaskStatus status);
+    Long getTasksByEmployeeInProjectWithStatusCount(Employee employee, Project project, TaskStatus taskStatus);
+    Long getTaskByStatusCount(TaskStatus status, User user);
+    Long getTaskByStatusAndEmployeeCount(Employee employee, TaskStatus status);
 
     Project find(Long id);
     List<Project> findByActive(boolean isActive);
@@ -39,8 +44,12 @@ public interface ProjectService {
     List<Project> findByName(String name);
     List<Project> findByDepartment(Department department);
 
+    List<Task> findTaskByStatus(PagingRequest pagingRequest, TaskStatus taskStatus, User user);
+    List<Task> findTaskByStatusAndEmployee(PagingRequest pagingRequest, Employee employee, TaskStatus taskStatus);
+    List<Task> findTaskInDepartmentByStatus(PagingRequest pagingRequest, Department department, TaskStatus taskStatus);
+    List<Task> findTaskInDepartmentByStatusAndEmployee(PagingRequest pagingRequest, Department department, Employee employee, TaskStatus taskStatus);
     List<Task> findTaskInProjectByStatus(PagingRequest pagingRequest, Project project, TaskStatus taskStatus);
-    List<Task> findTasksByEmployeeInProjectWithStatus(Employee employee, Project project, TaskStatus taskStatus);
+    List<Task> findTasksByEmployeeInProjectWithStatus(PagingRequest pagingRequest, Employee employee, Project project, TaskStatus taskStatus);
 
     Project save(Project project);
     Project merge(Project project);

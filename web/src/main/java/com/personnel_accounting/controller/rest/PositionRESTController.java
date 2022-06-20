@@ -4,6 +4,7 @@ import com.personnel_accounting.department.DepartmentService;
 import com.personnel_accounting.domain.Position;
 import com.personnel_accounting.entity.dto.PositionDTO;
 import com.personnel_accounting.exception.ExistingDataException;
+import com.personnel_accounting.exception.NoSuchDataException;
 import com.personnel_accounting.pagination.entity.Page;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -45,11 +47,21 @@ public class PositionRESTController {
         return new ResponseEntity<>(position, HttpStatus.OK);
     }
 
-    @PostMapping("/get_all")
-    public ResponseEntity<?> getPositions(@RequestBody PagingRequest pagingRequest) {
+    @PostMapping("/get_all/search-sorting")
+    public ResponseEntity<?> getPositionsWithSearchSorting(@RequestBody PagingRequest pagingRequest) {
         return new ResponseEntity<>(getPage(departmentService.findAllPositionsWithSearchSorting(pagingRequest)
                 .stream().map(position -> conversionService.convert(position, PositionDTO.class))
                 .collect(Collectors.toList()), pagingRequest.getDraw()),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/get_all")
+    public ResponseEntity<?> getPositions() {
+        List<Position> positions = departmentService.findAllPositions();
+        if (positions.size() == 0)
+            throw new NoSuchDataException(messageSource.getMessage("position.error.list.empty", null, null));
+        return new ResponseEntity<>(positions.stream().map(position ->
+                conversionService.convert(position, PositionDTO.class)).collect(Collectors.toList()),
                 HttpStatus.OK);
     }
 

@@ -36,7 +36,9 @@ $(document).ready(function () {
       })
     });
 
-    $("body").on("click", "#content-edit-department #close_department_btn", function () {
+    $("body").on("click", "#content-edit-department #close_department_btn", function (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
       close_department($(this).val());
     });
   });

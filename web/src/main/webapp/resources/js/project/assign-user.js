@@ -5,6 +5,8 @@ let mode = "1", selected_department_project_assign;
 $(document).ready(function () {
   $("#assign-user").click(function (event) {
     event.preventDefault();
+    $("#content-assign-user .nav-link").removeClass('active');
+    $("#content-assign-user #assignEmployeeBtn").addClass('active');
     $('.alert').replaceWith(`<div class="alert"></div>`);
     hideAllContent();
     $("#content-assign-user").show();
@@ -23,6 +25,9 @@ $(document).ready(function () {
         $("#content-assign-user #div_assign_users_table").hide();
         $("#content-assign-user #tabs_to_assign_user").hide();
         $("#content-assign-user #div_department_assign_users_table").show();
+
+        $("#content-assign-user .nav-link").removeClass('active');
+        $("#content-assign-user #assignEmployeeBtn").addClass('active');
       });
     } else showAssignUserTable();
 
@@ -84,6 +89,9 @@ function showAssignUserTable(department_id) {
     current_url_for_assign_user_table = "/api/employee/get_all/department/" + department_id;
     mode = "1";
     loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
+
+    $("#content-assign-user .nav-link").removeClass('active');
+    $(this).addClass('active');
   });
 
   $("#content-assign-user #removeEmployeeBtn").click(function () {
@@ -91,6 +99,9 @@ function showAssignUserTable(department_id) {
     current_url_for_assign_user_table = "/api/employee/get_with_project/department/" + department_id;
     mode = "2";
     loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);
+
+    $("#content-assign-user .nav-link").removeClass('active');
+    $(this).addClass('active');
   });
 }
 
@@ -268,12 +279,12 @@ function assign_user(employee_id, employee_name, project_str, position_id) {
   });
 }
 
-function cancel_user(employee_id, employee_name, project) {
+function cancel_user(employee_id, employee_name, project_str) {
   let employee_position = {}, project = {}, employee = {};
   Object.assign(employee_position, { project });
   Object.assign(employee_position, { employee });
   employee_position.employee.id = employee_id;
-  employee_position.project.id = project.split('|')[0];
+  employee_position.project.id = project_str.split('|')[0];
   $.ajax({
     type: "POST",
     contentType: "application/json",
@@ -286,7 +297,7 @@ function cancel_user(employee_id, employee_name, project) {
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
           "project.alert.cancel").replace("0", employee_name);
-        message = message.replace("1", project.split('|')[1]);
+        message = message.replace("1", project_str.split('|')[1]);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         if (assign_user_table != null) assign_user_table.destroy();
         loadAssignUserTable("#content-assign-user #assign_users_table", current_url_for_assign_user_table);

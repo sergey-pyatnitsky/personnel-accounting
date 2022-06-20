@@ -35,7 +35,7 @@ function loadAddTable(table_id, req_url) {
       { "data": "id", "sClass": "department_id" },
       { "data": "name", "sClass": "department_name" },
       {
-        "data": "isActive", render: function (data) {
+        "data": "active", render: function (data) {
           return data
             ? '<p class="text-success">+</p>'
             : '<p class="text-danger">-</p>';

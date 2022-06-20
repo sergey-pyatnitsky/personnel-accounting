@@ -114,7 +114,7 @@ function activate_project(project_str, action) {
         $('.alert').empty();
         if (data == "") {
           let message = get_message(localStorage.getItem("lang"),
-            "project.alert.deactivate").replace("0", project.split('|')[1]);
+            "project.alert.deactivate").replace("0", project_str.split('|')[1]);
           $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
           activate_table.destroy();
           loadActivateTable("#content-activate-project #activate_project_table", "/api/project/get_all/open");
