@@ -1,0 +1,23 @@
+version: "2.4"
+
+services:
+  db:
+    image: mysql:8.0.28
+    container_name: db
+    environment:
+      MYSQL_DATABASE: personnel_accounting
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+  webapp:
+    build: .
+    container_name: personnel_accounting
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      CATALINA_OPTS: "-Ddatasource.url=jdbc:mysql://db:3306/personnel_accounting -Ddatasource.username=admin -Ddatasource.password=admin"
