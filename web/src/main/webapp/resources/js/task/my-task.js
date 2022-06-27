@@ -92,6 +92,9 @@ function loadDepartmentViewTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -127,6 +130,9 @@ function loadProjectViewTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -162,6 +168,9 @@ function loadViewTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -252,6 +261,7 @@ function edit_task_status(task) {
   if ($("#time_input").length != 0) time = $("#time_input").val();
   $.ajax({
     type: "PUT",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/task/edit/status/" + task.split('|')[0],
     data: JSON.stringify(time),

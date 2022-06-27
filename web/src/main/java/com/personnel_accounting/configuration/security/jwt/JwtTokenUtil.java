@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @PropertySource("classpath:jwt.properties")
@@ -24,7 +26,12 @@ public class JwtTokenUtil {
     private int jwtExpirationInMs = 604800000;
 
     public String generateToken(UserDetails userDetails) {
+        final String authorities = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
         Map<String, Object> claims = new HashMap<>();
+        claims.put("scopes", authorities);
         return doGenerateToken(claims, userDetails.getUsername());
     }
 

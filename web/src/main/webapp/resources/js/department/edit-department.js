@@ -52,6 +52,9 @@ function loadEditTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -102,6 +105,7 @@ function edit_department(department_id, department_name) {
   department.name = department_name;
   $.ajax({
     type: "PUT",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/department/edit/" + department_id,
     data: JSON.stringify(department),
@@ -132,6 +136,7 @@ function close_department(department_str) {
   department.id = department_str.split('|')[0];
   $.ajax({
     type: "DELETE",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/department/close/" + department.id,
     cache: false,

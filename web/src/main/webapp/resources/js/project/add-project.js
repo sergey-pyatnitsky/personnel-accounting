@@ -24,6 +24,9 @@ function loadAddTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -83,6 +86,7 @@ function add_project(project_name, department_id, department_name) {
   project.active = false;
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/project/add",
     data: JSON.stringify(project),

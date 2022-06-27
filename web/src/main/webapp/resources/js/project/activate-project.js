@@ -23,6 +23,9 @@ function loadActivateTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -79,6 +82,7 @@ function activate_project(project_str, action) {
   if (action === "Активировать" || action === "Activate") {
     $.ajax({
       type: "PUT",
+      headers: {"Authorization": sessionStorage.getItem('tokenData')},
       contentType: "application/json",
       url: "/api/project/activate/" + project.id,
       async: false,
@@ -104,6 +108,7 @@ function activate_project(project_str, action) {
   else if (action === "Деактивировать" || action === "Deactivate") {
     $.ajax({
       type: "PUT",
+      headers: {"Authorization": sessionStorage.getItem('tokenData')},
       contentType: "application/json",
       url: "/api/project/inactivate/" + project.id,
       data: JSON.stringify(project),

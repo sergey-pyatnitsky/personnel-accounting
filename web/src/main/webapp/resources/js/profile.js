@@ -41,6 +41,7 @@ function setImage() {
   inputFile.append("file", file);
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: false,
     processData: false,
     url: "/api/uploadFile",
@@ -69,6 +70,7 @@ function edit_profile_data() {
 
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/profile/edit",
     data: JSON.stringify(employee),
@@ -96,6 +98,7 @@ function edit_profile_data() {
 function get_profile_data() {
   $.ajax({
     type: "GET",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/profile/get_profile_data",
     cache: false,
@@ -125,6 +128,7 @@ function check_old_password() {
 
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/profile/check_old_password",
     data: JSON.stringify(entity),
@@ -150,6 +154,7 @@ function save_password() {
 
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/profile/edit_password",
     data: JSON.stringify(entity),

@@ -104,6 +104,9 @@ function loadProjectaddTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -119,7 +122,7 @@ function loadProjectaddTable(table_id, req_url) {
         "mRender": function (data) {
           let message = get_message(localStorage.getItem("lang"),
             "task.alert.button.choice");
-          return '<button type="button" class="btn btn-primary" id="select_project_add"' +
+          return '<button type="button" class="btn btn-primary" id="select_project_add" ' +
             'value="' + data.id + '">' + message + '</button>'
         }
       }
@@ -139,6 +142,9 @@ function loadEmployeeaddTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -163,7 +169,7 @@ function loadEmployeeaddTable(table_id, req_url) {
         "mRender": function (data) {
           let message = get_message(localStorage.getItem("lang"),
             "task.alert.button.choice");
-          return '<button type="button" class="btn btn-primary" id="select_employee_add"' +
+          return '<button type="button" class="btn btn-primary" id="select_employee_add" ' +
             'value="' + data.id + '">' + message + '</button>'
         }
       }
@@ -183,6 +189,9 @@ function loadDepartmentaddTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -198,7 +207,7 @@ function loadDepartmentaddTable(table_id, req_url) {
         "mRender": function (data) {
           let message = get_message(localStorage.getItem("lang"),
             "task.alert.button.choice");
-          return '<button type="button" class="btn btn-primary" id="select_department_add"' +
+          return '<button type="button" class="btn btn-primary" id="select_department_add" ' +
             'value="' + data.id + '">' + message + '</button>'
         }
       }
@@ -221,6 +230,7 @@ function add_task() {
 
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/task/add",
     data: JSON.stringify(task),

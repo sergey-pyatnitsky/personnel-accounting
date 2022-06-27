@@ -37,6 +37,9 @@ function loadActivateTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -59,7 +62,7 @@ function loadActivateTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
-          let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"'
+          let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal" '
             + 'data-target="#activateUserModal" id="activate_user_btn" value="'
             + data.user.username + '">';
           if (data.user.active == false) {
@@ -87,6 +90,7 @@ function activate_user(username, action) {
   if (action === "Активировать" || action === "Activate") {
     $.ajax({
       type: "PUT",
+      headers: {"Authorization": sessionStorage.getItem('tokenData')},
       contentType: "application/json",
       url: "/api/employee/activate/" + username,
       async: false,
@@ -109,6 +113,7 @@ function activate_user(username, action) {
   else if (action === "Деактивировать" || action === "Deactivate") {
     $.ajax({
       type: "PUT",
+      headers: {"Authorization": sessionStorage.getItem('tokenData')},
       contentType: "application/json",
       url: "/api/employee/inactivate/" + username,
       cache: false,

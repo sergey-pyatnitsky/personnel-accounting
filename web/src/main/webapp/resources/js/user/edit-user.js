@@ -51,6 +51,9 @@ function loadEditTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -101,6 +104,7 @@ function edit_user(id, name, emp_role) {
   employee.id = id;
   $.ajax({
     type: "PUT",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/edit",
     data: JSON.stringify(employee),
@@ -120,7 +124,7 @@ function edit_user(id, name, emp_role) {
     error: function (error) {
       console.log(error);
       $('.alert').empty();
-      $('.alert').replaceWith(`<div class="alert alert-danger"role="alert">
+      $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">
         Ошибка!</div>`);
     }
   });
@@ -133,6 +137,7 @@ function delete_employee(employeeStr) {
   employee.id = employeeStr.split('|')[0];
   $.ajax({
     type: "DELETE",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/remove/" + employee.id,
     data: JSON.stringify(employee),

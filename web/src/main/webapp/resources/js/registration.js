@@ -21,6 +21,7 @@ function reg_user() {
 
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/registration",
     data: JSON.stringify(employee),

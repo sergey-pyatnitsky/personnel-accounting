@@ -26,6 +26,7 @@ function add_position() {
   position.name = $('#positionNameInput').val();
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/position/add",
     data: JSON.stringify(position),

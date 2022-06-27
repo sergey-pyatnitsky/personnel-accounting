@@ -113,6 +113,9 @@ function loadProjectModalTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -148,6 +151,9 @@ function loadDepartmentAssignTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -185,6 +191,9 @@ function loadAssignUserTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -230,6 +239,7 @@ function get_positions() {
   show_preloader();
   $.ajax({
     type: "GET",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/position/get_all",
     async: false,
@@ -255,6 +265,7 @@ function assign_user(employee_id, employee_name, project_str, position_id) {
   employee_position.position.id = position_id;
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/project/assign/employee",
     data: JSON.stringify(employee_position),
@@ -287,6 +298,7 @@ function cancel_user(employee_id, employee_name, project_str) {
   employee_position.project.id = project_str.split('|')[0];
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/project/cancel/employee",
     data: JSON.stringify(employee_position),

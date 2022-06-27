@@ -1,7 +1,6 @@
 $(document).ready(function () {
   hide_preloader();
   hideAllContent();
-  $("#view-position").click();
 });
 
 function hideAllContent() {

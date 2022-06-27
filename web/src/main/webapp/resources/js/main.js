@@ -9,6 +9,7 @@ function hide_preloader() {
 }
 
 $(document).ready(function () {
+
   if (localStorage.getItem("lang") != null && window.location.href.indexOf("logout") > -1
     && window.location.href.indexOf("lang") <= -1) {
     window.location.replace('?logout' + '&lang=' + localStorage.getItem("lang"));
@@ -30,6 +31,7 @@ $(document).ready(function () {
   else {
     $.ajax({
       type: "GET",
+      headers: {"Authorization": sessionStorage.getItem('tokenData')},
       contentType: "application/json",
       url: "/api/employee/profile/get_profile_data",
       cache: false,
@@ -66,6 +68,10 @@ $(document).ready(function () {
     localStorage.setItem("lang", "ru");
     switchTableLang(localStorage.getItem("lang"));
   })
+
+  $("#logoutBtn").click(function () {
+    sessionStorage.removeItem('tokenData');
+  })
 });
 
 function switchTableLang(lang) {
@@ -78,6 +84,7 @@ function get_message(lang, property) {
   let message = null;
   $.ajax({
     type: "GET",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/messages/" + lang + "/" + property,
     async: false,

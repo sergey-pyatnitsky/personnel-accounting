@@ -37,6 +37,9 @@ function loadActivateTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -64,7 +67,7 @@ function loadActivateTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
-          let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0"'
+          let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" '
             + 'id="activate_department_btn" value="' + data.id + '">';
           if (!data.active) {
             let message = get_message(localStorage.getItem("lang"),
@@ -92,6 +95,7 @@ function activate_department(department_id, action) {
   if (action === "Активировать" || action === "Activate") {
     $.ajax({
       type: "PUT",
+      headers: {"Authorization": sessionStorage.getItem('tokenData')},
       contentType: "application/json",
       url: "/api/department/activate/" + department_id,
       async: false,
@@ -114,6 +118,7 @@ function activate_department(department_id, action) {
   else if (action === "Деактивировать" || action === "Deactivate") {
     $.ajax({
       type: "PUT",
+      headers: {"Authorization": sessionStorage.getItem('tokenData')},
       contentType: "application/json",
       url: "/api/department/inactivate/" + department_id,
       async: false,

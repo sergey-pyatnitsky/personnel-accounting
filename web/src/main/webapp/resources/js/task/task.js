@@ -8,6 +8,6 @@ function hideAllContent() {
 $(document).ready(function () {
   hide_preloader();
   hideAllContent();
-  $("#view-task").click();
-  $("#my-task").click();
+  //$("#view-task").click();
+  //$("#my-task").click();
 });

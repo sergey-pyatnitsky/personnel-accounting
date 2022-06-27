@@ -27,6 +27,7 @@ function add_department() {
   department.name = $('#departmentNameInput').val();
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/department/add",
     data: JSON.stringify(department),

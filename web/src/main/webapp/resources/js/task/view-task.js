@@ -4,7 +4,6 @@ let selected_department = null, selected_project = null, current_status= null;
 $(document).ready(function () {
   hide_preloader();
   hideAllContent();
-
   $("#view-task").click(function (event) {
     event.preventDefault();
     hideAllContent();
@@ -132,6 +131,9 @@ function loadDepartmentViewTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -167,6 +169,9 @@ function loadProjectViewTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -202,6 +207,9 @@ function loadViewTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -297,6 +305,7 @@ function edit_task(task_id, task_name, task_description, task_status) {
   task.status = task_status;
   $.ajax({
     type: "PUT",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/task/edit/" + task.id,
     data: JSON.stringify(task),

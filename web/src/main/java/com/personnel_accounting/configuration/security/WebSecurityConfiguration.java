@@ -1,5 +1,6 @@
 package com.personnel_accounting.configuration.security;
 
+import com.personnel_accounting.configuration.security.jwt.JwtAuthenticationEntryPoint;
 import com.personnel_accounting.configuration.security.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService jwtUserDetailsService;
+
+    @Autowired
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,9 +52,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers("/login/**").permitAll()
                 .antMatchers("/authenticate/**").permitAll()
+                .antMatchers("/page/**").permitAll()
                 .anyRequest().authenticated().and()
                 .formLogin().loginPage("/login").and()
                 .logout().logoutSuccessUrl("/login?logout").permitAll().and()
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

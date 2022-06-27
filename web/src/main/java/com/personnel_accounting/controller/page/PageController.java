@@ -19,8 +19,16 @@ public class PageController {
         return "authorization/authorization";
     }
 
-    @GetMapping("/")
+    @GetMapping("/page/**")
     public String showMainPage(Model model) {
+        model.addAttribute("lang", LocaleContextHolder.getLocale().getLanguage());
+        model.addAttribute("title", messageSource.getMessage("main_page.title",
+                null, LocaleContextHolder.getLocale()));
+        return "page";
+    }
+
+    @GetMapping("/main-page")
+    public String showPage(Model model) {
         model.addAttribute("lang", LocaleContextHolder.getLocale().getLanguage());
         model.addAttribute("title", messageSource.getMessage("main_page.title",
                 null, LocaleContextHolder.getLocale()));

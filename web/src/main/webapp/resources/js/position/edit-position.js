@@ -39,6 +39,9 @@ function loadEditTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -75,6 +78,7 @@ function edit_position(position_id, position_name) {
   position.name = position_name;
   $.ajax({
     type: "PUT",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/position/edit/" + position_id,
     data: JSON.stringify(position),
@@ -107,6 +111,7 @@ function remove_position(position_str) {
   position.id = position_str.split('|')[0];
   $.ajax({
     type: "DELETE",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/position/remove/" + position.id,
     cache: false,

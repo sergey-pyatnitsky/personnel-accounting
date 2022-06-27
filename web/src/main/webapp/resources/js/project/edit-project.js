@@ -43,6 +43,9 @@ function loadEditTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -96,6 +99,9 @@ function loadDeartmentsTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -132,6 +138,7 @@ function edit_project(project_id, project_name, department_id) {
     project.department.id = department_id;
   $.ajax({
     type: "PUT",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/project/edit/" + project.id,
     data: JSON.stringify(project),
@@ -160,6 +167,7 @@ function close_project(project_str) {
   project.id = project_str.split('|')[0];
   $.ajax({
     type: "DELETE",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/project/close/" + project.id,
     cache: false,
