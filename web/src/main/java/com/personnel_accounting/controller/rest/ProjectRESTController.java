@@ -14,6 +14,7 @@ import com.personnel_accounting.pagination.entity.Page;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
+import com.personnel_accounting.utils.AuthenticationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -52,7 +53,7 @@ public class ProjectRESTController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addProject(@Valid @RequestBody ProjectDTO projectDTO, Authentication authentication) {
-        User user = userService.find(authentication.getName());
+        User user = userService.find(AuthenticationUtil.getUsernameFromAuthentication(authentication));
         if (userService.getAuthorityByUsername(user.getUsername()).getRole() == Role.DEPARTMENT_HEAD)
             projectDTO.getDepartment().setId(projectService.findDepartmentByUser(user).getId());
         employeeService.findByUser(user);
@@ -78,7 +79,8 @@ public class ProjectRESTController {
                                                           @PathVariable Long id, Authentication authentication) {
         Employee employee;
         if (id != 0) employee = employeeService.find(id);
-        else employee = employeeService.findByUser(userService.findByUsername(authentication.getName()));
+        else employee = employeeService.findByUser(
+                userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication)));
         return new ResponseEntity<>(
                 getPage(projectService.findByEmployeePaginated(pagingRequest, employee)
                         .stream().map(employeePosition ->
@@ -93,7 +95,8 @@ public class ProjectRESTController {
         Department department;
         if (id != 0) department = departmentService.find(id);
         else
-            department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
+            department = employeeService.findByUser(
+                    userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication))).getDepartment();
         return new ResponseEntity<>(getPage(departmentService.findProjectsPaginated(pagingRequest, department)
                         .stream().filter(Project::isActive).collect(Collectors.toList())
                         .stream().map(project -> conversionService.convert(project, ProjectDTO.class)).collect(Collectors.toList()), pagingRequest.getDraw(),

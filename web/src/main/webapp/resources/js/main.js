@@ -23,33 +23,37 @@ $(document).ready(function () {
     switchTableLang(localStorage.getItem("lang"));
   } else switchTableLang(localStorage.getItem("lang"));
 
-  if (localStorage.getItem("imageUrl") != null) {
-    $("#navbar_image").attr("src", localStorage.getItem("imageUrl"));
-    $("#navbar_name").text(localStorage.getItem("name"));
-    $("#main_menu_name").text(localStorage.getItem("name"));
-  }
-  else {
-    $.ajax({
-      type: "GET",
-      headers: {"Authorization": sessionStorage.getItem('tokenData')},
-      contentType: "application/json",
-      url: "/api/employee/profile/get_profile_data",
-      cache: false,
-      timeout: 600000,
-      success: function (data) {
-        let image = "http://localhost:8080/api/downloadFile/" + data.profile.imageId.toString();
-        $("#navbar_image").attr("src", image);
-        localStorage.setItem("imageUrl", image);
-        localStorage.setItem("name", data.name);
-        $("#navbar_name").text(data.name);
-        $("#main_menu_name").text(data.name);
-      },
-      error: function (error) {
-        console.log(error);
-        $('.alert').empty();
-        $('.alert').append(`<div class="alert alert-danger"role="alert">500 Error!</div>`);
-      }
-    });
+  if (window.location.href.indexOf("login") <= -1) {
+    if (localStorage.getItem("imageUrl") != null) {
+      $("#navbar_image").attr("src", localStorage.getItem("imageUrl"));
+      $("#navbar_name").text(localStorage.getItem("name"));
+      $("#main_menu_name").text(localStorage.getItem("name"));
+      $("#navbar_username").text(localStorage.getItem("username"));
+    } else {
+      $.ajax({
+        type: "GET",
+        headers: {"Authorization": sessionStorage.getItem('tokenData')},
+        contentType: "application/json",
+        url: "/api/employee/profile/get_profile_data",
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+          let image = "http://localhost:8080/api/downloadFile/" + data.profile.image.id.toString();
+          $("#navbar_image").attr("src", image);
+          localStorage.setItem("imageUrl", image);
+          localStorage.setItem("name", data.name);
+          localStorage.setItem("username", data.user.username);
+          $("#navbar_name").text(data.name);
+          $("#navbar_username").text(data.user.username);
+          $("#main_menu_name").text(data.name);
+        },
+        error: function (error) {
+          console.log(error);
+          $('.alert').empty();
+          $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">500 Error!</div>`);
+        }
+      });
+    }
   }
 
   $("#en_lang").click(function () {
@@ -71,6 +75,7 @@ $(document).ready(function () {
 
   $("#logoutBtn").click(function () {
     sessionStorage.removeItem('tokenData');
+    localStorage.clear();
   })
 });
 

@@ -17,8 +17,11 @@ function sendLoginRequest(username, password) {
     cache: false,
     timeout: 600000,
     success: function (data) {
+      localStorage.clear();
       saveToken(data);
-      window.location.href = window.location.href.split("login")[0] + "page/main-page";
+      if (window.location.href.indexOf("login") <= -1)
+        window.location.href = window.location.href + "/main";
+      else window.location.href = window.location.href.split("login")[0] + "page/main";
     },
     error: function (error) {
       console.log(error);
