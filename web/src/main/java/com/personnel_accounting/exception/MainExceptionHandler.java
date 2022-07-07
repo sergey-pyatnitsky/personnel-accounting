@@ -31,16 +31,6 @@ public class MainExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.OK);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleException(Exception e) {
-        ApiError apiError = ApiError.ApiErrorBuilder.anApiError()
-                .withTimestamp(new Date(System.currentTimeMillis()))
-                .withStatus(HttpStatus.OK.value())
-                .withError(e.getMessage()).build();
-        logger.error(e.getMessage());
-        return new ResponseEntity<>(apiError, HttpStatus.OK);
-    }
-
     @ExceptionHandler({DisabledException.class, BadCredentialsException.class})
     public ResponseEntity<ApiError> handleAuthException(Exception e) {
         ApiError apiError = ApiError.ApiErrorBuilder.anApiError()

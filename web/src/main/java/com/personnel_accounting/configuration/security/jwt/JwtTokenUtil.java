@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 public class JwtTokenUtil {
 
     @Value("${app.jwtSecret}")
-    private String jwtSecret = "personnel_accounting";
+    private String jwtSecret;
 
     @Value("${app.jwtExpirationInMs}")
-    private int jwtExpirationInMs = 604800000;
+    private int jwtExpirationInMs;
 
     public String generateToken(UserDetails userDetails) {
         final String authorities = userDetails.getAuthorities().stream()

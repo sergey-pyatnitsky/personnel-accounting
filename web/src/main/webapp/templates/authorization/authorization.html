@@ -13,26 +13,38 @@
 <body class="login-page">
 <main>
   <div class="login-block">
-    <img th:src="@{/resources/images/auth-reg.png}">
+    <img th:src="@{/resources/images/auth-reg.png}" alt="">
     <h1 th:text="#{login.input_data}"></h1>
     <div th:if="${param.error}" class="alert alert-danger" role="alert" th:text="#{login.error.login_password}"></div>
     <div th:if="${param.logout}" class="alert alert-danger" role="alert" th:text="#{login.logout}"></div>
     <div th:if="${param.unauthorized}" class="alert alert-danger" role="alert" th:text="#{login.unauthorized}"></div>
+    <div th:if="${param.disabled}" class="alert alert-danger" role="alert" th:text="#{login.user.disabled}"></div>
     <div class="alert alert-danger d-none" role="alert"></div>
     <form>
       <div class="form-group">
         <div class="input-group">
           <span class="input-group-addon"><i class="fa fa-user ti-user"></i></span>
-          <input type="text" class="form-control" id="username" name="username" th:placeholder="#{login.input.username}" required>
+          <input type="text" class="form-control" id="username" name="username" th:placeholder="#{login.input.username}"
+                 required>
         </div>
       </div>
       <div class="form-group">
         <div class="input-group">
           <span class="input-group-addon"><i class="fa fa-lock ti-unlock"></i></span>
-          <input type="password" class="form-control" id="password" name="password" th:placeholder="#{login.input.password}" required>
+          <input type="password" class="form-control" id="password" name="password"
+                 th:placeholder="#{login.input.password}" required>
         </div>
       </div>
       <button class="btn btn-primary btn-block" id="loginBtn" type="submit" th:text="#{login.sign_in}"></button>
+
+      <div class="row m-3">
+        <div class="col-12">
+          <a class="btn btn-outline-dark" href="/oauth2/authorization/google" role="button" style="text-transform:none">
+            <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in"
+                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"/>
+          </a>
+        </div>
+      </div>
     </form>
   </div>
 

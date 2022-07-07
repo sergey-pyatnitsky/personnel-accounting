@@ -16,6 +16,7 @@ import com.personnel_accounting.pagination.entity.Page;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
+import com.personnel_accounting.utils.AuthenticationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
@@ -23,13 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Date;
@@ -121,7 +116,8 @@ public class EmployeeRESTController {
         Department department;
         if (id != 0) department = departmentService.find(id);
         else
-            department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
+            department = employeeService.findByUser(userService.findByUsername(
+                    AuthenticationUtil.getUsernameFromAuthentication(authentication))).getDepartment();
         return new ResponseEntity<>(getPage(employeeService.findByDepartmentPaginated(department, pagingRequest).stream().map(obj -> {
                     EmployeeDTO employeeDTO = conversionService.convert(obj, EmployeeDTO.class);
                     employeeDTO.setDepartment(conversionService.convert(obj.getDepartment(), DepartmentDTO.class));
@@ -151,7 +147,8 @@ public class EmployeeRESTController {
         Department department;
         if (id != 0) department = departmentService.find(id);
         else
-            department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
+            department = employeeService.findByUser(userService.findByUsername(
+                    AuthenticationUtil.getUsernameFromAuthentication(authentication))).getDepartment();
         return new ResponseEntity<>(getPage(employeeService.getEmployeesWithOpenProjectByDepartment(department, pagingRequest)
                         .stream().map(obj -> {
                             EmployeeDTO employeeDTO = conversionService.convert(obj, EmployeeDTO.class);

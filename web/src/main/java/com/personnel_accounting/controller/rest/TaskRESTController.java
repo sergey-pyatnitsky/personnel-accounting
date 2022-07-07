@@ -1,11 +1,7 @@
 package com.personnel_accounting.controller.rest;
 
 import com.personnel_accounting.department.DepartmentService;
-import com.personnel_accounting.domain.Department;
-import com.personnel_accounting.domain.Employee;
-import com.personnel_accounting.domain.Project;
-import com.personnel_accounting.domain.Task;
-import com.personnel_accounting.domain.User;
+import com.personnel_accounting.domain.*;
 import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.entity.dto.*;
 import com.personnel_accounting.enums.TaskStatus;
@@ -13,17 +9,13 @@ import com.personnel_accounting.pagination.entity.Page;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
+import com.personnel_accounting.utils.AuthenticationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Time;
@@ -52,7 +44,8 @@ public class TaskRESTController {
     public ResponseEntity<?> addTask(@Valid @RequestBody TaskDTO taskDTO, Authentication authentication) {
         Task task = conversionService.convert(taskDTO, Task.class);
         task.setAssignee(employeeService.find(taskDTO.getAssignee().getId()));
-        task.setReporter(employeeService.findByUser(userService.findByUsername(authentication.getName())));
+        task.setReporter(employeeService.findByUser(
+                userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication))));
         return new ResponseEntity<>(conversionService.convert(employeeService.addTaskInProject(
                 projectService.find(taskDTO.getProject().getId()), task), TaskDTO.class),
                 HttpStatus.OK);
@@ -61,7 +54,7 @@ public class TaskRESTController {
     @PostMapping("/get_all/by_status/{status}")
     public ResponseEntity<?> getAllTaskByStatusPaginated(@RequestBody PagingRequest pagingRequest,
                                                          @PathVariable TaskStatus status, Authentication authentication) {
-        User user = userService.findByUsername(authentication.getName());
+        User user = userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication));
         return new ResponseEntity<>(getPage(projectService.findTaskByStatus(pagingRequest, status, user)
                         .stream().map(obj -> {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
@@ -78,7 +71,8 @@ public class TaskRESTController {
     @PostMapping("/get_all/by_status/{status}/employee")
     public ResponseEntity<?> getAllTaskByStatusAndEmployeePaginated(@RequestBody PagingRequest pagingRequest,
                                                                     @PathVariable TaskStatus status, Authentication authentication) {
-        Employee employee = employeeService.findByUser(userService.findByUsername(authentication.getName()));
+        Employee employee = employeeService.findByUser(
+                userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication)));
         return new ResponseEntity<>(getPage(projectService.findTaskByStatusAndEmployee(pagingRequest, employee, status)
                         .stream().map(obj -> {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
@@ -114,7 +108,8 @@ public class TaskRESTController {
             @RequestBody PagingRequest pagingRequest, @PathVariable Long id,
             @PathVariable TaskStatus status, Authentication authentication) {
         Department department = departmentService.find(id);
-        Employee employee = employeeService.findByUser(userService.findByUsername(authentication.getName()));
+        Employee employee = employeeService.findByUser(
+                userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication)));
         return new ResponseEntity<>(getPage(projectService.findTaskInDepartmentByStatusAndEmployee(pagingRequest, department, employee, status)
                         .stream().map(obj -> {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
@@ -147,9 +142,11 @@ public class TaskRESTController {
 
     @PostMapping("/get_all/project/{id}/by_status/{status}/employee")
     public ResponseEntity<?> getAllTasksByEmployeeInProjectWithStatusPaginated(@RequestBody PagingRequest pagingRequest,
-                                                                               @PathVariable TaskStatus status, @PathVariable Long id, Authentication authentication) {
+                                                                               @PathVariable TaskStatus status, @PathVariable Long id,
+                                                                               Authentication authentication) {
         Project project = projectService.find(id);
-        Employee employee = employeeService.findByUser(userService.findByUsername(authentication.getName()));
+        Employee employee = employeeService.findByUser(
+                userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication)));
         return new ResponseEntity<>(getPage(projectService.findTasksByEmployeeInProjectWithStatus(pagingRequest, employee, project, status)
                         .stream().map(obj -> {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);

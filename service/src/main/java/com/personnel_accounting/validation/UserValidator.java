@@ -29,14 +29,19 @@ public class UserValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         User user = (User) target;
-        if (checkForRegexp(user.getUsername(), env.getProperty("username.regexp"))) {
-            errors.rejectValue("username", "username.not_matches",
-                    messageSource.getMessage("user.validator.login", null, null));
+        if(user.getUsername().contains("@")){
+            if (checkForRegexp(user.getUsername(), env.getProperty("email.regexp")))
+                errors.rejectValue("username", "email.not_matches",
+                        messageSource.getMessage("profile.validator.email.regexp", null, null));
         }
+        else {
+            if (checkForRegexp(user.getUsername(), env.getProperty("username.regexp")))
+                errors.rejectValue("username", "username.not_matches",
+                        messageSource.getMessage("user.validator.login", null, null));
 
-        if (checkForRegexp(user.getPassword(), env.getProperty("password.regexp"))) {
-            errors.rejectValue("password", "password.not_matches",
-                    messageSource.getMessage("user.validator.password", null, null));
+            if (checkForRegexp(user.getPassword(), env.getProperty("password.regexp")))
+                errors.rejectValue("password", "password.not_matches",
+                        messageSource.getMessage("user.validator.password", null, null));
         }
     }
 

@@ -1,15 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
+  let token = document.getElementById("span_token_id").innerHTML;
+  if (token != ""){
+    saveToken(token);
+    window.location.href = window.location.href + "/main"
+  }
+
   let arr = window.location.href.split("/");
-  if(sessionStorage.getItem('tokenData') == null){
-    window.location.href = arr[0] + "//" + arr[2] + "/login";
-  }
-  else {
-    arr.shift();
-    arr.shift();
-    arr.shift();
-    arr.shift();
-    getHTML("/" + arr.join("/"));
-  }
+  //http://localhost:8080/page/main
+  arr.shift();
+  arr.shift();
+  arr.shift();
+  arr.shift();
+  getHTML("/" + arr.join("/"));
 });
 
 function getHTML(link) {
@@ -29,7 +31,7 @@ function getHTML(link) {
         document.head.innerHTML += link.outerHTML;
         $.ajax({
           url: link.getAttribute('href'),
-          dataType:"text/css"
+          dataType: "text/css"
         });
       }
 
@@ -46,10 +48,13 @@ function getHTML(link) {
           success: function () {
             currCountSrc++;
             if (currCountSrc == countAllSrc && $(".first_button").length != 0)
-                document.getElementById($(".first_button").attr('id')).click();
+              document.getElementById($(".first_button").attr('id')).click();
           },
         });
       }
     });
 }
 
+function saveToken(token) {
+  sessionStorage.setItem('tokenData', 'Bearer ' + JSON.stringify(token).replaceAll("\"", ""));
+}

@@ -11,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.Objects;
 
 @RestController
@@ -37,21 +39,20 @@ public class JwtAuthController {
     private MessageSource messageSource;
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody User user)
-            throws Exception {
-
-        authenticate(user.getUsername(), user.getPassword());
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody User user) {
         final UserDetails userDetails = jwtInMemoryUserDetailsService
                 .loadUserByUsername(user.getUsername());
+        authenticate(user.getUsername(), user.getPassword(), userDetails.getAuthorities());
         final String token = jwtTokenUtil.generateToken(userDetails);
         return ResponseEntity.ok(token);
     }
 
-    private void authenticate(String username, String password){
+    private void authenticate(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
         try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password, authorities));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (DisabledException e) {
             throw new DisabledException(
