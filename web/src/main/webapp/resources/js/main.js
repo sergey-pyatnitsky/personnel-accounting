@@ -37,7 +37,7 @@ $(document).ready(function () {
       cache: false,
       timeout: 600000,
       success: function (data) {
-        let image = "http://localhost:8080/api/downloadFile/" + data.profile.imageId.toString();
+        let image = "http://localhost:8080/api/downloadFile/" + data.profile.image.id.toString();
         $("#navbar_image").attr("src", image);
         localStorage.setItem("imageUrl", image);
         localStorage.setItem("name", data.name);

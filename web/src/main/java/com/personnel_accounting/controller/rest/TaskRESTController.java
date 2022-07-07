@@ -7,10 +7,7 @@ import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee.EmployeeService;
-import com.personnel_accounting.entity.dto.DepartmentDTO;
-import com.personnel_accounting.entity.dto.EmployeeDTO;
-import com.personnel_accounting.entity.dto.ProjectDTO;
-import com.personnel_accounting.entity.dto.TaskDTO;
+import com.personnel_accounting.entity.dto.*;
 import com.personnel_accounting.enums.TaskStatus;
 import com.personnel_accounting.pagination.entity.Page;
 import com.personnel_accounting.pagination.entity.PagingRequest;
@@ -70,6 +67,7 @@ public class TaskRESTController {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
                             taskDTO.setProject(conversionService.convert(obj.getProject(), ProjectDTO.class));
                             taskDTO.setAssignee(conversionService.convert(obj.getAssignee(), EmployeeDTO.class));
+                            taskDTO.getAssignee().setProfile(conversionService.convert(obj.getAssignee().getProfile(), ProfileDTO.class));
                             taskDTO.setDepartment(conversionService.convert(obj.getProject().getDepartment(), DepartmentDTO.class));
                             return taskDTO;
                         }).collect(Collectors.toList()),
@@ -86,6 +84,7 @@ public class TaskRESTController {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
                             taskDTO.setProject(conversionService.convert(obj.getProject(), ProjectDTO.class));
                             taskDTO.setAssignee(conversionService.convert(obj.getAssignee(), EmployeeDTO.class));
+                            taskDTO.getAssignee().setProfile(conversionService.convert(obj.getAssignee().getProfile(), ProfileDTO.class));
                             taskDTO.setDepartment(conversionService.convert(obj.getProject().getDepartment(), DepartmentDTO.class));
                             return taskDTO;
                         }).collect(Collectors.toList()),
@@ -102,6 +101,7 @@ public class TaskRESTController {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
                             taskDTO.setProject(conversionService.convert(obj.getProject(), ProjectDTO.class));
                             taskDTO.setAssignee(conversionService.convert(obj.getAssignee(), EmployeeDTO.class));
+                            taskDTO.getAssignee().setProfile(conversionService.convert(obj.getAssignee().getProfile(), ProfileDTO.class));
                             taskDTO.setDepartment(conversionService.convert(obj.getProject().getDepartment(), DepartmentDTO.class));
                             return taskDTO;
                         }).collect(Collectors.toList()),
@@ -120,6 +120,7 @@ public class TaskRESTController {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
                             taskDTO.setProject(conversionService.convert(obj.getProject(), ProjectDTO.class));
                             taskDTO.setAssignee(conversionService.convert(obj.getAssignee(), EmployeeDTO.class));
+                            taskDTO.getAssignee().setProfile(conversionService.convert(obj.getAssignee().getProfile(), ProfileDTO.class));
                             taskDTO.setDepartment(conversionService.convert(obj.getProject().getDepartment(), DepartmentDTO.class));
                             return taskDTO;
                         }).collect(Collectors.toList()),
@@ -136,6 +137,7 @@ public class TaskRESTController {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
                             taskDTO.setProject(conversionService.convert(obj.getProject(), ProjectDTO.class));
                             taskDTO.setAssignee(conversionService.convert(obj.getAssignee(), EmployeeDTO.class));
+                            taskDTO.getAssignee().setProfile(conversionService.convert(obj.getAssignee().getProfile(), ProfileDTO.class));
                             taskDTO.setDepartment(conversionService.convert(obj.getProject().getDepartment(), DepartmentDTO.class));
                             return taskDTO;
                         }).collect(Collectors.toList()),
@@ -153,6 +155,7 @@ public class TaskRESTController {
                             TaskDTO taskDTO = conversionService.convert(obj, TaskDTO.class);
                             taskDTO.setProject(conversionService.convert(obj.getProject(), ProjectDTO.class));
                             taskDTO.setAssignee(conversionService.convert(obj.getAssignee(), EmployeeDTO.class));
+                            taskDTO.getAssignee().setProfile(conversionService.convert(obj.getAssignee().getProfile(), ProfileDTO.class));
                             taskDTO.setDepartment(conversionService.convert(obj.getProject().getDepartment(), DepartmentDTO.class));
                             return taskDTO;
                         }).collect(Collectors.toList()),

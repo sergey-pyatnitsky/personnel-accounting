@@ -241,7 +241,7 @@ function loadViewTable(table_id, req_url) {
             <div class="row mt-1">
               <div class="card p-0">
                 <div class="card-header">
-                  <h6>` + data.name + `
+                  <h6>#` + data.id + ` ` + data.name + `
                     <span class="badge rounded-pill bg-info">` + data.status + `</span>
                   </h6>
                 </div>
@@ -249,7 +249,7 @@ function loadViewTable(table_id, req_url) {
                   <div class="col-2 text-center">
                     <a href="#" class="text-muted">
                       <img class="d-flex mr-3 rounded-circle mx-auto"
-                        src="https://bootdey.com/img/Content/avatar/avatar2.png" style="width: 48px; height: 48px;" alt="">
+                        src="http://localhost:8080/api/downloadFile/` + data.assignee.profile.image.id.toString() +`" style="width: 48px; height: 48px;" alt="">
                       <h5 class="media-heading mb-0 mt-0">` + data.assignee.name +`</h5>
                     </a>
                   </div>
