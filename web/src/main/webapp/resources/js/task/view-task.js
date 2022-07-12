@@ -249,7 +249,7 @@ function loadViewTable(table_id, req_url) {
                   <div class="col-2 text-center">
                     <a href="#" class="text-muted">
                       <img class="d-flex mr-3 rounded-circle mx-auto"
-                        src="http://localhost:8080/api/downloadFile/` + data.assignee.profile.image.id.toString() +`" style="width: 48px; height: 48px;" alt="">
+                        src="http://localhost:8080/api/downloadFile/` + data.assignee.profile.imageId.toString() +`" style="width: 48px; height: 48px;" alt="">
                       <h5 class="media-heading mb-0 mt-0">` + data.assignee.name +`</h5>
                     </a>
                   </div>

@@ -8,7 +8,6 @@ import com.personnel_accounting.domain.User;
 import com.personnel_accounting.email.EmailService;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.enums.Role;
-import com.personnel_accounting.image.ImageService;
 import com.personnel_accounting.profile.ProfileDAO;
 import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.UserValidator;
@@ -36,9 +35,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmailService emailService;
-
-    @Autowired
-    private ImageService imageService;
 
     @Autowired
     private ProfileDAO profileDAO;
@@ -82,7 +78,7 @@ public class UserServiceImpl implements UserService {
                 Employee employee = new Employee(name, false, user, new Profile());
                 Profile profile = new Profile();
                 profile.setEmail(email);
-                profile.setImage(imageService.getImage(1L));
+                profile.setImageId("1oRfzcWiifuIhZOh4h5eqVU2REr1G_EQ-");
                 profile = profileDAO.save(profile);
                 employee.setProfile(profile);
                 employeeDAO.save(employee);

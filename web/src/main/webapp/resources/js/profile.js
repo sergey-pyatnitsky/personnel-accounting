@@ -112,7 +112,7 @@ function get_profile_data() {
       $('#email').val(data.profile.email);
       $('#education').val(data.profile.education);
       $('#experience').val(data.profile.skills);
-      image_id = data.profile.image.id.toString();
+      image_id = data.profile.imageId.toString();
     },
     error: function (error) {
       console.log(error);
