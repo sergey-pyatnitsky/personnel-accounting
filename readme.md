@@ -32,7 +32,7 @@ The project provides for the accounting of tasks and tracking the time spent on 
 ## Database schema
 ![DB_schema](DB.png)
 
-##Getting Started
+## Getting Started
 Before launching projects, you must build an application. To start the project, run the following command:
 ```
 docker-compose up --build
