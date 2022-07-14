@@ -14,18 +14,15 @@ import com.personnel_accounting.pagination.entity.Page;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.project.ProjectService;
 import com.personnel_accounting.user.UserService;
+import com.personnel_accounting.utils.AuthenticationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Date;
@@ -34,6 +31,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("api/project")
 public class ProjectRESTController {
     @Autowired
     private ProjectService projectService;
@@ -53,9 +51,9 @@ public class ProjectRESTController {
     @Autowired
     private MessageSource messageSource;
 
-    @PostMapping("/api/project/add")
+    @PostMapping("/add")
     public ResponseEntity<?> addProject(@Valid @RequestBody ProjectDTO projectDTO, Authentication authentication) {
-        User user = userService.find(authentication.getName());
+        User user = userService.find(AuthenticationUtil.getUsernameFromAuthentication(authentication));
         if (userService.getAuthorityByUsername(user.getUsername()).getRole() == Role.DEPARTMENT_HEAD)
             projectDTO.getDepartment().setId(projectService.findDepartmentByUser(user).getId());
         employeeService.findByUser(user);
@@ -64,74 +62,72 @@ public class ProjectRESTController {
         return new ResponseEntity<>(conversionService.convert(project, ProjectDTO.class), HttpStatus.OK);
     }
 
-    @PostMapping("/api/project/get_all/open")
+    @PostMapping("/get_all/open")
     public ResponseEntity<?> getAllOpenProjects(@RequestBody PagingRequest pagingRequest) {
-        return new ResponseEntity<>(getPage(projectService.findAll(pagingRequest)
-                .stream().filter(project -> project.getEndDate() == null).collect(Collectors.toList())
-                .stream().map(project -> {
-                    ProjectDTO projectDTO = conversionService.convert(project, ProjectDTO.class);
-                    projectDTO.setDepartment(conversionService.convert(project.getDepartment(), DepartmentDTO.class));
-                    return projectDTO;
-                }).collect(Collectors.toList()), pagingRequest.getDraw(), projectService.getEmployeeCount().intValue()),
-                HttpStatus.OK);
+        return new ResponseEntity<>(getPage(projectService.findAllOpen(pagingRequest)
+                        .stream().map(project -> {
+                            ProjectDTO projectDTO = conversionService.convert(project, ProjectDTO.class);
+                            projectDTO.setDepartment(conversionService.convert(project.getDepartment(), DepartmentDTO.class));
+                            return projectDTO;
+                        }).collect(Collectors.toList()),
+                pagingRequest.getDraw(), projectService.getAllOpenProjectCount().intValue()), HttpStatus.OK);
     }
 
-    @PostMapping("/api/project/by_employee/open/{id}")
-    public ResponseEntity<?> getAllOpenProjectsByEmployee(@RequestBody PagingRequest pagingRequest, @PathVariable Long id) {
-        Employee employee = employeeService.find(id);
-        return new ResponseEntity<>(
-                getPage(projectService.findByEmployeePaginated(pagingRequest, employee)
-                        .stream().filter(employeePosition ->
-                                employeePosition.isActive() && employeePosition.getEndDate() == null)
-                        .collect(Collectors.toList())
+    @PostMapping("/by_employee/open/{id}")
+    public ResponseEntity<?> getAllOpenProjectsByEmployee(@RequestBody PagingRequest pagingRequest,
+                                                          @PathVariable Long id, Authentication authentication) {
+        Employee employee;
+        if (id != 0) employee = employeeService.find(id);
+        else employee = employeeService.findByUser(
+                userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication)));
+        return new ResponseEntity<>(getPage(projectService.findByEmployeePaginated(pagingRequest, employee)
                         .stream().map(employeePosition ->
                                 conversionService.convert(employeePosition.getProject(), ProjectDTO.class))
-                        .collect(Collectors.toList()), pagingRequest.getDraw(), projectService.getByEmployeeCount(employee).intValue()),
-                HttpStatus.OK);
+                        .collect(Collectors.toList()),
+                pagingRequest.getDraw(), projectService.getByEmployeeCount(employee).intValue()), HttpStatus.OK);
     }
 
-    @PostMapping("/api/project/by_department/open/{id}")
+    @PostMapping("/by_department/open/{id}")
     public ResponseEntity<?> getAllOpenProjectsByDepartment(@RequestBody PagingRequest pagingRequest,
                                                             @PathVariable Long id, Authentication authentication) {
         Department department;
         if (id != 0) department = departmentService.find(id);
         else
-            department = employeeService.findByUser(userService.findByUsername(authentication.getName())).getDepartment();
-        return new ResponseEntity<>(getPage(departmentService.findProjectsPaginated(pagingRequest, department)
-                .stream().filter(Project::isActive).collect(Collectors.toList())
-                .stream().map(project -> conversionService.convert(project, ProjectDTO.class)).collect(Collectors.toList()), pagingRequest.getDraw(),
-                departmentService.getProjectsByDepartmentCount(department).intValue()), HttpStatus.OK);
+            department = employeeService.findByUser(
+                    userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication))).getDepartment();
+        return new ResponseEntity<>(getPage(departmentService.findOpenProjectsByDepartmentPaginated(pagingRequest, department)
+                        .stream().map(project -> conversionService.convert(project, ProjectDTO.class)).collect(Collectors.toList()),
+                pagingRequest.getDraw(), departmentService.getOpenProjectsByDepartmentCount(department).intValue()), HttpStatus.OK);
     }
 
-    @PostMapping("/api/project/get_all/closed")
+    @PostMapping("/get_all/closed")
     public ResponseEntity<?> getAllClosedProjects(@RequestBody PagingRequest pagingRequest) {
-        return new ResponseEntity<>(getPage(projectService.findAll(pagingRequest)
-                .stream().filter(project -> project.getEndDate() != null).collect(Collectors.toList())
-                .stream().map(project -> {
-                    ProjectDTO projectDTO = conversionService.convert(project, ProjectDTO.class);
-                    projectDTO.setDepartment(conversionService.convert(project.getDepartment(), DepartmentDTO.class));
-                    return projectDTO;
-                }).collect(Collectors.toList()), pagingRequest.getDraw(), projectService.getEmployeeCount().intValue()),
-                HttpStatus.OK);
+        return new ResponseEntity<>(getPage(projectService.findAllClosed(pagingRequest)
+                        .stream().map(project -> {
+                            ProjectDTO projectDTO = conversionService.convert(project, ProjectDTO.class);
+                            projectDTO.setDepartment(conversionService.convert(project.getDepartment(), DepartmentDTO.class));
+                            return projectDTO;
+                        }).collect(Collectors.toList()),
+                pagingRequest.getDraw(), projectService.getAllClosedProjectCount().intValue()), HttpStatus.OK);
     }
 
-    @PutMapping("/api/project/activate/{id}")
+    @PutMapping("/activate/{id}")
     public ResponseEntity<?> activateProject(@PathVariable Long id) {
         if (!projectService.activate(projectService.find(id)))
             throw new OperationExecutionException(
-                    messageSource.getMessage("project.error.activate", null, null));
+                    messageSource.getMessage("project.error.activate", null, LocaleContextHolder.getLocale()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/api/project/inactivate/{id}")
+    @PutMapping("/inactivate/{id}")
     public ResponseEntity<?> inactivateProject(@PathVariable Long id) {
         if (!projectService.inactivate(projectService.find(id)))
             throw new OperationExecutionException(
-                    messageSource.getMessage("project.error.deactivate", null, null));
+                    messageSource.getMessage("project.error.deactivate", null, LocaleContextHolder.getLocale()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/api/project/edit/{id}")
+    @PutMapping("/edit/{id}")
     public ResponseEntity<?> editProject(@PathVariable Long id, @Valid @RequestBody ProjectDTO projectDTO) {
         Project project = projectService.find(id);
         project.setName(projectDTO.getName());
@@ -148,7 +144,7 @@ public class ProjectRESTController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/project/close/{id}")
+    @DeleteMapping("/close/{id}")
     public ResponseEntity<?> closeProject(@PathVariable Long id) {
         Project project = projectService.find(id);
         if (project.isActive()) throw new ActiveStatusDataException(
@@ -158,7 +154,7 @@ public class ProjectRESTController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/api/project/assign/employee")
+    @PostMapping("/assign/employee")
     public ResponseEntity<?> assignEmployeeToProject(@Valid @RequestBody EmployeePositionDTO employeePositionDTO) {
         if (projectService.assignToProject(
                 employeeService.find(employeePositionDTO.getEmployee().getId()),
@@ -168,7 +164,7 @@ public class ProjectRESTController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/api/project/cancel/employee")
+    @PostMapping("/cancel/employee")
     public ResponseEntity<?> cancelEmployeeFromProject(@Valid @RequestBody EmployeePositionDTO employeePositionDTO) {
         EmployeePosition employeePosition = projectService.findEmployeePositions(
                         employeeService.find(employeePositionDTO.getEmployee().getId()))

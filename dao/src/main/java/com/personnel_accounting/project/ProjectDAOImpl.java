@@ -56,6 +56,38 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
+    public List<Project> findAllOpen(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Project where endDate is null";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, department.id, department.name, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Project> findAllClosed(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Project where endDate is not null";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, department.id, department.name, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
     public List<Project> findByDepartmentPaginated(PagingRequest pagingRequest, Department department) {
         Session session = sessionFactory.getCurrentSession();
         Order order = pagingRequest.getOrder().get(0);
@@ -73,9 +105,34 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
+    public List<Project> findOpenProjectsByDepartmentPaginated(PagingRequest pagingRequest, Department department) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Project where department = :department and endDate is null";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, department.id, department.name, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("department", department);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
     public Long getProjectsByDepartmentCount(Department department) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("select count(*) from Project where department =:department");
+        query.setParameter("department", department);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getOpenProjectsByDepartmentCount(Department department) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Project where department =:department and endDate is null");
         query.setParameter("department", department);
         return (Long) query.getSingleResult();
     }
@@ -100,6 +157,20 @@ public class ProjectDAOImpl implements ProjectDAO {
     public Long getProjectCount() {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("select count(*) from Project");
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getAllOpenProjectCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Project where endDate is null");
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getAllClosedProjectCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Project where endDate is not null");
         return (Long) query.getSingleResult();
     }
 

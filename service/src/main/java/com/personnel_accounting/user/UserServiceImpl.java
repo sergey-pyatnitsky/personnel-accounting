@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User changeUserRole(User user, Role role) {
         Authority authority = authorityDAO.find(user.getUsername());
         if (authority.getRole() != role) {
@@ -64,6 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean registerUser(User user, String pass, String name, Role role, String email) {
         ValidationUtil.validate(user, userValidator);
         user.setPassword(pass);
@@ -75,6 +78,7 @@ public class UserServiceImpl implements UserService {
                 Employee employee = new Employee(name, false, user, new Profile());
                 Profile profile = new Profile();
                 profile.setEmail(email);
+                profile.setImageId("1oRfzcWiifuIhZOh4h5eqVU2REr1G_EQ-");
                 profile = profileDAO.save(profile);
                 employee.setProfile(profile);
                 employeeDAO.save(employee);
@@ -115,6 +119,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean inactivate(User user) {
         boolean isActive = userDAO.inactivate(user);
         if (isActive) {
@@ -127,6 +132,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean activate(User user) {
         boolean isActive = userDAO.activate(user);
         if (isActive) {
@@ -139,6 +145,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean remove(User user) {
         if (authorityDAO.removeByUsername(user.getUsername())) {
             return userDAO.remove(userDAO.find(user.getUsername()));
@@ -154,6 +161,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User save(User user, Role role) {
         ValidationUtil.validate(user, userValidator);
         Authority authority = new Authority(user.getUsername(), role);

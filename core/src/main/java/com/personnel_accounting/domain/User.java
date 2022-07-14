@@ -38,4 +38,9 @@ public class User {
         this.password = password;
         this.isActive = isActive;
     }
+
+    public User(String username, boolean isActive) {
+        this.username = username;
+        this.isActive = isActive;
+    }
 }

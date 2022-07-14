@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +29,16 @@ public class MainExceptionHandler extends ResponseEntityExceptionHandler {
                 .withError(e.getMessage()).build();
         logger.error(e.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.OK);
+    }
+
+    @ExceptionHandler({DisabledException.class, BadCredentialsException.class})
+    public ResponseEntity<ApiError> handleAuthException(Exception e) {
+        ApiError apiError = ApiError.ApiErrorBuilder.anApiError()
+                .withTimestamp(new Date(System.currentTimeMillis()))
+                .withStatus(HttpStatus.UNAUTHORIZED.value())
+                .withError(e.getMessage()).build();
+        logger.error(e.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
     }
 
     @Override

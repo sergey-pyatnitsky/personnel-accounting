@@ -8,6 +8,7 @@ import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.employee.EmployeeDAO;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
+import com.personnel_accounting.exception.ExistingDataException;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.position.PositionDAO;
 import com.personnel_accounting.project.ProjectDAO;
@@ -16,6 +17,8 @@ import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.DepartmentValidator;
 import com.personnel_accounting.validation.PositionValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -48,7 +51,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Autowired
     private PositionValidator positionValidator;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @Override
+    @Transactional
     public Department addDepartment(Department department) {
         ValidationUtil.validate(department, departmentValidator);
         return departmentDAO.findByName(department.getName())
@@ -58,6 +65,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public boolean closeDepartment(Department department) {
         Department tempDepartment = departmentDAO.merge(department);
         if (tempDepartment.getStartDate() == null)
@@ -88,8 +96,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Project> findProjectsPaginated(PagingRequest pagingRequest, Department department) {
-        return projectDAO.findByDepartmentPaginated(pagingRequest, department);
+    public List<Project> findOpenProjectsByDepartmentPaginated(PagingRequest pagingRequest, Department department) {
+        return projectDAO.findOpenProjectsByDepartmentPaginated(pagingRequest, department);
     }
 
     @Override
@@ -115,6 +123,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public Department changeDepartmentState(Department department, boolean isActive) {
         List<Project> projects = projectDAO.findByDepartment(department);
         projects.forEach(obj -> obj.setActive(isActive));
@@ -144,8 +153,28 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public List<Department> findAllOpen(PagingRequest pagingRequest) {
+        return departmentDAO.findAllOpen(pagingRequest);
+    }
+
+    @Override
+    public List<Department> findAllClosed(PagingRequest pagingRequest) {
+        return departmentDAO.findAllClosed(pagingRequest);
+    }
+
+    @Override
     public Long getDepartmentCount() {
         return departmentDAO.getDepartmentCount();
+    }
+
+    @Override
+    public Long getOpenDepartmentCount() {
+        return departmentDAO.getOpenDepartmentCount();
+    }
+
+    @Override
+    public Long getClosedDepartmentCount() {
+        return departmentDAO.getClosedDepartmentCount();
     }
 
     @Override
@@ -176,6 +205,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public boolean inactivate(Department department) {
         projectDAO.findByDepartment(department).forEach(project -> {
             taskDAO.findByProject(project).forEach(task -> task.setTaskStatus(TaskStatus.CLOSED));
@@ -186,6 +216,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public boolean activate(Department department) {
         List<Project> projects = projectDAO.findByDepartment(department);
         projects.forEach(project -> {
@@ -196,12 +227,38 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public Position addPosition(Position position) {
         ValidationUtil.validate(position, positionValidator);
         return positionDAO.findAll().stream().filter(obj -> obj.getName().equals(position.getName()))
                 .findFirst().orElse(null) != null
                 ? position
                 : positionDAO.save(position);
+    }
+
+    @Override
+    @Transactional
+    public Position editPosition(Position position) {
+        ValidationUtil.validate(position, positionValidator);
+        if(positionDAO.findByName(position.getName()) != null)
+            throw new ExistingDataException(
+                    messageSource.getMessage("position.alert.edit", null, LocaleContextHolder.getLocale()));
+        Position positionFromDB = positionDAO.find(position.getId());
+        positionFromDB.setName(position.getName());
+        return positionDAO.save(positionFromDB);
+    }
+
+    @Override
+    public boolean removePositionById(Long id) {
+        if(employeePositionDAO.findByPosition(positionDAO.find(id)).size() != 0)
+            throw new ExistingDataException(
+                    messageSource.getMessage("position.alert.remove", null, LocaleContextHolder.getLocale()));
+        return positionDAO.removeById(id);
+    }
+
+    @Override
+    public List<Position> findAllPositionsWithSearchSorting(PagingRequest pagingRequest) {
+        return positionDAO.findAllWithSearchSorting(pagingRequest);
     }
 
     @Override
@@ -232,5 +289,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Long getProjectsByDepartmentCount(Department department) {
         return projectDAO.getProjectsByDepartmentCount(department);
+    }
+
+    @Override
+    public Long getOpenProjectsByDepartmentCount(Department department) {
+        return projectDAO.getOpenProjectsByDepartmentCount(department);
     }
 }

@@ -32,8 +32,8 @@ $(document).ready(function () {
     });
 
     let current_row = null;
-    $("body").on('show.bs.modal', "#content-assign-user #assignUserModal", function (event) {
-      current_row = $(event.relatedTarget).closest('tr');
+    $("#content-assign-user #assignUserModal").on('show.bs.modal', function (event) {
+      current_row = $(document.activeElement).closest('tr');
       if (department_assign_table != null) department_assign_table.destroy();
       loadDeartmentsAssignTable("#departmentSelectModalTable", "/api/department/get_all/open");
 
@@ -55,6 +55,9 @@ function loadDeartmentsAssignTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -70,7 +73,7 @@ function loadDeartmentsAssignTable(table_id, req_url) {
         "mRender": function (data) {
           let message = get_message(localStorage.getItem("lang"),
             "department.button.text.select");
-          return '<button type="button" class="btn btn-primary" id="save_assign_department_modal_btn"' +
+          return '<button type="button" class="btn btn-primary" id="save_assign_department_modal_btn" ' +
             'data-dismiss="modal" value="' + data.id + '|' + data.name + '">' + message + '</button>'
         }
       }
@@ -90,6 +93,9 @@ function loadAssignTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -116,12 +122,12 @@ function loadAssignTable(table_id, req_url) {
           if (data.department != null) {
             let message = get_message(localStorage.getItem("lang"),
               "department.button.text.transfer");
-            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
+            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal" ' +
               'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">' + message + '</button>'
           } else {
             let message = get_message(localStorage.getItem("lang"),
               "department.button.text.assign");
-            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"' +
+            return '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal" ' +
               'data-target="#assignUserModal" id="transfer_user_btn" value="' + data.id + '">' + message + '</button>';
           }
         }
@@ -138,6 +144,7 @@ function get_open_department() {
   show_preloader();
   $.ajax({
     type: "GET",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/department/get_all/open",
     async: false,
@@ -153,13 +160,14 @@ function get_open_department() {
   hide_preloader();
 }
 
-function assign_user(employee_id, employee_name, department) {
+function assign_user(employee_id, employee_name, department_str) {
   let employee = {}, department = {};
   Object.assign(employee, { department });
   employee.id = employee_id;
-  employee.department.id = department.split('|')[0];
+  employee.department.id = department_str.split('|')[0];
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/assign/department",
     data: JSON.stringify(employee),
@@ -170,7 +178,7 @@ function assign_user(employee_id, employee_name, department) {
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
           "department.alert.assign_user").replace("0", employee_name);
-        message = message.replace("1", department.split('|')[2]);
+        message = message.replace("1", department_str.split('|')[1]);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         assign_table.destroy();
         loadAssignTable("#content-assign-user #assign_users_table", current_url_for_assign_table);

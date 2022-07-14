@@ -55,9 +55,55 @@ public class DepartmentDAOImpl implements DepartmentDAO {
     }
 
     @Override
+    public List<Department> findAllOpen(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+
+        String hql = "from Department where endDate is null";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, isActive) like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength() + 1);
+        return query.list();
+    }
+
+    @Override
+    public List<Department> findAllClosed(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+
+        String hql = "from Department where endDate is not null";
+        if(!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, name, isActive) like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength() + 1);
+        return query.list();
+    }
+
+    @Override
     public Long getDepartmentCount() {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("select count(*) from Department");
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getOpenDepartmentCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Department where endDate is null");
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getClosedDepartmentCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select count(*) from Department where endDate is not null");
         return (Long) query.getSingleResult();
     }
 

@@ -1,4 +1,4 @@
-package com.personnel_accounting.configuration;
+package com.personnel_accounting.configuration.security;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 

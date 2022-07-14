@@ -5,6 +5,9 @@ $(document).ready(function () {
   $("#activate-user").click(function (event) {
     event.preventDefault();
     $('.alert').replaceWith(`<div class="alert"></div>`);
+    $("#content-activate-user #toRemoveTab").remove();
+    $("#content-activate-user .nav-link").removeClass('active');
+    $("#content-activate-user #employee_btn").addClass('active');
     hideAllContent();
     $("#content-activate-user").show();
     if (activate_table != null) activate_table.destroy();
@@ -12,12 +15,16 @@ $(document).ready(function () {
     loadActivateTable("#content-activate-user #activate_users_table", current_url_for_activate_table);
 
     $("#content-activate-user #employee_btn").click(function () {
+      $("#content-activate-user .nav-link").removeClass('active');
+      $("#content-activate-user #employee_btn").addClass('active');
       activate_table.destroy();
       current_url_for_activate_table = "/api/employee/get_all";
       loadActivateTable("#content-activate-user #activate_users_table", current_url_for_activate_table);
     });
 
     $("#content-activate-user #admin_btn").click(function () {
+      $("#content-activate-user .nav-link").removeClass('active');
+      $("#content-activate-user #admin_btn").addClass('active');
       activate_table.destroy();
       current_url_for_activate_table = "/api/employee/get_all/admins";
       loadActivateTable("#content-activate-user #activate_users_table", current_url_for_activate_table);
@@ -37,6 +44,9 @@ function loadActivateTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {
@@ -59,7 +69,7 @@ function loadActivateTable(table_id, req_url) {
         "mData": null,
         "bSortable": false,
         "mRender": function (data) {
-          let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal"'
+          let content = '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" data-toggle="modal" '
             + 'data-target="#activateUserModal" id="activate_user_btn" value="'
             + data.user.username + '">';
           if (data.user.active == false) {
@@ -87,6 +97,7 @@ function activate_user(username, action) {
   if (action === "Активировать" || action === "Activate") {
     $.ajax({
       type: "PUT",
+      headers: {"Authorization": sessionStorage.getItem('tokenData')},
       contentType: "application/json",
       url: "/api/employee/activate/" + username,
       async: false,
@@ -109,6 +120,7 @@ function activate_user(username, action) {
   else if (action === "Деактивировать" || action === "Deactivate") {
     $.ajax({
       type: "PUT",
+      headers: {"Authorization": sessionStorage.getItem('tokenData')},
       contentType: "application/json",
       url: "/api/employee/inactivate/" + username,
       cache: false,

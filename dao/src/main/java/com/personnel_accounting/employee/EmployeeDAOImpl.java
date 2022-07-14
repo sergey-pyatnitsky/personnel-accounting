@@ -4,6 +4,7 @@ import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.User;
+import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.pagination.entity.Column;
 import com.personnel_accounting.pagination.entity.Order;
 import com.personnel_accounting.pagination.entity.PagingRequest;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -49,9 +51,145 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
+    public List<Employee> findAllActiveEmployee(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Employee where user.isActive =:active and user.authority.role in (:roles)";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("active", true);
+        query.setParameterList("roles", Arrays.asList(Role.EMPLOYEE, Role.DEPARTMENT_HEAD, Role.PROJECT_MANAGER));
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Employee> findAllActiveAdmins(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Employee where user.isActive =:active and user.authority.role =:role";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("active", true);
+        query.setParameter("role", Role.ADMIN);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Employee> findAllFreeAndActiveEmployees(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Employee where user.isActive =:active and department is null";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("active", true);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Employee> findAllAssignedAndActiveEmployees(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Employee where user.isActive =:active and department is not null";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("active", true);
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
+    public List<Employee> findAllDismissed(PagingRequest pagingRequest) {
+        Session session = sessionFactory.getCurrentSession();
+        Order order = pagingRequest.getOrder().get(0);
+        Column column = pagingRequest.getColumns().get(order.getColumn());
+        String hql = "from Employee where user.isActive =:active and user.authority.role in (:roles)";
+        if (!pagingRequest.getSearch().getValue().equals(""))
+            hql += " and concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
+                    "like '%" + pagingRequest.getSearch().getValue() + "%'";
+        hql += " order by " + column.getData() + " " + order.getDir().toString();
+        Query query = session.createQuery(hql);
+        query.setParameter("active", false);
+        query.setParameterList("roles", Arrays.asList(Role.EMPLOYEE, Role.DEPARTMENT_HEAD, Role.PROJECT_MANAGER, Role.ADMIN));
+        query.setFirstResult(pagingRequest.getStart());
+        query.setMaxResults(pagingRequest.getLength());
+        return query.list();
+    }
+
+    @Override
     public Long getEmployeeCount() {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("select count(*) from Employee");
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getActiveEmployeeCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "select count(*) from Employee where user.isActive =:active and user.authority.role in (:roles)");
+        query.setParameterList("roles", Arrays.asList(Role.EMPLOYEE, Role.DEPARTMENT_HEAD, Role.PROJECT_MANAGER));
+        query.setParameter("active", true);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getActiveAdminCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "select count(*) from Employee where user.isActive =:active and user.authority.role =:role");
+        query.setParameter("role", Role.ADMIN);
+        query.setParameter("active", true);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getFreeAndActiveEmployeesCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "select count(*) from Employee where user.isActive =:active and department is null");
+        query.setParameter("active", true);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getAssignedAndActiveEmployeesCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "select count(*) from Employee where user.isActive =:active and department is not null");
+        query.setParameter("active", true);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long getDismissedEmployeeCount() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "select count(*) from Employee where user.isActive =:active and user.authority.role in (:roles)");
+        query.setParameterList("roles", Arrays.asList(Role.EMPLOYEE, Role.DEPARTMENT_HEAD, Role.PROJECT_MANAGER, Role.ADMIN));
+        query.setParameter("active", false);
         return (Long) query.getSingleResult();
     }
 
@@ -115,7 +253,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         Column column = pagingRequest.getColumns().get(order.getColumn());
         String hql = "from Employee where department = :department";
         if (!pagingRequest.getSearch().getValue().equals(""))
-            hql += " and where concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
+            hql += " and concat(id, user.username, name, user.authority.role, user.isActive, isActive) " +
                     "like '%" + pagingRequest.getSearch().getValue() + "%'";
         hql += " order by " + column.getData() + " " + order.getDir().toString();
         Query query = session.createQuery(hql);

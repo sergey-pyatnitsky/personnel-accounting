@@ -43,6 +43,9 @@ function loadViewTable(table_id, req_url) {
     "ajax": {
       "url": req_url,
       "type": "POST",
+      "beforeSend" : function(xhr) {
+        xhr.setRequestHeader('Authorization', sessionStorage.getItem('tokenData'));
+      },
       "dataType": "json",
       "contentType": "application/json",
       "data": function (d) {

@@ -2,7 +2,6 @@ package com.personnel_accounting.employee;
 
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
-import com.personnel_accounting.domain.Image;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.ReportCard;
@@ -15,7 +14,7 @@ import java.util.List;
 
 public interface EmployeeService {
     List<Employee> getEmployeesWithProjectByDepartment(Department department, PagingRequest pagingRequest);
-    Image editProfileImage(Image image, User user);
+    String editProfileImage(String id, User user);
     ReportCard trackTime(Task task, Time time);
     Task changeTaskStatus(Task task);
     Task addTaskInProject(Project project, Task task);
@@ -31,6 +30,11 @@ public interface EmployeeService {
     ReportCard mergeReportCard(ReportCard reportCard);
 
     Long getEmployeeCount();
+    Long getActiveEmployeeCount();
+    Long getActiveAdminCount();
+    Long getFreeAndActiveEmployeesCount();
+    Long getAssignedAndActiveEmployeesCount();
+    Long getDismissedEmployeeCount();
     Long getEmployeeByDepartmentCount(Department department);
     Long getEmployeeByProjectCount(Project project);
     int getEmployeesWithOpenProjectByDepartmentCount(Department department);
@@ -42,6 +46,11 @@ public interface EmployeeService {
 
     Employee find(Long id);
     List<Employee> findAll(PagingRequest pagingRequest);
+    List<Employee> findAllActiveEmployee(PagingRequest pagingRequest);
+    List<Employee> findAllActiveAdmins(PagingRequest pagingRequest);
+    List<Employee> findAllFreeAndActiveEmployees(PagingRequest pagingRequest);
+    List<Employee> findAllAssignedAndActiveEmployees(PagingRequest pagingRequest);
+    List<Employee> findAllDismissed(PagingRequest pagingRequest);
     List<Employee> findByName(String name);
     List<Employee> findByActive(boolean isActive);
     Employee findByUser(User user);
@@ -52,6 +61,7 @@ public interface EmployeeService {
     Employee save(Employee employee);
     Employee merge(Employee employee);
     boolean removeById(Long id);
+    boolean removeWithInactivation(Employee employee);
     boolean remove(Employee employee);
 
     boolean inactivate(Employee employee);

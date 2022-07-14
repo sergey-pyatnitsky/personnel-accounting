@@ -1,5 +1,6 @@
-package com.personnel_accounting.configuration;
+package com.personnel_accounting.configuration.web;
 
+import com.personnel_accounting.configuration.ServiceConfiguration;
 import com.personnel_accounting.entity.converter.domain.*;
 import com.personnel_accounting.entity.converter.dto.*;
 import org.springframework.context.MessageSource;

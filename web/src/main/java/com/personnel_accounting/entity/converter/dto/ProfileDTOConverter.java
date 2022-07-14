@@ -15,7 +15,7 @@ public class ProfileDTOConverter implements Converter<Profile, ProfileDTO> {
         profileDTO.setPhone(source.getPhone());
         profileDTO.setEmail(source.getEmail());
         profileDTO.setSkills(source.getSkills());
-        profileDTO.setImage(source.getImage());
+        profileDTO.setImageId(source.getImageId());
         return profileDTO;
     }
 }

@@ -2,7 +2,6 @@ package com.personnel_accounting.employee;
 
 import com.personnel_accounting.domain.Department;
 import com.personnel_accounting.domain.Employee;
-import com.personnel_accounting.domain.Image;
 import com.personnel_accounting.domain.Profile;
 import com.personnel_accounting.domain.Project;
 import com.personnel_accounting.domain.ReportCard;
@@ -10,11 +9,11 @@ import com.personnel_accounting.domain.Task;
 import com.personnel_accounting.domain.User;
 import com.personnel_accounting.employee_position.EmployeePositionDAO;
 import com.personnel_accounting.enums.TaskStatus;
-import com.personnel_accounting.image.ImageDAO;
 import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.profile.ProfileDAO;
 import com.personnel_accounting.report_card.ReportCardDAO;
 import com.personnel_accounting.task.TaskDAO;
+import com.personnel_accounting.user.UserDAO;
 import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.EmployeeValidator;
 import com.personnel_accounting.validation.ProfileValidator;
@@ -43,6 +42,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     private ProfileDAO profileDAO;
 
     @Autowired
+    private UserDAO userDAO;
+
+    @Autowired
     private EmployeePositionDAO employeePositionDAO;
 
     @Autowired
@@ -52,19 +54,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private TaskValidator taskValidator;
 
     @Autowired
-    private ImageDAO imageDAO;
-
-    @Autowired
     private ProfileValidator profileValidator;
 
     @Override
-    public Image editProfileImage(Image image, User user) {
+    @Transactional
+    public String editProfileImage(String id, User user) {
         Profile profile = employeeDAO.findByUser(user).getProfile();
-        Long oldImageId = profile.getImage().getId();
-        profile.setImage(image);
-        profileDAO.save(profile);
-        if (oldImageId != 1) imageDAO.removeById(oldImageId);
-        return image;
+        profile.setImageId(id);
+        return profileDAO.save(profile).getImageId();
     }
 
     @Override
@@ -165,7 +162,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .stream().filter(employee ->
                         employeePositionDAO.findByEmployee(employee)
                                 .stream().filter(employeePosition -> employeePosition.getProject() != null
-                                        && employeePosition.getProject().getEndDate() == null)
+                                        && employeePosition.getEndDate() == null)
                                 .findFirst().orElse(null) != null
                 ).collect(Collectors.toList());
     }
@@ -176,7 +173,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .stream().filter(employee ->
                         employeePositionDAO.findByEmployee(employee)
                                 .stream().filter(employeePosition -> employeePosition.getProject() != null
-                                        && employeePosition.getProject().getEndDate() == null)
+                                        && employeePosition.getEndDate() == null)
                                 .findFirst().orElse(null) != null
                 ).count();
     }
@@ -192,8 +189,58 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<Employee> findAllActiveEmployee(PagingRequest pagingRequest) {
+        return employeeDAO.findAllActiveEmployee(pagingRequest);
+    }
+
+    @Override
+    public List<Employee> findAllActiveAdmins(PagingRequest pagingRequest) {
+        return employeeDAO.findAllActiveAdmins(pagingRequest);
+    }
+
+    @Override
+    public List<Employee> findAllFreeAndActiveEmployees(PagingRequest pagingRequest) {
+        return employeeDAO.findAllFreeAndActiveEmployees(pagingRequest);
+    }
+
+    @Override
+    public List<Employee> findAllAssignedAndActiveEmployees(PagingRequest pagingRequest) {
+        return employeeDAO.findAllAssignedAndActiveEmployees(pagingRequest);
+    }
+
+    @Override
+    public List<Employee> findAllDismissed(PagingRequest pagingRequest) {
+        return employeeDAO.findAllDismissed(pagingRequest);
+    }
+
+    @Override
     public Long getEmployeeCount() {
         return employeeDAO.getEmployeeCount();
+    }
+
+    @Override
+    public Long getActiveEmployeeCount() {
+        return employeeDAO.getActiveEmployeeCount();
+    }
+
+    @Override
+    public Long getActiveAdminCount() {
+        return employeeDAO.getActiveAdminCount();
+    }
+
+    @Override
+    public Long getFreeAndActiveEmployeesCount() {
+        return employeeDAO.getFreeAndActiveEmployeesCount();
+    }
+
+    @Override
+    public Long getAssignedAndActiveEmployeesCount() {
+        return employeeDAO.getAssignedAndActiveEmployeesCount();
+    }
+
+    @Override
+    public Long getDismissedEmployeeCount() {
+        return employeeDAO.getDismissedEmployeeCount();
     }
 
     @Override
@@ -244,6 +291,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public boolean removeById(Long id) {
         Employee employee = employeeDAO.find(id);
         employeePositionDAO.findByEmployee(employee)
@@ -259,31 +307,46 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
+    public boolean removeWithInactivation(Employee employee) {
+        if(inactivate(employee)) {
+            return userDAO.inactivate(employee.getUser());
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
     public boolean inactivate(Employee employee) {
         Date date = new Date(System.currentTimeMillis());
         employeePositionDAO.findByEmployee(employee).forEach(employeePosition -> {
             employeePosition.setModifiedDate(date);
             employeePosition.setActive(false);
+            employeePositionDAO.save(employeePosition);
         });
         List<Task> tasks = taskDAO.findByAssignee(employee);
         tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.IN_PROGRESS).collect(Collectors.toList())
                 .forEach(task -> {
                     task.setModifiedDate(date);
                     task.setTaskStatus(TaskStatus.OPEN);
+                    taskDAO.save(task);
                 });
         tasks.stream().filter(task -> task.getTaskStatus() == TaskStatus.DONE).collect(Collectors.toList())
                 .forEach(task -> {
                     task.setModifiedDate(date);
                     task.setTaskStatus(TaskStatus.CLOSED);
+                    taskDAO.save(task);
                 });
         return employeeDAO.inactivate(employee);
     }
 
     @Override
+    @Transactional
     public boolean activate(Employee employee) {
         employeePositionDAO.findByEmployee(employee).forEach(employeePosition -> {
             employeePosition.setModifiedDate(new Date(System.currentTimeMillis()));
             employeePosition.setActive(true);
+            employeePositionDAO.save(employeePosition);
         });
         return employeeDAO.activate(employee);
     }

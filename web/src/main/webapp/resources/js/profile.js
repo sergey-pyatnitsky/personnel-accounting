@@ -41,14 +41,15 @@ function setImage() {
   inputFile.append("file", file);
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: false,
     processData: false,
     url: "/api/uploadFile",
     data: inputFile,
     success: function (data) {
-      $("#profile_image").attr("src", data);
-      $("#navbar_image").attr("src", data);
-      localStorage.setItem("imageUrl", data);
+      $("#profile_image").attr("src", "http://localhost:8080/api/downloadFile/" + data);
+      $("#navbar_image").attr("src", "http://localhost:8080/api/downloadFile/" + data);
+      localStorage.setItem("imageUrl", "http://localhost:8080/api/downloadFile/" + data);
     },
     error: function (error) {
       console.log(error);
@@ -69,6 +70,7 @@ function edit_profile_data() {
 
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/profile/edit",
     data: JSON.stringify(employee),
@@ -96,6 +98,7 @@ function edit_profile_data() {
 function get_profile_data() {
   $.ajax({
     type: "GET",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/profile/get_profile_data",
     cache: false,
@@ -109,7 +112,7 @@ function get_profile_data() {
       $('#email').val(data.profile.email);
       $('#education').val(data.profile.education);
       $('#experience').val(data.profile.skills);
-      image_id = data.profile.image.id.toString();
+      image_id = data.profile.imageId.toString();
     },
     error: function (error) {
       console.log(error);
@@ -125,6 +128,7 @@ function check_old_password() {
 
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/profile/check_old_password",
     data: JSON.stringify(entity),
@@ -150,6 +154,7 @@ function save_password() {
 
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/profile/edit_password",
     data: JSON.stringify(entity),

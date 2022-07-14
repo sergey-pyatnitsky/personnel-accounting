@@ -20,6 +20,7 @@ function search_employee() {
 function search_by_email(search_value) {
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/telephone-directory/search/by_email/" + search_value,
     cache: false,
@@ -50,6 +51,7 @@ function search_by_email(search_value) {
 function search_by_phone(search_value) {
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/telephone-directory/search/by_phone/" + search_value,
     cache: false,
@@ -80,6 +82,7 @@ function search_by_phone(search_value) {
 function search_by_name(search_value) {
   $.ajax({
     type: "POST",
+    headers: {"Authorization": sessionStorage.getItem('tokenData')},
     contentType: "application/json",
     url: "/api/employee/telephone-directory/search/by_name/" + search_value,
     cache: false,

@@ -1,4 +1,4 @@
-package com.personnel_accounting.configuration;
+package com.personnel_accounting.configuration.web;
 
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
