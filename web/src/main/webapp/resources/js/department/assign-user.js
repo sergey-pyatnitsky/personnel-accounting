@@ -32,8 +32,8 @@ $(document).ready(function () {
     });
 
     let current_row = null;
-    $("body").on('show.bs.modal', "#content-assign-user #assignUserModal", function (event) {
-      current_row = $(event.relatedTarget).closest('tr');
+    $("#content-assign-user #assignUserModal").on('show.bs.modal', function (event) {
+      current_row = $(document.activeElement).closest('tr');
       if (department_assign_table != null) department_assign_table.destroy();
       loadDeartmentsAssignTable("#departmentSelectModalTable", "/api/department/get_all/open");
 

@@ -5,6 +5,9 @@ $(document).ready(function () {
   $("#activate-user").click(function (event) {
     event.preventDefault();
     $('.alert').replaceWith(`<div class="alert"></div>`);
+    $("#content-activate-user #toRemoveTab").remove();
+    $("#content-activate-user .nav-link").removeClass('active');
+    $("#content-activate-user #employee_btn").addClass('active');
     hideAllContent();
     $("#content-activate-user").show();
     if (activate_table != null) activate_table.destroy();
@@ -12,12 +15,16 @@ $(document).ready(function () {
     loadActivateTable("#content-activate-user #activate_users_table", current_url_for_activate_table);
 
     $("#content-activate-user #employee_btn").click(function () {
+      $("#content-activate-user .nav-link").removeClass('active');
+      $("#content-activate-user #employee_btn").addClass('active');
       activate_table.destroy();
       current_url_for_activate_table = "/api/employee/get_all";
       loadActivateTable("#content-activate-user #activate_users_table", current_url_for_activate_table);
     });
 
     $("#content-activate-user #admin_btn").click(function () {
+      $("#content-activate-user .nav-link").removeClass('active');
+      $("#content-activate-user #admin_btn").addClass('active');
       activate_table.destroy();
       current_url_for_activate_table = "/api/employee/get_all/admins";
       loadActivateTable("#content-activate-user #activate_users_table", current_url_for_activate_table);

@@ -88,8 +88,15 @@ $(document).ready(function () {
     });
 
     let current_row = null;
+    $("body").on("click", "#editTaskBtn", function (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      current_row = $(this);
+      $('#task_edit_modal').modal('toggle');
+    });
+
     $("body").on('show.bs.modal', "#task_edit_modal", function (event) {
-      current_row = $(event.relatedTarget).closest('tr');
+      current_row = current_row.closest('tr');
       let modal = $(this);
 
       let task_id = current_row.find('.task_id').text();
@@ -261,7 +268,7 @@ function loadViewTable(table_id, req_url) {
                   </div>
                   <div class="col">
                     <button type="button" class="btn btn-danger btn-sm waves-light mb-0 mt-2" ` +
-                      `data-toggle="modal" data-target="#task_edit_modal" value="` + data.id +`">` + message +`</button>
+                      `data-toggle="modal" data-target="#task_edit_modal" id = "editTaskBtn" value="` + data.id +`">` + message +`</button>
                   </div>
                 </div>
               </div>

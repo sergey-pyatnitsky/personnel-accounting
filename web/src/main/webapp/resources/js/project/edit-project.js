@@ -10,10 +10,17 @@ $(document).ready(function () {
     loadEditTable("#content-edit-project #edit_project_table", "/api/project/get_all/open");
 
     let current_row = null;
+    $("body").on("click", "#editProjectBtn", function (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      current_row = $(this);
+      $('#projectEditModal').modal('toggle');
+    });
+
     $("body").on('show.bs.modal', "#projectEditModal", function (event) {
       if (department_table != null) department_table.destroy();
       loadDeartmentsTable("#content-edit-project #departments_table", "/api/department/get_all/open");
-      current_row = $(event.relatedTarget).closest('tr');
+      current_row = current_row.closest('tr');
       let modal = $(this);
 
       modal.find('#project_modal_name').val(current_row.find('.project_name').text());
@@ -78,7 +85,7 @@ function loadEditTable(table_id, req_url) {
           let message2 = get_message(localStorage.getItem("lang"),
             "project.button.text.remove");
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
-            + ' data-target="#projectEditModal">' + message1 + '</button>'
+            + ' id="editProjectBtn" data-target="#projectEditModal">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="remove_project_btn"'
             + ' value="' + data.id + '|' + data.name + '">' + message2 + '</button>';
         }

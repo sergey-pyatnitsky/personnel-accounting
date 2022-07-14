@@ -36,7 +36,7 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
     @Override
     public List<EmployeePosition> findAll() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from EmployeePosition ").list();
+        return session.createQuery("from EmployeePosition").list();
     }
 
     @Override
@@ -88,9 +88,9 @@ public class EmployeePositionDAOImpl implements EmployeePositionDAO {
         Session session = sessionFactory.getCurrentSession();
         Order order = pagingRequest.getOrder().get(0);
         Column column = pagingRequest.getColumns().get(order.getColumn());
-        String hql = "from EmployeePosition where employee = :employee and project.endDate = null and isActive = true";
+        String hql = "from EmployeePosition where employee =:employee and endDate is null";
         if (!pagingRequest.getSearch().getValue().equals(""))
-            hql += " and where concat(employee.id, employee.name, employee.user.username, employee.user.authority.role, isActive) " +
+            hql += " and concat(employee.id, employee.name, employee.user.username, employee.user.authority.role, isActive) " +
                     "like '%" + pagingRequest.getSearch().getValue() + "%'";
         hql += " order by " + column.getData() + " " + order.getDir().toString();
         Query query = session.createQuery(hql);

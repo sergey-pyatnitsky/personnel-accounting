@@ -9,7 +9,6 @@ function hide_preloader() {
 }
 
 $(document).ready(function () {
-
   if (localStorage.getItem("lang") != null && window.location.href.indexOf("logout") > -1
     && window.location.href.indexOf("lang") <= -1) {
     window.location.replace('?logout' + '&lang=' + localStorage.getItem("lang"));
@@ -38,14 +37,26 @@ $(document).ready(function () {
         cache: false,
         timeout: 600000,
         success: function (data) {
-          let image = "http://localhost:8080/api/downloadFile/" + data.profile.imageId.toString();
-          $("#navbar_image").attr("src", image);
-          localStorage.setItem("imageUrl", image);
-          localStorage.setItem("name", data.name);
-          localStorage.setItem("username", data.user.username);
-          $("#navbar_name").text(data.name);
-          $("#navbar_username").text(data.user.username);
-          $("#main_menu_name").text(data.name);
+          if(data.name != undefined){
+            let image = "http://localhost:8080/api/downloadFile/" + data.profile.imageId.toString();
+            $("#navbar_image").attr("src", image);
+            localStorage.setItem("imageUrl", image);
+            localStorage.setItem("name", data.name);
+            localStorage.setItem("username", data.user.username);
+            $("#navbar_name").text(data.name);
+            $("#navbar_username").text(data.user.username);
+            $("#main_menu_name").text(data.name);
+          }
+          else {
+            let image = "http://localhost:8080/api/downloadFile/1oRfzcWiifuIhZOh4h5eqVU2REr1G_EQ-";
+            $("#navbar_image").attr("src", image);
+            localStorage.setItem("imageUrl", image);
+            localStorage.setItem("name", "Administrator");
+            localStorage.setItem("username", data.username);
+            $("#navbar_name").text("Administrator");
+            $("#navbar_username").text(data.username);
+            $("#main_menu_name").text("Administrator");
+          }
         },
         error: function (error) {
           console.log(error);

@@ -9,9 +9,13 @@ public interface DepartmentDAO {
     Department find(Long id);
     List<Department> findByActive(boolean isActive);
     List<Department> findAll(PagingRequest pagingRequest);
+    List<Department> findAllOpen(PagingRequest pagingRequest);
+    List<Department> findAllClosed(PagingRequest pagingRequest);
     List<Department> findByName(String name);
 
     Long getDepartmentCount();
+    Long getOpenDepartmentCount();
+    Long getClosedDepartmentCount();
 
     Department save(Department department);
     List<Department> save(List<Department> departments);

@@ -96,8 +96,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Project> findProjectsPaginated(PagingRequest pagingRequest, Department department) {
-        return projectDAO.findByDepartmentPaginated(pagingRequest, department);
+    public List<Project> findOpenProjectsByDepartmentPaginated(PagingRequest pagingRequest, Department department) {
+        return projectDAO.findOpenProjectsByDepartmentPaginated(pagingRequest, department);
     }
 
     @Override
@@ -153,8 +153,28 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public List<Department> findAllOpen(PagingRequest pagingRequest) {
+        return departmentDAO.findAllOpen(pagingRequest);
+    }
+
+    @Override
+    public List<Department> findAllClosed(PagingRequest pagingRequest) {
+        return departmentDAO.findAllClosed(pagingRequest);
+    }
+
+    @Override
     public Long getDepartmentCount() {
         return departmentDAO.getDepartmentCount();
+    }
+
+    @Override
+    public Long getOpenDepartmentCount() {
+        return departmentDAO.getOpenDepartmentCount();
+    }
+
+    @Override
+    public Long getClosedDepartmentCount() {
+        return departmentDAO.getClosedDepartmentCount();
     }
 
     @Override
@@ -269,5 +289,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Long getProjectsByDepartmentCount(Department department) {
         return projectDAO.getProjectsByDepartmentCount(department);
+    }
+
+    @Override
+    public Long getOpenProjectsByDepartmentCount(Department department) {
+        return projectDAO.getOpenProjectsByDepartmentCount(department);
     }
 }

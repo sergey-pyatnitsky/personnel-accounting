@@ -32,8 +32,15 @@ $(document).ready(function () {
     } else showAssignUserTable();
 
     let current_row = null;
+    $("body").on("click", "#assign_user_btn", function (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      current_row = $(this);
+      $('#assignUserModal').modal('toggle');
+    });
+
     $("body").on('show.bs.modal', "#assignUserModal", function (event) {
-      current_row = $(event.relatedTarget).closest('tr');
+      current_row = current_row.closest('tr');
       let modal = $(this);
       if (current_row.find("#assign_user_btn").text() == "Назначить" ||
         current_row.find("#assign_user_btn").text() == "Assign") {

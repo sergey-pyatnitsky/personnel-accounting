@@ -66,48 +66,64 @@ public class EmployeeRESTController {
     @PostMapping("/api/employee/get_all")
     public ResponseEntity<?> getEmployees(@RequestBody PagingRequest pagingRequest) {
         return new ResponseEntity<>(getPage(employeeService.findAll(pagingRequest)
-                .stream().map(employee -> {
-                    EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
-                    tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
-                    tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
-                    return tempEmployee;
-                }).collect(Collectors.toList())
-                .stream().filter(employeeDTO ->
-                        employeeDTO.getUser().getAuthority().getRole() != Role.SUPER_ADMIN
-                                && employeeDTO.getUser().getAuthority().getRole() != Role.ADMIN)
-                .collect(Collectors.toList()), pagingRequest.getDraw(), employeeService.getEmployeeCount().intValue()),
-                HttpStatus.OK);
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
+                            return tempEmployee;
+                        }).collect(Collectors.toList()),
+                pagingRequest.getDraw(), employeeService.getEmployeeCount().intValue()), HttpStatus.OK);
+    }
+
+    @PostMapping("/api/employee/get_all/active")
+    public ResponseEntity<?> getAllActiveEmployees(@RequestBody PagingRequest pagingRequest) {
+        return new ResponseEntity<>(getPage(employeeService.findAllActiveEmployee(pagingRequest)
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
+                            return tempEmployee;
+                        }).collect(Collectors.toList()),
+                pagingRequest.getDraw(), employeeService.getActiveEmployeeCount().intValue()), HttpStatus.OK);
+    }
+
+    @PostMapping("/api/employee/get_all/dismissed")
+    public ResponseEntity<?> getDismissedEmployees(@RequestBody PagingRequest pagingRequest) {
+        return new ResponseEntity<>(getPage(employeeService.findAllDismissed(pagingRequest)
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
+                            return tempEmployee;
+                        }).collect(Collectors.toList()),
+                pagingRequest.getDraw(), employeeService.getDismissedEmployeeCount().intValue()), HttpStatus.OK);
     }
 
     @PostMapping("/api/employee/get_all/admins")
-    public ResponseEntity<?> getAllAdmins(@RequestBody PagingRequest pagingRequest) {
-        return new ResponseEntity<>(getPage(employeeService.findAll(pagingRequest)
-                .stream().map(employee -> {
-                    EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
-                    tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
-                    tempEmployee.getUser().getAuthority().setRole(
-                            userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
-                    return tempEmployee;
-                }).collect(Collectors.toList())
-                .stream().filter(employeeDTO -> employeeDTO.getUser().getAuthority().getRole() == Role.ADMIN)
-                .collect(Collectors.toList()), pagingRequest.getDraw(), employeeService.getEmployeeCount().intValue()),
-                HttpStatus.OK);
+    public ResponseEntity<?> getAllActiveAdmins(@RequestBody PagingRequest pagingRequest) {
+        return new ResponseEntity<>(getPage(employeeService.findAllActiveAdmins(pagingRequest)
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.getUser().getAuthority().setRole(
+                                    userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
+                            return tempEmployee;
+                        }).collect(Collectors.toList()),
+                pagingRequest.getDraw(), employeeService.getActiveAdminCount().intValue()), HttpStatus.OK);
     }
 
     @PostMapping("/api/employee/get_all/free")
     public ResponseEntity<?> getAllFreeEmployees(@RequestBody PagingRequest pagingRequest) {
-        return new ResponseEntity<>(getPage(employeeService.findAll(pagingRequest)
-                .stream().map(employee -> {
-                    EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
-                    tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
-                    tempEmployee.getUser().getAuthority().setRole(
-                            userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
-                    tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
-                    return tempEmployee;
-                }).collect(Collectors.toList())
-                .stream().filter(employeeDTO -> employeeDTO.getDepartment() == null)
-                .collect(Collectors.toList()), pagingRequest.getDraw(), employeeService.getEmployeeCount().intValue()),
-                HttpStatus.OK);
+        return new ResponseEntity<>(getPage(employeeService.findAllFreeAndActiveEmployees(pagingRequest)
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.getUser().getAuthority().setRole(
+                                    userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
+                            tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
+                            return tempEmployee;
+                        }).collect(Collectors.toList()),
+                pagingRequest.getDraw(), employeeService.getFreeAndActiveEmployeesCount().intValue()), HttpStatus.OK);
     }
 
     @PostMapping("/api/employee/get_all/department/{id}")
@@ -132,13 +148,13 @@ public class EmployeeRESTController {
     public ResponseEntity<?> getAllEmployeeByProject(@RequestBody PagingRequest pagingRequest, @PathVariable Long id) {
         Project project = projectService.find(id);
         return new ResponseEntity<>(getPage(projectService.findByProject(project)
-                .stream().filter(Employee::isActive).collect(Collectors.toList())
-                .stream().map(employee -> {
-                    EmployeeDTO employeeDTO = conversionService.convert(employee, EmployeeDTO.class);
-                    employeeDTO.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
-                    return employeeDTO;
-                }).collect(Collectors.toList()), pagingRequest.getDraw(), employeeService.getEmployeeByProjectCount(project).intValue()),
-                HttpStatus.OK);
+                        .stream().filter(Employee::isActive).collect(Collectors.toList())
+                        .stream().map(employee -> {
+                            EmployeeDTO employeeDTO = conversionService.convert(employee, EmployeeDTO.class);
+                            employeeDTO.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            return employeeDTO;
+                        }).collect(Collectors.toList()),
+                pagingRequest.getDraw(), employeeService.getEmployeeByProjectCount(project).intValue()), HttpStatus.OK);
     }
 
     @PostMapping("/api/employee/get_with_project/department/{id}")
@@ -157,24 +173,21 @@ public class EmployeeRESTController {
                             employeeDTO.getUser().getAuthority().setRole(userService.findRoleByUsername(employeeDTO.getUser().getUsername()));
                             return employeeDTO;
                         }).collect(Collectors.toList()),
-                pagingRequest.getDraw(), employeeService.getEmployeesWithOpenProjectByDepartmentCount(department)),
-                HttpStatus.OK);
+                pagingRequest.getDraw(), employeeService.getEmployeesWithOpenProjectByDepartmentCount(department)), HttpStatus.OK);
     }
 
     @PostMapping("/api/employee/get_all/assigned")
     public ResponseEntity<?> getAllAssignedEmployees(@RequestBody PagingRequest pagingRequest) {
-        return new ResponseEntity<>(getPage(employeeService.findAll(pagingRequest)
-                .stream().map(employee -> {
-                    EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
-                    tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
-                    tempEmployee.getUser().getAuthority().setRole(
-                            userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
-                    tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
-                    return tempEmployee;
-                }).collect(Collectors.toList())
-                .stream().filter(employeeDTO -> employeeDTO.getDepartment() != null)
-                .collect(Collectors.toList()), pagingRequest.getDraw(), employeeService.getEmployeeCount().intValue()),
-                HttpStatus.OK);
+        return new ResponseEntity<>(getPage(employeeService.findAllAssignedAndActiveEmployees(pagingRequest)
+                        .stream().map(employee -> {
+                            EmployeeDTO tempEmployee = conversionService.convert(employee, EmployeeDTO.class);
+                            tempEmployee.setUser(conversionService.convert(employee.getUser(), UserDTO.class));
+                            tempEmployee.getUser().getAuthority().setRole(
+                                    userService.findRoleByUsername(tempEmployee.getUser().getUsername()));
+                            tempEmployee.setDepartment(conversionService.convert(employee.getDepartment(), DepartmentDTO.class));
+                            return tempEmployee;
+                        }).collect(Collectors.toList()),
+                pagingRequest.getDraw(), employeeService.getAssignedAndActiveEmployeesCount().intValue()), HttpStatus.OK);
     }
 
     @PostMapping("/api/employee/assign/department")
@@ -190,7 +203,7 @@ public class EmployeeRESTController {
 
     @DeleteMapping("/api/employee/remove/{id}")
     public ResponseEntity<?> removeUser(@PathVariable Long id) {
-        if (!employeeService.inactivate(employeeService.find(id)))
+        if (!employeeService.removeWithInactivation(employeeService.find(id)))
             throw new OperationExecutionException(messageSource.getMessage("user.error.remove", null, null));
         return new ResponseEntity<>(HttpStatus.OK);
     }

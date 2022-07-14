@@ -13,6 +13,7 @@ import com.personnel_accounting.pagination.entity.PagingRequest;
 import com.personnel_accounting.profile.ProfileDAO;
 import com.personnel_accounting.report_card.ReportCardDAO;
 import com.personnel_accounting.task.TaskDAO;
+import com.personnel_accounting.user.UserDAO;
 import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.EmployeeValidator;
 import com.personnel_accounting.validation.ProfileValidator;
@@ -39,6 +40,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private ProfileDAO profileDAO;
+
+    @Autowired
+    private UserDAO userDAO;
 
     @Autowired
     private EmployeePositionDAO employeePositionDAO;
@@ -158,7 +162,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .stream().filter(employee ->
                         employeePositionDAO.findByEmployee(employee)
                                 .stream().filter(employeePosition -> employeePosition.getProject() != null
-                                        && employeePosition.getProject().getEndDate() == null)
+                                        && employeePosition.getEndDate() == null)
                                 .findFirst().orElse(null) != null
                 ).collect(Collectors.toList());
     }
@@ -169,7 +173,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .stream().filter(employee ->
                         employeePositionDAO.findByEmployee(employee)
                                 .stream().filter(employeePosition -> employeePosition.getProject() != null
-                                        && employeePosition.getProject().getEndDate() == null)
+                                        && employeePosition.getEndDate() == null)
                                 .findFirst().orElse(null) != null
                 ).count();
     }
@@ -185,8 +189,58 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<Employee> findAllActiveEmployee(PagingRequest pagingRequest) {
+        return employeeDAO.findAllActiveEmployee(pagingRequest);
+    }
+
+    @Override
+    public List<Employee> findAllActiveAdmins(PagingRequest pagingRequest) {
+        return employeeDAO.findAllActiveAdmins(pagingRequest);
+    }
+
+    @Override
+    public List<Employee> findAllFreeAndActiveEmployees(PagingRequest pagingRequest) {
+        return employeeDAO.findAllFreeAndActiveEmployees(pagingRequest);
+    }
+
+    @Override
+    public List<Employee> findAllAssignedAndActiveEmployees(PagingRequest pagingRequest) {
+        return employeeDAO.findAllAssignedAndActiveEmployees(pagingRequest);
+    }
+
+    @Override
+    public List<Employee> findAllDismissed(PagingRequest pagingRequest) {
+        return employeeDAO.findAllDismissed(pagingRequest);
+    }
+
+    @Override
     public Long getEmployeeCount() {
         return employeeDAO.getEmployeeCount();
+    }
+
+    @Override
+    public Long getActiveEmployeeCount() {
+        return employeeDAO.getActiveEmployeeCount();
+    }
+
+    @Override
+    public Long getActiveAdminCount() {
+        return employeeDAO.getActiveAdminCount();
+    }
+
+    @Override
+    public Long getFreeAndActiveEmployeesCount() {
+        return employeeDAO.getFreeAndActiveEmployeesCount();
+    }
+
+    @Override
+    public Long getAssignedAndActiveEmployeesCount() {
+        return employeeDAO.getAssignedAndActiveEmployeesCount();
+    }
+
+    @Override
+    public Long getDismissedEmployeeCount() {
+        return employeeDAO.getDismissedEmployeeCount();
     }
 
     @Override
@@ -250,6 +304,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public boolean remove(Employee employee) {
         return employeeDAO.remove(employee);
+    }
+
+    @Override
+    @Transactional
+    public boolean removeWithInactivation(Employee employee) {
+        if(inactivate(employee)) {
+            return userDAO.inactivate(employee.getUser());
+        }
+        return false;
     }
 
     @Override

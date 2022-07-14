@@ -47,9 +47,9 @@ function setImage() {
     url: "/api/uploadFile",
     data: inputFile,
     success: function (data) {
-      $("#profile_image").attr("src", data);
-      $("#navbar_image").attr("src", data);
-      localStorage.setItem("imageUrl", data);
+      $("#profile_image").attr("src", "http://localhost:8080/api/downloadFile/" + data);
+      $("#navbar_image").attr("src", "http://localhost:8080/api/downloadFile/" + data);
+      localStorage.setItem("imageUrl", "http://localhost:8080/api/downloadFile/" + data);
     },
     error: function (error) {
       console.log(error);

@@ -18,6 +18,7 @@ function sendLoginRequest(username, password) {
     timeout: 600000,
     success: function (data) {
       localStorage.clear();
+      localStorage.setItem("lang", "en");
       saveToken(data);
       if (window.location.href.indexOf("login") <= -1)
         window.location.href = window.location.href + "/main";

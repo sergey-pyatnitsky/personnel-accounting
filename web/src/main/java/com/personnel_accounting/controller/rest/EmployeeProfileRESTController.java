@@ -7,6 +7,7 @@ import com.personnel_accounting.employee.EmployeeService;
 import com.personnel_accounting.entity.dto.EmployeeDTO;
 import com.personnel_accounting.entity.dto.ProfileDTO;
 import com.personnel_accounting.entity.dto.UserDTO;
+import com.personnel_accounting.enums.Role;
 import com.personnel_accounting.exception.IncorrectDataException;
 import com.personnel_accounting.user.UserService;
 import com.personnel_accounting.utils.AuthenticationUtil;
@@ -56,11 +57,14 @@ public class EmployeeProfileRESTController {
     @GetMapping("/employee/profile/get_profile_data")
     public ResponseEntity<?> getProfileData(Authentication authentication) {
         User user = userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication));
-        Employee employee = employeeService.findByUser(user);
-        EmployeeDTO employeeDTO = conversionService.convert(employee, EmployeeDTO.class);
-        employeeDTO.setProfile(conversionService.convert(employee.getProfile(), ProfileDTO.class));
-        employeeDTO.setUser(conversionService.convert(user, UserDTO.class));
-        return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
+        if(!user.getAuthority().getRole().equals(Role.SUPER_ADMIN)) {
+            Employee employee = employeeService.findByUser(user);
+            EmployeeDTO employeeDTO = conversionService.convert(employee, EmployeeDTO.class);
+            employeeDTO.setProfile(conversionService.convert(employee.getProfile(), ProfileDTO.class));
+            employeeDTO.setUser(conversionService.convert(user, UserDTO.class));
+            return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(conversionService.convert(user, UserDTO.class), HttpStatus.OK);
     }
 
     @PostMapping("/employee/profile/edit")

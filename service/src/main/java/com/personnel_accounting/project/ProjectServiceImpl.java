@@ -173,9 +173,8 @@ public class ProjectServiceImpl implements ProjectService {
             if (obj.getProject().getId().equals(project.getId()) && obj.getEndDate() == null)
                 return employeePositionDAO.merge(obj);
         }
-        EmployeePosition employeePosition = new EmployeePosition(false, employee, positionDAO.save(position),
+        EmployeePosition employeePosition = new EmployeePosition(true, employee, position,
                 project, project.getDepartment());
-        employeePosition.setActive(true);
         employeePosition.setStartDate(new Date(System.currentTimeMillis()));
         return employeePositionDAO.save(employeePosition);
     }
@@ -209,6 +208,16 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Long getEmployeeCount() {
         return projectDAO.getProjectCount();
+    }
+
+    @Override
+    public Long getAllOpenProjectCount() {
+        return projectDAO.getAllOpenProjectCount();
+    }
+
+    @Override
+    public Long getAllClosedProjectCount() {
+        return projectDAO.getAllClosedProjectCount();
     }
 
     @Override
@@ -280,6 +289,16 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Project> findAll(PagingRequest pagingRequest) {
         return projectDAO.findAll(pagingRequest);
+    }
+
+    @Override
+    public List<Project> findAllOpen(PagingRequest pagingRequest) {
+        return projectDAO.findAllOpen(pagingRequest);
+    }
+
+    @Override
+    public List<Project> findAllClosed(PagingRequest pagingRequest) {
+        return projectDAO.findAllClosed(pagingRequest);
     }
 
     @Override

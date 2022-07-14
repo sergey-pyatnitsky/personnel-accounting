@@ -53,32 +53,28 @@ public class DepartmentRESTController {
 
     @PostMapping("/get_all/open")
     public ResponseEntity<?> getAllOpenDepartments(@RequestBody PagingRequest pagingRequest) {
-        return new ResponseEntity<>(getPage(departmentService.findAll(pagingRequest)
-                .stream().filter(department -> department.getEndDate() == null).collect(Collectors.toList())
-                .stream().map(department -> conversionService.convert(department, DepartmentDTO.class))
-                .collect(Collectors.toList()), pagingRequest.getDraw(), departmentService.getDepartmentCount().intValue()),
-                HttpStatus.OK);
+        return new ResponseEntity<>(getPage(departmentService.findAllOpen(pagingRequest)
+                        .stream().map(department -> conversionService.convert(department, DepartmentDTO.class))
+                        .collect(Collectors.toList()),
+                pagingRequest.getDraw(), departmentService.getOpenDepartmentCount().intValue()), HttpStatus.OK);
     }
 
     @PostMapping("/get_all/closed")
     public ResponseEntity<?> getAllClosedDepartments(@RequestBody PagingRequest pagingRequest) {
-        return new ResponseEntity<>(getPage(departmentService.findAll(pagingRequest)
-                .stream().filter(department -> department.getEndDate() != null).collect(Collectors.toList())
-                .stream().map(department -> conversionService.convert(department, DepartmentDTO.class))
-                .collect(Collectors.toList()), pagingRequest.getDraw(), departmentService.getDepartmentCount().intValue()),
-                HttpStatus.OK);
+        return new ResponseEntity<>(getPage(departmentService.findAllClosed(pagingRequest)
+                        .stream().map(department -> conversionService.convert(department, DepartmentDTO.class))
+                        .collect(Collectors.toList()),
+                pagingRequest.getDraw(), departmentService.getClosedDepartmentCount().intValue()), HttpStatus.OK);
     }
 
     @PostMapping("/projects/open/{id}")
     public ResponseEntity<?> getAllOpenProjectsByDepartment(@RequestBody PagingRequest pagingRequest,
                                                             @PathVariable Long id) {
         Department department = departmentService.find(id);
-        return new ResponseEntity<>(getPage(departmentService.findProjectsPaginated(pagingRequest, department)
-                        .stream().filter(obj -> obj.getEndDate() == null).collect(Collectors.toList())
+        return new ResponseEntity<>(getPage(departmentService.findOpenProjectsByDepartmentPaginated(pagingRequest, department)
                         .stream().map(project -> conversionService.convert(project, ProjectDTO.class))
                         .collect(Collectors.toList()),
-                pagingRequest.getDraw(), departmentService.getProjectsByDepartmentCount(department).intValue()),
-                HttpStatus.OK);
+                pagingRequest.getDraw(), departmentService.getOpenProjectsByDepartmentCount(department).intValue()), HttpStatus.OK);
     }
 
     @PutMapping("/activate/{id}")

@@ -29,6 +29,9 @@ public interface ProjectService {
     List<EmployeePosition> findEmployeePositions(Employee employee);
     List<EmployeePosition> findByEmployeePaginated(PagingRequest pagingRequest, Employee employee);
 
+    Long getAllOpenProjectCount();
+    Long getAllClosedProjectCount();
+
     Long getEmployeeCount();
     Long getByEmployeeCount(Employee employee);
     Long getTaskByStatusInProjectCount(Project project, TaskStatus status);
@@ -41,6 +44,8 @@ public interface ProjectService {
     Project find(Long id);
     List<Project> findByActive(boolean isActive);
     List<Project> findAll(PagingRequest pagingRequest);
+    List<Project> findAllOpen(PagingRequest pagingRequest);
+    List<Project> findAllClosed(PagingRequest pagingRequest);
     List<Project> findByName(String name);
     List<Project> findByDepartment(Department department);
 

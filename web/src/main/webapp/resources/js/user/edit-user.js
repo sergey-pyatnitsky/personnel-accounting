@@ -5,6 +5,9 @@ $(document).ready(function () {
   $("#edit-user").click(function (event) {
     event.preventDefault();
     $('.alert').replaceWith(`<div class="alert"></div>`);
+    $("#content-edit-user #toRemoveTab").remove();
+    $("#content-edit-user .nav-link").removeClass('active');
+    $("#content-edit-user #employee_btn").addClass('active');
     hideAllContent();
     $("#content-edit-user").show();
     if (edit_table != null) edit_table.destroy();
@@ -12,20 +15,31 @@ $(document).ready(function () {
     loadEditTable("#content-edit-user #edit_users_table", current_url_for_edit_table);
 
     $("#content-edit-user #employee_btn").click(function () {
+      $("#content-edit-user .nav-link").removeClass('active');
+      $("#content-edit-user #employee_btn").addClass('active');
       edit_table.destroy();
       current_url_for_edit_table = "/api/employee/get_all";
       loadEditTable("#content-edit-user #edit_users_table", current_url_for_edit_table);
     });
 
     $("#content-edit-user #admin_btn").click(function () {
+      $("#content-edit-user .nav-link").removeClass('active');
+      $("#content-edit-user #admin_btn").addClass('active');
       edit_table.destroy();
       current_url_for_edit_table = "/api/employee/get_all/admins";
       loadEditTable("#content-edit-user #edit_users_table", current_url_for_edit_table);
     });
 
     let current_row = null;
+    $("body").on("click", "#editUserBtn", function (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      current_row = $(this);
+      $('#editUserModal').modal("toggle");
+    });
+
     $("body").on('show.bs.modal', "#editUserModal", function (event) {
-      current_row = $(event.relatedTarget).closest('tr');
+      current_row = current_row.closest('tr');
       let modal = $(this);
 
       modal.find('#inputNameEditModal').val(current_row.find('.employee_name').text());
@@ -66,7 +80,7 @@ function loadEditTable(table_id, req_url) {
       { "data": "name", "sClass": "employee_name" },
       { "data": "user.authority.role", "sClass": "employee_role" },
       {
-        "data": "active", render: function (data) {
+        "data": "user.active", render: function (data) {
           return data
             ? '<p class="text-success">+</p>'
             : '<p class="text-danger">-</p>';
@@ -81,7 +95,7 @@ function loadEditTable(table_id, req_url) {
           let message2 = get_message(localStorage.getItem("lang"),
             "user.alert.button.remove");
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
-            + ' data-target="#editUserModal" value="' + data.user.username + '">' + message1 + '</button>'
+            + ' data-target="#editUserModal" id="editUserBtn" value="' + data.user.username + '">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="removeUserBtn"'
             + ' value="' + data.id + '|' + data.name + '">' + message2 + '</button>';
         }
@@ -115,7 +129,7 @@ function edit_user(id, name, emp_role) {
       $('.alert').empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
-          "user.alert.activate").replace("0", employee.name);
+          "user.alert.edit").replace("0", employee.name);
         $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
         edit_table.destroy();
         loadEditTable("#content-edit-user #edit_users_table", current_url_for_edit_table);
@@ -125,7 +139,7 @@ function edit_user(id, name, emp_role) {
       console.log(error);
       $('.alert').empty();
       $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">
-        Ошибка!</div>`);
+        Error!</div>`);
     }
   });
   hide_preloader();

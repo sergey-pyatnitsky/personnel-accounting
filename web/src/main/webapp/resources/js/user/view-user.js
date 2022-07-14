@@ -4,19 +4,33 @@ $(document).ready(function () {
   $("#view-user").click(function (event) {
     event.preventDefault();
     $('.alert').replaceWith(`<div class="alert"></div>`);
+    $("#content-view-user .nav-link").removeClass('active');
+    $("#content-view-user #employee_btn").addClass('active');
     hideAllContent();
     $("#content-view-user").show();
     if (view_table != null) view_table.destroy();
     loadViewTable("#content-view-user #view_data_table", "/api/employee/get_all");
 
     $("#content-view-user #employee_btn").click(function () {
+      $("#content-view-user .nav-link").removeClass('active');
+      $("#content-view-user #employee_btn").addClass('active');
       view_table.destroy();
       loadViewTable("#content-view-user #view_data_table", "/api/employee/get_all");
     });
 
     $("#content-view-user #admin_btn").click(function () {
+      $("#content-view-user .nav-link").removeClass('active');
+      $("#content-view-user #admin_btn").addClass('active');
       view_table.destroy();
       loadViewTable("#content-view-user #view_data_table", "/api/employee/get_all/admins");
+    });
+
+    $("#content-view-user #dismissed_btn").click(function () {
+      $("#content-view-user .nav-link").removeClass('active');
+      $("#content-view-user #dismissed_btn").addClass('active');
+      view_table.destroy();
+      current_url_for_edit_table = "/api/employee/get_all/dismissed";
+      loadViewTable("#content-view-user #view_data_table", current_url_for_edit_table);
     });
   });
 });

@@ -2,11 +2,12 @@ document.addEventListener('DOMContentLoaded', function () {
   let token = document.getElementById("span_token_id").innerHTML;
   if (token != ""){
     saveToken(token);
-    window.location.href = window.location.href + "/main"
+    if( window.location.href.indexOf("lang") > -1)
+      window.location.href = window.location.href + "/main?lang" + window.location.href.split("lang")[1];
+    else window.location.href = window.location.href + "/main";
   }
 
   let arr = window.location.href.split("/");
-  //http://localhost:8080/page/main
   arr.shift();
   arr.shift();
   arr.shift();
@@ -41,16 +42,18 @@ function getHTML(link) {
 
       var scriptTag = $('body script'), countAllSrc = scriptTag.length, currCountSrc = 0;
       for (const tag of scriptTag) {
-        $.ajax({
-          url: tag.getAttribute('src'),
-          async: false,
-          dataType: "script",
-          success: function () {
-            currCountSrc++;
-            if (currCountSrc == countAllSrc && $(".first_button").length != 0)
-              document.getElementById($(".first_button").attr('id')).click();
-          },
-        });
+        if(tag.getAttribute("src").indexOf("https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js") < 0) {
+          $.ajax({
+            url: tag.getAttribute('src'),
+            async: false,
+            dataType: "script",
+            success: function () {
+              currCountSrc++;
+              if (currCountSrc == (countAllSrc - 1) && $(".first_button").length != 0)
+                document.getElementById($(".first_button").attr('id')).click();
+            },
+          });
+        }
       }
     });
 }

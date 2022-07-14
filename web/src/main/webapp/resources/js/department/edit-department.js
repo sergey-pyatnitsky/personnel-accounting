@@ -24,16 +24,27 @@ $(document).ready(function () {
     });
 
     let current_row = null;
-    $("body").on('show.bs.modal', "#departmentEditModal", function (event) {
-      current_row = $(event.relatedTarget).closest('tr');
-      let modal = $(this);
+    $("body").on("click", "#editBtnDepartment", function (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      if($(this) != null)
+        current_row = $(this);
+      $('#departmentEditModal').modal("toggle");
+    });
 
-      modal.find('#department_modal_name').val(current_row.find('.department_name').text());
+    $("body").on('show.bs.modal', '#departmentEditModal', function (event) {
+      console.log(current_row);
+      if(current_row != null) {
+        current_row = current_row.closest('tr');
+        let modal = $(this);
 
-      $("#save_department_modal_btn").click(function () {
-        edit_department(current_row.find('.department_id').text(),
-          modal.find('#department_modal_name').val());
-      })
+        modal.find('#department_modal_name').val(current_row.find('.department_name').text());
+
+        $("#save_department_modal_btn").click(function () {
+          edit_department(current_row.find('.department_id').text(),
+            modal.find('#department_modal_name').val());
+        })
+      }
     });
 
     $("body").on("click", "#content-edit-department #close_department_btn", function (event) {
@@ -87,7 +98,7 @@ function loadEditTable(table_id, req_url) {
           let message2 = get_message(localStorage.getItem("lang"),
             "department.button.text.remove");
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
-            + ' data-target="#departmentEditModal">' + message1 + '</button>'
+            + ' data-target="#departmentEditModal" id="editBtnDepartment">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="close_department_btn"'
             + ' value="' + data.id + '|' + data.name + '">' + message2 + '</button>';
         }

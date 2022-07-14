@@ -12,8 +12,15 @@ $(document).ready(function () {
     loadEditTable("#content-edit-position #edit_positions_table", current_url_for_edit_table);
 
     let current_row = null;
+    $("body").on("click", "#editPositionBtn", function (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      current_row = $(this);
+      $('#positionEditModal').modal('toggle');
+    });
+
     $("body").on('show.bs.modal', "#positionEditModal", function (event) {
-      current_row = $(event.relatedTarget).closest('tr');
+      current_row = current_row.closest('tr');
       let modal = $(this);
 
       modal.find('#position_modal_name').val(current_row.find('.position_name').text());
@@ -60,7 +67,7 @@ function loadEditTable(table_id, req_url) {
           let message2 = get_message(localStorage.getItem("lang"),
             "position.button.text.remove");
           return '<button type="button" class="btn btn-warning btn-rounded btn-sm my-0 mr-2" data-toggle="modal"'
-            + ' data-target="#positionEditModal">' + message1 + '</button>'
+            + ' id = "editPositionBtn" data-target="#positionEditModal">' + message1 + '</button>'
             + '<button type="button" class="btn btn-danger btn-rounded btn-sm my-0" id="close_position_btn"'
             + ' value="' + data.id + '|' + data.name + '">' + message2 + '</button>';
         }

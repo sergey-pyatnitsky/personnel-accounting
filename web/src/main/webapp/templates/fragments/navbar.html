@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
 
 <body>
 <th:block th:fragment="navbar">
@@ -35,7 +35,8 @@
               <span class="caret"></span>
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="right: 0; left: auto;">
-              <a class="dropdown-item" href="/page/profile" th:text="#{navbar.profile}"></a>
+              <a class="dropdown-item" href="/page/profile" th:text="#{navbar.profile}"
+                 sec:authorize="hasAnyAuthority('ADMIN', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'EMPLOYEE')"></a>
               <form th:action="@{/logout}" method="post">
                 <button type="submit" class="dropdown-item" id="logoutBtn" th:text="#{navbar.logout}"></button>
               </form>
