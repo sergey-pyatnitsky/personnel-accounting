@@ -41,19 +41,25 @@ The authorization page will be available at http://localhost:8080/login
 6. Ajax
 
 ## Database schema
-<img src="image/DB.png" alt="DB_schema" style="width:700px; display:block; margin: 10px auto;"/>
+<div style="text-align: center;">
+   <img src="image/DB.png" alt="DB_schema" style="max-width: 60%;"/>
+</div>
 
 ## Additional information
 
 Storing profile pictures of employees is done through a Google Drive service account.
 The Google Drive API allows you to create apps that leverage Google Drive cloud storage.
 This diagram shows the relationship between your Google Drive app, Google Drive, and Google Drive API:
-<img src="image/drive-intro.png" alt="Google Drive" style="width:300px; display:block; margin: 10px auto;"/>
+<div style="text-align: center;">
+   <img src="image/drive-intro.png" alt="Google Drive" style="max-width: 40%;"/>
+</div>
 
  This application uses Token-Based Authentication. You can authorize through the standard authorization form or through the Google Accounts service. </br>
   Token-Based Authentication uses a server-signed token (bearer token), which the client passes to the server in the HTTP Authorization header with the Bearer keyword or in the request body. </br></br>
   An example of the authorization page is presented below:
-<img src="image/auth.png" alt="auth page" style="width:300px; display:block; margin: 10px auto;"/>
+<div style="text-align: center;">
+   <img src="image/auth.png" alt="auth page" style="max-width: 30%;"/>
+</div>
 
 There are 5 types of users in this system:
 1. **Super admin**</br></br>
@@ -95,10 +101,14 @@ There are 5 types of users in this system:
    1. Tracking the time worked
    
  An example of the main admin menu is presented below:
-<img src="image/main.png" alt="main page" style="width:700px; display:block; margin: 10px auto;"/>
+<div style="text-align: center;">
+   <img src="image/main.png" alt="main page" style="max-width: 60%;"/>
+</div>
 
  Each user has the ability to change the application interface, view the information of 
  company employees and edit personal information (full name, address, phone number, education, personal skills).
 
  An example of the telephone directory page is presented below:
-<img src="image/Phone_directory.png" alt="phone directory page" style="width:700px; display:block; margin: 10px auto;"/>
+<div style="text-align: center;">
+   <img src="image/Phone_directory.png" alt="phone directory page" style="max-width: 60%;"/>
+</div>
