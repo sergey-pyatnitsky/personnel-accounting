@@ -46,6 +46,12 @@ public class PageController {
         return "authorization/authorization";
     }
 
+    @GetMapping("/page")
+    public String showLoginPageWhenError(Model model) {
+        model.addAttribute("lang", LocaleContextHolder.getLocale().getLanguage());
+        return "redirect:/login";
+    }
+
     @GetMapping("/page/**")
     public String getLoginInfo(HttpServletRequest request, Model model, Authentication authentication) {
         model.addAttribute("lang", LocaleContextHolder.getLocale().getLanguage());
@@ -61,7 +67,7 @@ public class PageController {
             if (user != null && user.isActive())
                 model.addAttribute("token", getJwtToken(user));
             else if (user != null && !user.isActive())
-                return "forward:/login?disabled";
+                return "redirect:/login?disabled";
         }
         return "page";
     }
