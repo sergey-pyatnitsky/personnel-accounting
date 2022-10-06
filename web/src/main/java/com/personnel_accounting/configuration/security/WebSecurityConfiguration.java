@@ -100,6 +100,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/authenticate/**").permitAll()
                 .antMatchers("/page").permitAll()
                 .antMatchers("/oauth2/**").permitAll()
+                .antMatchers("/api/messages/**").permitAll()
                 .anyRequest().authenticated().and()
                 .formLogin().loginPage("/login").and()
                 .logout().logoutSuccessUrl("/login?logout").permitAll().and()
