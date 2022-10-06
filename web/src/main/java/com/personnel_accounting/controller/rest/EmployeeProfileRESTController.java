@@ -50,7 +50,7 @@ public class EmployeeProfileRESTController {
     @PostMapping("/employee/profile/edit_password")
     public ResponseEntity<?> editUserPass(@Valid @RequestBody UserDTO userDTO, Authentication authentication) {
         User user = userService.findByUsername(AuthenticationUtil.getUsernameFromAuthentication(authentication));
-        userService.changeAuthData(user, "{bcrypt}" + (new BCryptPasswordEncoder()).encode(userDTO.getPassword()));
+        userService.changeAuthData(user, userDTO.getPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

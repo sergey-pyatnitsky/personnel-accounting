@@ -13,6 +13,7 @@ import com.personnel_accounting.utils.ValidationUtil;
 import com.personnel_accounting.validation.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -49,8 +50,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User changeAuthData(User user, String password) {
-        ValidationUtil.validate(user, userValidator);
         user.setPassword(password);
+        ValidationUtil.validate(user, userValidator);
+        user.setPassword("{bcrypt}" + (new BCryptPasswordEncoder()).encode(password));
         return userDAO.save(user);
     }
 
