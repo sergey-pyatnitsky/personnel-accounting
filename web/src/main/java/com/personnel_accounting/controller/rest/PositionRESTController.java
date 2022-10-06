@@ -65,6 +65,14 @@ public class PositionRESTController {
                 HttpStatus.OK);
     }
 
+    @PostMapping("/get_all")
+    public ResponseEntity<?> getPositions(@RequestBody PagingRequest pagingRequest) {
+        return new ResponseEntity<>(getPage(departmentService.findAllPositionsWithSearchSorting(pagingRequest)
+                .stream().map(position -> conversionService.convert(position, PositionDTO.class))
+                .collect(Collectors.toList()), pagingRequest.getDraw()),
+                HttpStatus.OK);
+    }
+
     @PutMapping("/edit/{id}")
     public ResponseEntity<?> editPosition(@Valid @RequestBody PositionDTO positionDTO, @PathVariable Long id) {
         positionDTO.setId(id);
