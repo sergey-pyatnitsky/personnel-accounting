@@ -320,7 +320,7 @@ function edit_task(task_id, task_name, task_description, task_status) {
     timeout: 600000,
     success: function (data) {
       $("#content-view-task .alert").removeClass('d-none');
-      $$("#content-view-task .alert").empty();
+      $("#content-view-task .alert").empty();
       if (data == "") {
         let message = get_message(localStorage.getItem("lang"),
           "task.alert.edit").replace("0", task.name);

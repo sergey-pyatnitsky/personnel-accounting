@@ -196,8 +196,24 @@ function loadViewTable(table_id, req_url) {
       {
         "data": null,
         render: function (data) {
-          let message = get_message(localStorage.getItem("lang"),
-            "task.alert.button.edit.status");
+
+
+          let content = ``;
+          if (data.status == "DONE") {
+            let message = get_message(localStorage.getItem("lang"), "task.time");
+            content = `
+                <input type="time" id="time_input" class="form-control"/>
+                <button type="button" class="btn btn-danger btn-sm waves-light mb-0 mt-2" id="edit_task_status_btn" 
+                        value="` + data.id + '|' + data.name + `">` + message + `</button>`;
+          }
+          else if (data.status != "CLOSED"){
+            let message = get_message(localStorage.getItem("lang"), "task.alert.button.edit.status");
+            content = `
+                <button type="button" class="btn btn-danger btn-sm waves-light mb-0 mt-2" id="edit_task_status_btn" 
+                        value="` + data.id + '|' + data.name + `">` + message + `</button></div>`;
+          }
+
+
           return `
             <div class="row mt-1">
               <div class="card p-0">
@@ -221,8 +237,7 @@ function loadViewTable(table_id, req_url) {
                     <div class="text-end">` + data.create_date + `</div>
                   </div>
                   <div class="col">
-                    <button type="button" class="btn btn-danger btn-sm waves-light mb-0 mt-2" id="edit_task_status_btn" 
-                        value="` + data.id + '|' + data.name + `">` + message + `</button></div>
+                    ` + content + `
                   </div>
                 </div>
               </div>
