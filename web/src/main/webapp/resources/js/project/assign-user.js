@@ -39,7 +39,7 @@ $(document).ready(function () {
       $('#assignUserModal').modal('toggle');
     });
 
-    $("body").on('show.bs.modal', "#assignUserModal", function (event) {
+    $("body").on('show.bs.modal', "#content-assign-user #assignUserModal", function (event) {
       current_row = current_row.closest('tr');
       let modal = $(this);
       if (current_row.find("#assign_user_btn").text() == "Назначить" ||
