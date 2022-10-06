@@ -10,7 +10,7 @@ services:
       MYSQL_PASSWORD: admin
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
+      - "3305:3305"
   webapp:
     build: .
     container_name: personnel_accounting
