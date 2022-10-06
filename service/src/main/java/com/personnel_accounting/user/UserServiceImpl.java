@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
                 Employee employee = new Employee(name, false, user, new Profile());
                 Profile profile = new Profile();
                 profile.setEmail(email);
-                profile.setImageId("1oRfzcWiifuIhZOh4h5eqVU2REr1G_EQ-");
+                profile.setImageId("1ohOOokl9RpEE27HIrtsxj6dXdxnPQnmo");
                 profile = profileDAO.save(profile);
                 employee.setProfile(profile);
                 employeeDAO.save(employee);

@@ -34,7 +34,7 @@ function reg_user() {
       } else {
         let message = get_message(localStorage.getItem("lang"),
           "registration.alert.success");
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
+        $('.alert_reg').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
       }
     },
     error: function (error) {

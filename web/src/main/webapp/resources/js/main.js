@@ -48,7 +48,7 @@ $(document).ready(function () {
             $("#main_menu_name").text(data.name);
           }
           else {
-            let image = "http://localhost:8080/api/downloadFile/1oRfzcWiifuIhZOh4h5eqVU2REr1G_EQ-";
+            let image = "http://localhost:8080/api/downloadFile/1ohOOokl9RpEE27HIrtsxj6dXdxnPQnmo";
             $("#navbar_image").attr("src", image);
             localStorage.setItem("imageUrl", image);
             localStorage.setItem("name", "Administrator");
