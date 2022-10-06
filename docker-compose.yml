@@ -10,7 +10,7 @@ services:
       MYSQL_PASSWORD: admin
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
+      - "3305:3305"
   webapp:
     build: .
     container_name: personnel_accounting
@@ -20,4 +20,4 @@ services:
     depends_on:
       - db
     environment:
-      CATALINA_OPTS: "-Ddatasource.url=jdbc:mysql://db:3306/personnel_accounting -Ddatasource.username=admin -Ddatasource.password=admin"
+      CATALINA_OPTS: "-Ddatasource.url=jdbc:mysql://db:3305/personnel_accounting -Ddatasource.username=admin -Ddatasource.password=admin"
