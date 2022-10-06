@@ -90,7 +90,7 @@ function edit_profile_data() {
     error: function (error) {
       console.log(error);
       $('.alert').empty();
-      $('.alert').append(`<div class="alert alert-danger"role="alert">Ошибка!</div>`);
+      $('.alert').append(`<div class="alert alert-danger" role="alert">Ошибка!</div>`);
     }
   });
 }
@@ -117,7 +117,7 @@ function get_profile_data() {
     error: function (error) {
       console.log(error);
       $('.alert').empty();
-      $('.alert').replaceWith(`<div class="alert alert-danger"role="alert">500 Error</div>`);
+      $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">500 Error</div>`);
     }
   });
 }
@@ -143,7 +143,7 @@ function check_old_password() {
     error: function (error) {
       console.log(error);
       $('.alert_pass').empty();
-      $('.alert_pass').replaceWith(`<div class="alert alert-danger"role="alert">500 Error</div>`);
+      $('.alert_pass').replaceWith(`<div class="alert alert-danger" role="alert">500 Error</div>`);
     }
   });
 }
@@ -169,15 +169,14 @@ function save_password() {
         $('#modal_input_repeat').val('');
         $('.alert_pass').empty();
 
-        let message = get_message(localStorage.getItem("lang"),
-          "profile.alert.password.done").replace("0", employeeStr.split('|')[1]);
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
+        let message = get_message(localStorage.getItem("lang"), "profile.alert.password.done");
+        $('.alert_pass').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
       }
     },
     error: function (error) {
       console.log(error);
       $('.alert_pass').empty();
-      $('.alert_pass').replaceWith(`<div class="alert alert-danger"role="alert">500 Error</div>`);
+      $('.alert_pass').replaceWith(`<div class="alert alert-danger" role="alert">500 Error</div>`);
     }
   });
 }

@@ -173,7 +173,7 @@ public class TaskRESTController {
     @PutMapping("/edit/status/{id}")
     public ResponseEntity<?> editTaskStatus(@PathVariable Long id, @RequestBody String time) {
         Task task = employeeService.findTask(id);
-        employeeService.changeTaskStatus(task);
+        if(!task.getTaskStatus().equals(TaskStatus.CLOSED))employeeService.changeTaskStatus(task);
         if (!time.equals("null"))
             employeeService.trackTime(task, Time.valueOf(time.replaceAll("\"", "") + ":00"));
         return new ResponseEntity<>(HttpStatus.OK);

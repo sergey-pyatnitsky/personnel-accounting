@@ -4,7 +4,7 @@ $(document).ready(function () {
       $('.alert_reg').empty();
       let message = get_message(localStorage.getItem("lang"),
         "registration.alert.password");
-      $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + message + `</div>`);
+      $('.alert_reg').replaceWith(`<div class="alert alert_reg alert-danger" role="alert">` + message + `</div>`);
     }
     else {
       reg_user();
@@ -30,11 +30,11 @@ function reg_user() {
     success: function (data) {
       $('.alert_reg').empty();
       if (data != "") {
-        $('.alert_reg').replaceWith(`<div class="alert alert-danger" role="alert">` + data.error + `</div>`)
+        $('.alert_reg').replaceWith(`<div class="alert alert_reg alert-danger" role="alert">` + data.error + `</div>`)
       } else {
         let message = get_message(localStorage.getItem("lang"),
           "registration.alert.success");
-        $('.alert').replaceWith(`<div class="alert alert-success" role="alert">` + message + `</div>`);
+        $('.alert_reg').replaceWith(`<div class="alert alert_reg alert-success" role="alert">` + message + `</div>`);
       }
     },
     error: function (error) {
@@ -42,7 +42,7 @@ function reg_user() {
       $('.alert_reg').empty();
       let message = get_message(localStorage.getItem("lang"),
         "registration.alert.exist");
-      $('.alert').replaceWith(`<div class="alert alert-danger" role="alert">` + message + `</div>`);
+      $('.alert_reg').replaceWith(`<div class="alert alert_reg alert-danger" role="alert">` + message + `</div>`);
     }
   });
 }
